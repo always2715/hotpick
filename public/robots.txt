@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://stellate.co.kr/sitemap.xml

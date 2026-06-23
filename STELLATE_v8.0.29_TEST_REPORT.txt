@@ -1,0 +1,39 @@
+STELLATE v8.0.29 TEST REPORT
+============================
+
+1. Syntax checks
+- lib/contentAccuracy.js: PASS
+- lib/contentArchitecture.js: PASS
+- lib/contentPolicy.js: PASS
+- lib/researchPipeline.js: PASS
+- lib/editorialContent.js: PASS
+- lib/feedFirstPipeline.js: PASS
+- lib/api.js: PASS
+- lib/publicationPolicy.js: PASS
+- pages/feed/[slug].js: PASS
+
+2. Accuracy regression
+- npm run test:v8029: PASS
+- actual Fact text preservation: PASS
+- canonical source deduplication: PASS
+- [object Object] summary regression: BLOCKED
+- unsupported date/forecast rejection: PASS
+- trusted related video retention: PASS
+- personal video rejection: PASS
+
+3. Existing regression suite
+- ranking/images/content/jobs/fallback/top-feed/refresh/admin/selection/copyright/research/publication/online/title tests: PASS
+- v8.0.2 through v8.0.28 compatibility test components: PASS
+- v8.0.24 through v8.0.29 final components: PASS
+
+4. Production build
+- Next.js 14.2.35 compile: PASS
+- static page generation: PASS
+- build traces: PASS
+- BUILD_ID generated: PASS
+
+5. Production smoke
+- GET /api/version: HTTP 200
+- appVersion: 8.0.29
+- contentVersion: 126
+- GET /admin-login: HTTP 200

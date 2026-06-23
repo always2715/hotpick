@@ -1,9 +1,7 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "next build",
   "outputDirectory": ".next",
   "framework": "nextjs",
-  "env": {
-    "ANTHROPIC_API_KEY": "@anthropic_api_key",
-    "YOUTUBE_API_KEY": "@youtube_api_key"
-  }
+  "installCommand": "npm ci --no-audit --no-fund"
 }

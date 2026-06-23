@@ -1,0 +1,13 @@
+{
+  "name": "STELLATE",
+  "short_name": "STELLATE",
+  "description": "실시간 검색순위 TOP 30",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#E24B4A",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

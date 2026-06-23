@@ -1,0 +1,30 @@
+STELLATE v8.0.29 RELEASE MANIFEST
+=================================
+Base: STELLATE v8.0.28 FULL
+App version: 8.0.29
+Content version: 126
+Trend cache version: 46
+
+Primary changed runtime files:
+- lib/contentAccuracy.js (new)
+- lib/contentArchitecture.js
+- lib/contentPolicy.js
+- lib/researchPipeline.js
+- lib/editorialContent.js
+- lib/feedFirstPipeline.js
+- lib/api.js
+- lib/publicationPolicy.js
+- pages/feed/[slug].js
+- pages/api/version.js
+- pages/admin.js
+- package.json
+- package-lock.json
+
+Primary test file:
+- tests/v8029-content-accuracy.test.mjs
+
+Excluded from archive:
+- node_modules
+- .next
+- .vercel
+- local log files

@@ -1,33 +1,9 @@
-# HotPick 🔥
-실시간 트렌드 키워드 TOP 30 + AI 콘텐츠 자동 생성 웹앱
+# STELLATE v8.0.30
 
-## 배포 가이드
+- appVersion: `8.0.30`
+- contentVersion: `126`
+- trendCacheVersion: `46`
 
-### 1. GitHub에 코드 올리기
-```bash
-git init
-git add .
-git commit -m "first commit"
-git branch -M main
-git remote add origin https://github.com/[깃헙아이디]/hotpick.git
-git push -u origin main
-```
+관리자 TOP 작업 즉시 중단, QStash 후속 배치·최종 공개 차단, 피드 인덱스 장애 시 공개 상세 원본 fallback, 현재 TOP 피드 강제 재구성 및 실제 표시 건수 검증을 적용한 전체본입니다.
 
-### 2. Vercel 배포
-1. vercel.com 접속
-2. New Project → GitHub 연동 → hotpick 선택
-3. Environment Variables 추가:
-   - ANTHROPIC_API_KEY = [Claude API 키]
-   - YOUTUBE_API_KEY = [유튜브 API 키]
-   - UNSPLASH_ACCESS_KEY = [Unsplash 키] (선택)
-4. Deploy 클릭
-
-### 3. 완료
-배포 후 [프로젝트명].vercel.app 으로 접속 가능
-
-## API 키 발급처
-| 키 | 발급처 |
-|----|--------|
-| ANTHROPIC_API_KEY | console.claude.com |
-| YOUTUBE_API_KEY | console.cloud.google.com |
-| UNSPLASH_ACCESS_KEY | unsplash.com/developers |
+상세 변경사항은 `README_v8.0.30.md`를 확인하세요.

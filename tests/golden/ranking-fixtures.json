@@ -1,0 +1,48 @@
+[
+  {
+    "name": "독립 출처가 확인된 기업 실적 사건",
+    "keyword": "삼성전자 실적",
+    "trafficValue": 100000,
+    "googleRank": 1,
+    "datalab": {"growth": 1.2, "latest": 90},
+    "articles": [
+      {"title": "삼성전자 2분기 실적 발표 영업이익 증가", "link": "https://a.example.com/1", "source": "A"},
+      {"title": "삼성전자 2분기 실적 공개 반도체 영업이익 개선", "link": "https://b.example.com/2", "source": "B"},
+      {"title": "삼성전자 분기 실적 발표 매출과 영업이익 증가", "link": "https://c.example.com/3", "source": "C"}
+    ],
+    "expectedEligible": true
+  },
+  {
+    "name": "YouTube 단독 리뷰 후보",
+    "keyword": "스파이더맨 예고편 리뷰 떡밥 총정리",
+    "trafficValue": 50000,
+    "googleRank": 2,
+    "datalab": {"growth": 2, "latest": 100},
+    "youtubeSupport": 3,
+    "articles": [],
+    "expectedEligible": false
+  },
+  {
+    "name": "단일 출처 연예 루머",
+    "keyword": "배우 열애설",
+    "trafficValue": 80000,
+    "googleRank": 3,
+    "articles": [
+      {"title": "배우 A와 B 열애설 온라인 확산", "link": "https://rumor.example.com/1", "source": "Rumor"}
+    ],
+    "expectedEligible": false
+  },
+  {
+    "name": "독립 출처가 확인된 서비스 장애",
+    "keyword": "카카오톡 장애",
+    "trafficValue": 120000,
+    "googleRank": 1,
+    "datalab": {"growth": 1.5, "latest": 100},
+    "articles": [
+      {"title": "카카오톡 접속 장애 발생 일부 이용자 불편", "link": "https://a.example.com/k1", "source": "A"},
+      {"title": "카카오톡 접속 장애 이용자 메시지 전송 실패", "link": "https://b.example.com/k2", "source": "B"},
+      {"title": "카카오톡 서비스 장애 복구 작업 진행", "link": "https://c.example.com/k3", "source": "C"}
+    ],
+    "expectedEligible": true
+  }
+]

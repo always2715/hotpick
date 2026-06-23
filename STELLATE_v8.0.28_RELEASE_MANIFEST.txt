@@ -1,0 +1,26 @@
+STELLATE v8.0.28 RELEASE MANIFEST
+================================
+
+Primary changed files
+- lib/trendRefreshJob.js
+- lib/feedSetQuality.js
+- lib/api.js
+- lib/jobs.js
+- lib/kv.js
+- pages/api/version.js
+- pages/admin.js
+- package.json
+- package-lock.json
+
+Tests
+- tests/v8028-top30-completion-recovery.test.mjs
+- tests/v8027-bounded-refresh-retry.test.mjs
+- tests/v8019-stage-recovery.test.mjs
+- tests/v8026-admin-runtime-recovery.test.mjs
+- tests/v809-resumable-refresh.test.mjs
+
+Documentation
+- README.md
+- README_v8.0.28.md
+- STELLATE_v8.0.28_TEST_REPORT.txt
+- STELLATE_v8.0.28_RELEASE_MANIFEST.txt
