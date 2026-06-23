@@ -9,6 +9,7 @@ import { CATEGORIES } from '../../lib/categories';
 import { requireAdmin } from '../../lib/adminAuth';
 import { enqueueTrendRefresh, enqueueTrendRefreshStep, enqueueMissingContentJobs, enqueueSelectedContentJobs, selectTopContentCandidates, createTrendRefreshRun } from '../../lib/jobs';
 import { executeTrendRefreshRun, MAX_CANDIDATE_ATTEMPTS } from '../../lib/trendRefreshJob';
+import { PUBLIC_TOP_COUNT } from '../../lib/topConfig';
 
 export const config = { maxDuration: 300 };
 
@@ -48,7 +49,7 @@ async function resolveTrend(slug) {
     searchQuery: existing.searchQuery || existing.displayTitle || existing.keyword, category: existing.category,
     categoryConfidence: existing.categoryConfidence, categoryReason: existing.categoryReason,
     qualityScore: existing.qualityScore, rankingGrade: existing.rankingGrade, rankingScore: existing.rankingScore, contentTier: existing.contentTier, rank: existing.rank,
-    imageMeta: existing.imageMeta || null, eventKey: existing.eventKey, topEligible: Number(existing.rank||0)>=1&&Number(existing.rank||0)<=30&&['full','standard','brief'].includes(String(existing.contentTier||'')),
+    imageMeta: existing.imageMeta || null, eventKey: existing.eventKey, topEligible: Number(existing.rank||0)>=1&&Number(existing.rank||0)<=PUBLIC_TOP_COUNT&&['full','standard','brief'].includes(String(existing.contentTier||'')),
   };
 }
 
@@ -141,12 +142,15 @@ export default async function handler(req, res) {
       const [candidates,tasks]=await Promise.all([getTrendRunCandidates(runId),getCronRunTasks(runId)]);
       if(!candidates.length)return res.status(409).json({error:'이 실행의 저장된 후보 목록이 없습니다. 새 TOP 갱신을 실행하세요.'});
       const needsIdentityMigration=candidates.some(candidate=>!candidate?.candidateId||!candidate?.publicationStageId);
-      const needsFixedTop30Migration=candidates.length!==30||candidates.some(candidate=>candidate?.fixedTop30!==true);
+      const needsFixedTop20Migration=candidates.length!==PUBLIC_TOP_COUNT||candidates.some(candidate=>candidate?.fixedTop20!==true);
+      if(needsFixedTop20Migration){
+        return res.status(409).json({error:`이 실행은 이전 TOP${candidates.length} 기준 작업이라 TOP${PUBLIC_TOP_COUNT}으로 안전하게 재개할 수 없습니다. 기존 작업을 중단하고 새 TOP 갱신을 시작하세요.`,topCountMigrationRequired:true,currentCandidateCount:candidates.length,targetTopCount:PUBLIC_TOP_COUNT});
+      }
       const ready=tasks.filter(task=>['generated','reused'].includes(task.status)).length;
       let phase='start';
       let cursor=0;
       let retryableCount=0;
-      if(!needsIdentityMigration&&!needsFixedTop30Migration){
+      if(!needsIdentityMigration&&!needsFixedTop20Migration){
         for(const task of tasks){
           if(['generated','reused'].includes(String(task?.status||'')))continue;
           if(Number(task?.attempts||0)>=MAX_CANDIDATE_ATTEMPTS)continue;
@@ -169,11 +173,11 @@ export default async function handler(req, res) {
         manualRetryAllowed:'true',retryCursor:0,retryProcessed:0,retryQueued:retryableCount,
         stepCount:0,lastPhase:'admin_resume',
         resumeNeedsIdentityMigration:needsIdentityMigration?'true':'false',
-        resumeNeedsFixedTop30Migration:needsFixedTop30Migration?'true':'false',
+        resumeNeedsFixedTop20Migration:needsFixedTop20Migration?'true':'false',
       });
       const queued=await enqueueTrendRefreshStep({runId,trigger:'admin_resume',phase,cursor});
-      await addAudit('trend_refresh_resumed','',null,{runId,phase,cursor,readyCount:ready,retryableCount,needsIdentityMigration,needsFixedTop30Migration,messageId:queued.messageId||''},'중단된 TOP 배치 실행 명시적 재개','admin');
-      return res.status(202).json({success:true,accepted:true,runId,phase,cursor,readyCount:ready,retryableCount,needsIdentityMigration,needsFixedTop30Migration,qstashMessageId:queued.messageId||''});
+      await addAudit('trend_refresh_resumed','',null,{runId,phase,cursor,readyCount:ready,retryableCount,needsIdentityMigration,needsFixedTop20Migration,messageId:queued.messageId||''},'중단된 TOP 배치 실행 명시적 재개','admin');
+      return res.status(202).json({success:true,accepted:true,runId,phase,cursor,readyCount:ready,retryableCount,needsIdentityMigration,needsFixedTop20Migration,qstashMessageId:queued.messageId||''});
     }
     if (action === 'preview_trends') {
       const result=await previewTrends();
@@ -201,15 +205,15 @@ export default async function handler(req, res) {
       return res.json({success:true,content});
     }
     if (action === 'retry_selected') {
-      const selected=[...new Set((Array.isArray(slugs)?slugs:[]).map(String).filter(Boolean))].slice(0,30);
+      const selected=[...new Set((Array.isArray(slugs)?slugs:[]).map(String).filter(Boolean))].slice(0,PUBLIC_TOP_COUNT);
       if(!selected.length)return res.status(400).json({error:'재시도할 항목을 선택하세요.'});
       const resolved=(await Promise.all(selected.map(resolveTrend))).filter(Boolean);
       const queued=await enqueueSelectedContentJobs(resolved,{trigger:'admin_selected_retry'});
       return res.status(202).json({success:true,queued});
     }
     if (action === 'regenerate_top_contents') {
-      const trends=selectTopContentCandidates(await getCachedTrends({includeHidden:true}),{limit:30});
-      if(!trends.length)return res.status(400).json({error:'재생성할 현재 공개 TOP1~30 콘텐츠가 없습니다.'});
+      const trends=selectTopContentCandidates(await getCachedTrends({includeHidden:true}),{limit:PUBLIC_TOP_COUNT});
+      if(!trends.length)return res.status(400).json({error:'재생성할 현재 공개 TOP1~20 콘텐츠가 없습니다.'});
       const queued=await enqueueSelectedContentJobs(trends,{trigger:'admin_top_regenerate'});
       return res.status(202).json({success:true,queued,count:trends.length});
     }

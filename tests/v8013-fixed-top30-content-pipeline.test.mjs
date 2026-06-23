@@ -31,16 +31,16 @@ assert.deepEqual(publicTopRejectionReasons({
 const refresh=fs.readFileSync(new URL('../lib/trendRefreshJob.js',import.meta.url),'utf8');
 assert.match(refresh,/prepareSelectedTopCandidates\(\(prepared\.trends \|\| \[\]\)\.slice\(0, TARGET_TOP_COUNT\)/);
 assert.doesNotMatch(refresh,/TOP_RESEARCH_CANDIDATE_LIMIT/);
-assert.match(refresh,/fixedTop30Flow:\s*true/);
+assert.match(refresh,/fixedTop20Flow:\s*true/);
 assert.match(refresh,/isFixedKeywordFeedReady/);
-assert.match(refresh,/top30_fixed_content_incomplete/);
+assert.match(refresh,/top20_fixed_content_incomplete/);
 assert.doesNotMatch(refresh,/buildDeterministicSafetyContent/);
 
 const api=fs.readFileSync(new URL('../lib/api.js',import.meta.url),'utf8');
-assert.match(api,/fixedTop30Flow&&contentIsReady\(candidate\)&&isFixedKeywordFeedReady\(candidate\)/);
-assert.match(api,/contentPipeline:\['top30_keyword_selection','independent_keyword_search','feed_first_content','feed_derived_summary'\]/);
+assert.match(api,/fixedTop20Flow&&contentIsReady\(stageCandidate\)&&isFixedKeywordFeedReady\(stageCandidate\)/);
+assert.match(api,/contentPipeline:\['top20_keyword_selection','independent_keyword_search','feed_first_content','feed_derived_summary'\]/);
 
 const version=fs.readFileSync(new URL('../pages/api/version.js',import.meta.url),'utf8');
 assert.match(version,/fixed-keyword-content-stop-control-v8025/);
-assert.match(version,/fixed_keyword_content_v15/);
-console.log('v8.0.13 fixed TOP30 compatibility tests passed under v8.0.25');
+assert.match(version,/fixed_keyword_content_v16_top20/);
+console.log('v8.0.13 fixed TOP20 compatibility tests passed under v8.0.25');

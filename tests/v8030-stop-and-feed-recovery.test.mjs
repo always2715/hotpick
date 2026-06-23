@@ -25,7 +25,7 @@ const admin=fs.readFileSync(new URL('../pages/admin.js',import.meta.url),'utf8')
 assert.match(admin,/현재 TOP 작업 즉시 중단/);
 assert.match(admin,/stop_active_trend_run/);
 assert.match(admin,/activeRunId/);
-assert.match(admin,/CURRENT_CONTENT_VERSION=126/);
+assert.match(admin,/CURRENT_CONTENT_VERSION=127/);
 
 const adminAction=fs.readFileSync(new URL('../pages/api/admin-action.js',import.meta.url),'utf8');
 assert.match(adminAction,/stop_active_trend_run/);

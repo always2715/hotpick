@@ -16,7 +16,7 @@ assert.doesNotMatch(job,/buildDeterministicSafetyContent/);
 assert.doesNotMatch(job,/persistDeterministicSafetyStage/);
 assert.doesNotMatch(job,/FINALIZE_SAFETY_FALLBACK_PASSES/);
 assert.match(job,/assessResearchBackedFeedSet/);
-assert.match(job,/확정된 TOP30 키워드 중 상세·피드·제목/);
+assert.match(job,/확정된 TOP20 키워드 중 상세·피드·제목/);
 assert.match(job,/prepared\.trends\s*\|\|\s*\[\]/);
 assert.doesNotMatch(job,/prepared\.researchPool\s*\|\|\s*prepared\.trends/);
 console.log('STELLATE v8.0.20 fallback regression is blocked under v8.0.21: PASS');

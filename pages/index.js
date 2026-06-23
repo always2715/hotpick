@@ -6,6 +6,7 @@ import MonetizationSlot from '../components/MonetizationSlot';
 import { CATEGORIES } from '../lib/categories';
 import { getCachedTrends, getTrendsUpdatedAt } from '../lib/kv';
 import { optimizeImageUrl } from '../lib/images';
+import { PUBLIC_TOP_COUNT } from '../lib/topConfig';
 
 const CAT_BG = {
   entertainment:'linear-gradient(135deg,#EEEDFE,#AFA9EC)', sports:'linear-gradient(135deg,#E1F5EE,#5DCAA5)',
@@ -44,7 +45,7 @@ export default function Home({ trends, updatedAt }) {
       <Header />
       <main className="page-shell">
         <section className="top-intro">
-          <div><p className="eyebrow">VERIFIED DISCOVERY</p><h1>지금 확인된<br />주요 이슈</h1><p>검색 상승, 최신 보도, 사건 일관성, 독립 출처를 함께 확인합니다.</p>{trends.length>0&&<div className="trend-count-note">TOP {trends.length}/30 · 검증 완료</div>}</div>
+          <div><p className="eyebrow">VERIFIED DISCOVERY</p><h1>지금 확인된<br />주요 이슈</h1><p>검색 상승, 최신 보도, 사건 일관성, 독립 출처를 함께 확인합니다.</p>{trends.length>0&&<div className="trend-count-note">TOP {trends.length}/{PUBLIC_TOP_COUNT} · 검증 완료</div>}</div>
           <div className="update-pill">{updatedAt ? `갱신 ${new Date(updatedAt).toLocaleString('ko-KR')}` : '데이터 준비 중'}</div>
         </section>
 
@@ -82,7 +83,7 @@ export async function getServerSideProps({ res }) {
   res.setHeader('Cache-Control', 'private, no-store');
   try {
     const [trends, updatedAt] = await Promise.all([getCachedTrends(), getTrendsUpdatedAt()]);
-    return { props: JSON.parse(JSON.stringify({ trends: Array.isArray(trends) ? trends.slice(0, 30) : [], updatedAt: updatedAt || null })) };
+    return { props: JSON.parse(JSON.stringify({ trends: Array.isArray(trends) ? trends.slice(0, PUBLIC_TOP_COUNT) : [], updatedAt: updatedAt || null })) };
   } catch (error) {
     console.error('Homepage data load failed:', error);
     return { props: { trends: [], updatedAt: null } };

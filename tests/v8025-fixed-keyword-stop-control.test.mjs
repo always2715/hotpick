@@ -51,7 +51,7 @@ assert.match(processBlock,/isFixedKeywordFeedReady/);
 const api=fs.readFileSync(new URL('../lib/api.js',import.meta.url),'utf8');
 assert.match(api,/identityMode/);
 assert.match(job,/expanded_keyword_research/);
-assert.match(api,/fixed_keyword_feed_v15/);
+assert.match(api,/fixed_keyword_feed_v16_top20/);
 assert.doesNotMatch(api,/현재 사건 Fact 1개가 없어.*검토/);
 
 const kv=fs.readFileSync(new URL('../lib/kv.js',import.meta.url),'utf8');
@@ -71,10 +71,10 @@ assert.match(admin,/추가 검색/);
 assert.doesNotMatch(admin,/검토기준 미충족/);
 
 const version=fs.readFileSync(new URL('../pages/api/version.js',import.meta.url),'utf8');
-assert.match(version,/contentVersion:126/);
-assert.match(version,/trendCacheVersion:46/);
+assert.match(version,/contentVersion:127/);
+assert.match(version,/trendCacheVersion:47/);
 assert.match(version,/fixed-keyword-content-stop-control-v8025/);
-assert.match(version,/fixed_keyword_content_v15/);
+assert.match(version,/fixed_keyword_content_v16_top20/);
 assert.match(version,/maxKeywordAttempts:3/);
 assert.match(version,/maxRunSteps:18/);
 assert.match(version,/maxRunMinutes:60/);

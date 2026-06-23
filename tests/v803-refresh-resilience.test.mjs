@@ -24,10 +24,10 @@ const previousSeeds=mergeDiscoverySeeds([],[],[{
 assert.equal(previousSeeds.length,1,'최근 TOP은 콘텐츠 버전 재검증을 위해 다음 조사 후보에 포함되어야 합니다.');
 assert.equal(previousSeeds[0].previousSeed,true);
 
-const bootstrap=assessTrendSetHealth(Array.from({length:30},(_,i)=>({slug:`n${i}`,eventKey:`n${i}`})),[],{mergedCandidates:60,rejected:30},{consecutiveLow:0,targetCount:30});
-assert.equal(bootstrap.healthy,true,'v8.0.4에서는 검증된 TOP 30개가 준비되어야 공개할 수 있어야 합니다.');
+const bootstrap=assessTrendSetHealth(Array.from({length:20},(_,i)=>({slug:`n${i}`,eventKey:`n${i}`})),[],{mergedCandidates:60,rejected:40},{consecutiveLow:0,targetCount:20});
+assert.equal(bootstrap.healthy,true,'v8.0.4에서는 검증된 TOP 20개가 준비되어야 공개할 수 있어야 합니다.');
 assert.equal(bootstrap.bootstrap,true);
-const incomplete=assessTrendSetHealth([{slug:'one',eventKey:'one'}],[],{mergedCandidates:60,rejected:59},{consecutiveLow:0,targetCount:30});
+const incomplete=assessTrendSetHealth([{slug:'one',eventKey:'one'}],[],{mergedCandidates:60,rejected:59},{consecutiveLow:0,targetCount:20});
 assert.equal(incomplete.healthy,false,'30개 미만은 기존 TOP을 유지해야 합니다.');
 
 const noReady=assessTrendSetHealth([],[],{mergedCandidates:10,rejected:10},{consecutiveLow:0});

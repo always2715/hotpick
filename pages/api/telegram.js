@@ -27,7 +27,7 @@ export default async function handler(req, res) {
         const badge = i === 0 ? '🔥' : i < 3 ? '⭐' : '·';
         message += `${badge} ${i+1}위 ${t.topTitle || t.displayTitle || t.keyword}\n`;
       });
-      message += `\n🔗 [전체 TOP 30 보기](https://stellate.co.kr)`;
+      message += `\n🔗 [전체 TOP 20 보기](https://stellate.co.kr)`;
     } else {
       // 개별 키워드 알림
       const emoji = rank <= 3 ? '🔥' : '📈';

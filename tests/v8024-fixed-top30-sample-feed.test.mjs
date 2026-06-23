@@ -35,36 +35,36 @@ assert.match(job,/prepareSelectedTopCandidates\(\(prepared\.trends \|\| \[\]\)\.
 assert.doesNotMatch(job,/prepared\.researchPool/);
 assert.doesNotMatch(job,/TOP_RESEARCH_CANDIDATE_LIMIT/);
 assert.doesNotMatch(job,/status:\s*'skipped'/);
-assert.match(job,/31위 이하 후보로 교체하지 않습니다/);
-assert.match(job,/fixed_keyword_content_v15/);
+assert.match(job,/21위 이하 후보로 교체하지 않습니다/);
+assert.match(job,/TOP_POLICY_VERSION/);
 
 const api=fs.readFileSync(new URL('../lib/api.js',import.meta.url),'utf8');
 assert.match(api,/첫 번째는 ‘박서진은 어떤 가수인가’/);
 assert.match(api,/실제 요약정보 카드는 전체 피드 작성 후/);
-assert.match(api,/CONTENT_VERSION = 126/);
-assert.match(api,/TREND_CACHE_VERSION = 46/);
+assert.match(api,/CONTENT_VERSION = 127/);
+assert.match(api,/TREND_CACHE_VERSION = 47/);
 
 const preview=fs.readFileSync(new URL('../pages/[slug].js',import.meta.url),'utf8');
 assert.match(preview,/summaryParagraphs/);
 assert.match(preview,/상세 정보 피드 보기/);
 
 const admin=fs.readFileSync(new URL('../pages/admin.js',import.meta.url),'utf8');
-assert.match(admin,/TOP 키워드 30개 선확정/);
-assert.match(admin,/31위 이하 후보 교체 없음/);
+assert.match(admin,/TOP 키워드 20개 선확정/);
+assert.match(admin,/21위 이하 후보 교체 없음/);
 assert.match(admin,/재시도 대기 \{run\.retryWait\|\|0\}/);
 assert.doesNotMatch(admin,/<p>전체 \{total\}.*후순위 생략/);
 
 
 const adminAction=fs.readFileSync(new URL('../pages/api/admin-action.js',import.meta.url),'utf8');
-assert.match(adminAction,/needsFixedTop30Migration/);
-assert.match(adminAction,/candidates\.length!==30/);
-assert.match(adminAction,/candidate\?\.fixedTop30!==true/);
+assert.match(adminAction,/needsFixedTop20Migration/);
+assert.match(adminAction,/candidates\.length!==PUBLIC_TOP_COUNT/);
+assert.match(adminAction,/candidate\?\.fixedTop20!==true/);
 assert.match(adminAction,/manual_explicit_retry/);
 assert.match(adminAction,/retryableCount/);
 
 const version=fs.readFileSync(new URL('../pages/api/version.js',import.meta.url),'utf8');
-assert.match(version,/contentVersion:126/);
-assert.match(version,/trendCacheVersion:46/);
+assert.match(version,/contentVersion:127/);
+assert.match(version,/trendCacheVersion:47/);
 assert.match(version,/fixed-keyword-content-stop-control-v8025/);
-assert.match(version,/fixed_keyword_content_v15/);
-console.log('STELLATE v8.0.25 fixed TOP30 and sample-aligned feed compatibility tests: PASS');
+assert.match(version,/fixed_keyword_content_v16_top20/);
+console.log('STELLATE v8.0.31 fixed TOP20 and sample-aligned feed compatibility tests: PASS');

@@ -64,14 +64,14 @@ assert.equal(normalized.details.previousCount,30);
 console.log('trend refresh pipeline tests passed');
 
 
-const healthy=assessTrendSetHealth(Array.from({length:30},(_,i)=>({slug:`n${i}`,eventKey:`n${i}`})),Array.from({length:30},(_,i)=>({slug:`p${i}`,eventKey:`p${i}`})),{mergedCandidates:60,rejected:20},{consecutiveLow:0,targetCount:30});
+const healthy=assessTrendSetHealth(Array.from({length:20},(_,i)=>({slug:`n${i}`,eventKey:`n${i}`})),Array.from({length:20},(_,i)=>({slug:`p${i}`,eventKey:`p${i}`})),{mergedCandidates:60,rejected:20},{consecutiveLow:0,targetCount:20});
 assert.equal(healthy.healthy,true);
-const low=assessTrendSetHealth(Array.from({length:29},(_,i)=>({slug:`n${i}`,eventKey:`n${i}`})),Array.from({length:30},(_,i)=>({slug:`p${i}`,eventKey:`p${i}`})),{mergedCandidates:60,rejected:31,dominantRejectionShare:0.75},{consecutiveLow:0,targetCount:30});
+const low=assessTrendSetHealth(Array.from({length:19},(_,i)=>({slug:`n${i}`,eventKey:`n${i}`})),Array.from({length:20},(_,i)=>({slug:`p${i}`,eventKey:`p${i}`})),{mergedCandidates:60,rejected:31,dominantRejectionShare:0.75},{consecutiveLow:0,targetCount:20});
 assert.equal(low.healthy,false);
 assert.equal(low.lowCount,true);
 assert.equal(low.suddenDrop,true);
 assert.equal(low.massRejected,true);
-const secondLow=assessTrendSetHealth([{slug:'one',eventKey:'one'}],[],{mergedCandidates:60,rejected:59},{consecutiveLow:1,targetCount:30});
+const secondLow=assessTrendSetHealth([{slug:'one',eventKey:'one'}],[],{mergedCandidates:60,rejected:59},{consecutiveLow:1,targetCount:20});
 assert.equal(secondLow.healthy,false);
 assert.equal(secondLow.incompleteTarget,true);
 assert.equal(secondLow.allowMergeWithPrevious,true);
@@ -83,4 +83,4 @@ console.log('trend refresh health guard tests passed');
 assert.equal(shouldCommitProgressiveRecovery(8,0,30),true,'초기 TOP이 0건이면 검증된 일부라도 복구 공개해야 합니다.');
 assert.equal(shouldCommitProgressiveRecovery(18,8,30),true,'30개까지 증가하는 복구 갱신은 허용해야 합니다.');
 assert.equal(shouldCommitProgressiveRecovery(8,18,30),false,'부분 TOP이 감소하는 갱신은 차단해야 합니다.');
-assert.equal(shouldCommitProgressiveRecovery(29,30,30),false,'완성된 TOP30을 불완전한 목록으로 교체하면 안 됩니다.');
+assert.equal(shouldCommitProgressiveRecovery(19,20,20),false,'완성된 TOP20을 불완전한 목록으로 교체하면 안 됩니다.');

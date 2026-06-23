@@ -9,7 +9,7 @@ import {
 import { selectVisibleTrendPool } from '../lib/trendSelectionPolicy.js';
 import { assessTrendSetHealth } from '../lib/trendRefreshPolicy.js';
 
-assert.equal(TOP_TARGET_COUNT,30);
+assert.equal(TOP_TARGET_COUNT,20);
 assert.equal(TOP_RESEARCH_POOL_LIMIT,120);
 assert.equal(TOP_DISCOVERY_POOL_LIMIT,240);
 assert.equal(extractNewsDiscoveryKeyword('[속보] 삼성전자 신제품 공개 - 연합뉴스'),'삼성전자');
@@ -37,11 +37,11 @@ const candidates=Array.from({length:60},(_,i)=>({
 const selected=selectVisibleTrendPool(candidates,{limit:90});
 assert.equal(selected.length,60,'입력된 60개 후보는 10개로 잘리지 않아야 합니다.');
 
-const ready30=assessTrendSetHealth(candidates.slice(0,30),[],{mergedCandidates:60},{targetCount:30});
-assert.equal(ready30.healthy,true);
-const ready29=assessTrendSetHealth(candidates.slice(0,29),[],{mergedCandidates:60},{targetCount:30});
-assert.equal(ready29.healthy,false);
-assert.equal(ready29.incompleteTarget,true);
+const ready20=assessTrendSetHealth(candidates.slice(0,20),[],{mergedCandidates:60},{targetCount:20});
+assert.equal(ready20.healthy,true);
+const ready19=assessTrendSetHealth(candidates.slice(0,19),[],{mergedCandidates:60},{targetCount:20});
+assert.equal(ready19.healthy,false);
+assert.equal(ready19.incompleteTarget,true);
 
 const vercel=JSON.parse(fs.readFileSync(new URL('../vercel.json',import.meta.url),'utf8'));
 assert.ok(!Object.prototype.hasOwnProperty.call(vercel,'crons'),'외부 크론 사용 시 Vercel Cron을 중복 등록하면 안 됩니다.');
@@ -53,12 +53,12 @@ assert.match(css,/\.instagram-picker button\{width:100%!important;[^}]*white-spa
 const statusSource=fs.readFileSync(new URL('../pages/api/admin/status.js',import.meta.url),'utf8');
 assert.ok(statusSource.includes("cronMode:'external'"));
 const jobSource=fs.readFileSync(new URL('../lib/trendRefreshJob.js',import.meta.url),'utf8');
-assert.match(jobSource,/TARGET_TOP_COUNT\s*=\s*30/);
-assert.match(jobSource,/RESEARCH_POOL_LIMIT\s*=\s*30/);
-assert.ok(jobSource.includes("top30_fixed_content_incomplete"));
+assert.match(jobSource,/TARGET_TOP_COUNT\s*=\s*PUBLIC_TOP_COUNT/);
+assert.match(jobSource,/RESEARCH_POOL_LIMIT\s*=\s*PUBLIC_TOP_COUNT/);
+assert.ok(jobSource.includes("top20_fixed_content_incomplete"));
 assert.doesNotMatch(jobSource,/carryoverMigratedFrom|validCarryoverRows|combinePublicationRows/);
 
-console.log('v8.0.5 TOP30 and vertical Instagram tests passed');
+console.log('v8.0.31 TOP20 and vertical Instagram compatibility tests passed');
 
 const trendsSource = fs.readFileSync(new URL('../lib/trends.js',import.meta.url),'utf8');
 assert.match(trendsSource, /google_trends_related_news/, 'Google Trends related news should expand discovery candidates');
@@ -71,4 +71,4 @@ const apiSource = fs.readFileSync(new URL('../lib/api.js',import.meta.url),'utf8
 assert.match(apiSource, /verified_fallback/, 'verified fallback should be supported');
 assert.doesNotMatch(apiSource, /AI fallback 결과는 자동 공개하지 않습니다/, 'verified fallback must not be blocked solely because Claude was unavailable');
 
-assert.match(adminSource, /\(trends\|\|\[\]\)\.slice\(0,30\)/, 'instagram should include all current TOP30 items');
+assert.match(adminSource, /\(trends\|\|\[\]\)\.slice\(0,PUBLIC_TOP_COUNT\)/, 'instagram should include all current TOP20 items');

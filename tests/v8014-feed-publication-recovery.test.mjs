@@ -19,7 +19,7 @@ assert.equal(feedDraftIsReady({...content,card:{...content.card,summary:'짧음'
 const kv=fs.readFileSync(new URL('../lib/kv.js',import.meta.url),'utf8');
 assert.match(kv,/repairPublishedFeedIndexesInternal/,'공개 콘텐츠에서 피드 인덱스를 복구하는 경로가 필요합니다.');
 assert.match(kv,/feedIndexState/,'피드 set 하나만 보지 않고 실제 인덱스 전체를 점검해야 합니다.');
-assert.match(kv,/ATOMIC_PUBLICATION_FEED_INCOMPLETE/,'TOP30 공개 후 피드 30건을 검증해야 합니다.');
+assert.match(kv,/ATOMIC_PUBLICATION_FEED_INCOMPLETE/,'TOP20 공개 후 피드 20건을 검증해야 합니다.');
 assert.match(kv,/feedDraft,feedReady:feedDraftIsReady/,'상세 생성 단계에서 피드 초안을 함께 저장해야 합니다.');
 assert.match(kv,/if\(all\.length===0.*repairPublishedFeedIndexesInternal/s,'피드 조회가 비어 있으면 자동 복구 후 재조회해야 합니다.');
 

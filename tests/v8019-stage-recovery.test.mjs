@@ -9,10 +9,10 @@ const input=Array.from({length:30},(_,index)=>({
   eventKey:index===0?'match':index===1?'transfer':`event-${index+1}`,
 }));
 const prepared=prepareSelectedTopCandidates(input,'run-test');
-assert.equal(prepared.length,30);
-assert.equal(new Set(prepared.map(row=>row.slug)).size,30,'같은 키워드의 다른 사건도 공개 slug가 충돌하면 안 됩니다.');
-assert.equal(new Set(prepared.map(row=>row.candidateId)).size,30);
-assert.equal(new Set(prepared.map(row=>row.publicationStageId)).size,30);
+assert.equal(prepared.length,20);
+assert.equal(new Set(prepared.map(row=>row.slug)).size,20,'같은 키워드의 다른 사건도 공개 slug가 충돌하면 안 됩니다.');
+assert.equal(new Set(prepared.map(row=>row.candidateId)).size,20);
+assert.equal(new Set(prepared.map(row=>row.publicationStageId)).size,20);
 assert.ok(prepared.every(row=>row.publicationStageId.startsWith('run-test:')));
 
 const job=fs.readFileSync(new URL('../lib/trendRefreshJob.js',import.meta.url),'utf8');

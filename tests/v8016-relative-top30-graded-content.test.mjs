@@ -23,9 +23,9 @@ for(let i=0;i<6;i++)candidates.push({keyword:`후속 ${i}`,topKeyword:`후속 ${
 for(let i=0;i<4;i++)candidates.push({keyword:`관심 ${i}`,topKeyword:`관심 ${i}`,topTopic:'',candidateType:'interest',causeStatus:'unconfirmed',rankingScore:50-i,category:'trend',rankingComponents:{search:8,newsVelocity:0},eventSignatures:[`interest-${i}`]});
 for(let i=0;i<5;i++)candidates.push({keyword:`유지 ${i}`,topKeyword:`유지 ${i}`,topTopic:'',candidateType:'interest',causeStatus:'unconfirmed',previousSeed:true,previousRank:20+i,rankingScore:10-i,category:'general',rankingComponents:{search:0,newsVelocity:0},eventSignatures:[`maintained-${i}`]});
 const selected=selectStableTop30(candidates);
-assert.equal(selected.rows.length,30);
-assert.equal(selected.diagnostics.finalTopCount,30);
-assert.ok(['expanded','disabled'].includes(selected.diagnostics.categoryCapPhase),'카테고리 상한보다 TOP30 완성을 우선해야 합니다.');
+assert.equal(selected.rows.length,20);
+assert.equal(selected.diagnostics.finalTopCount,20);
+assert.ok(['base','expanded','disabled'].includes(selected.diagnostics.categoryCapPhase),'카테고리 상한을 적용하되 TOP20 완성을 우선해야 합니다.');
 
 const d=buildTrendBrief({topicTitle:'원인 미확인 키워드',category:{label:'일반'},trendMeta:{keyword:'원인 미확인 키워드',category:'general'},newsBundle:{relatedNews:[],relatedContent:[],maxAgeHours:36}});
 assert.equal(d.contentGrade,'D');
@@ -34,7 +34,7 @@ assert.equal(d.causeStatus,'unconfirmed');
 assert.equal(isPublicContentReady(d),true);
 assert.equal(containsPublicResearchWindow(`${d.topTitle} ${d.blog} ${d.card.summary}`),false);
 
-const publicD={rank:30,visibility:'published',publicTopPolicy:'relative_top30_graded_content_v6',publicReady:true,contentReady:true,mainVisible:true,contentGrade:'D',candidateType:'interest',verifiedFactCount:0,verifiedEvidenceCount:0};
+const publicD={rank:20,visibility:'published',publicTopPolicy:'relative_top30_graded_content_v6',publicReady:true,contentReady:true,mainVisible:true,contentGrade:'D',candidateType:'interest',verifiedFactCount:0,verifiedEvidenceCount:0};
 assert.deepEqual(publicTopRejectionReasons(publicD),[]);
 assert.equal(isCurrentPublicTop(publicD),true);
 
@@ -46,8 +46,8 @@ assert.match(trends,/selectStableTop30/);
 assert.match(trends,/fetchCommunityTrends/);
 assert.match(trends,/rawCollected/);
 assert.match(refresh,/isFixedKeywordFeedReady/);
-assert.match(refresh,/fixed_keyword_content_v15/);
-assert.match(api,/!isTopBriefEligible\(trendMeta\) && !fixedTop30Flow/);
+assert.match(refresh,/TOP_POLICY_VERSION/);
+assert.match(api,/!isTopBriefEligible\(trendMeta\) && !fixedTop20Flow/);
 assert.match(api,/CONTENT_KEYWORD_NOT_READY/);
 assert.doesNotMatch(refresh,/buildDeterministicSafetyContent/);
-console.log('v8.0.16 relative TOP30 and graded content tests passed');
+console.log('v8.0.16 relative discovery and TOP20 public graded content tests passed');
