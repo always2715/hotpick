@@ -2,6 +2,7 @@ import Script from 'next/script';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import '../styles/globals.css';
+import SiteFooter from '../components/SiteFooter';
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 const NAVER_WCS_ID = process.env.NEXT_PUBLIC_NAVER_WCS_ID;
@@ -75,5 +76,6 @@ export default function App({ Component, pageProps }) {
     <Analytics router={router} />
     {ADS_ENABLED && ADS_CLIENT && pageCanShowAds && <Script id="stellate-adsense" async strategy="afterInteractive" crossOrigin="anonymous" src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADS_CLIENT}`} />}
     <Component {...pageProps} />
+    {!excludedPath && <SiteFooter />}
   </>;
 }

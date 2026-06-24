@@ -1,0 +1,26 @@
+STELLATE v8.0.35 CHANGED FILES
+========================================
+
+신규
+- components/SiteFooter.js
+- tests/v8035-editorial-product-quality.test.mjs
+- README_v8.0.35.md
+- STELLATE_PROJECT_HANDOFF_v8.0.35.txt
+- STELLATE_v8.0.35_TEST_REPORT.txt
+- STELLATE_v8.0.35_CHANGED_FILES.txt
+
+주요 수정
+- pages/_app.js: 공개 페이지 SiteFooter 적용
+- pages/feed.js: 2줄 핵심 요약과 출처·사실 표시
+- pages/feed/[slug].js: 요약 카드, 검증 정보, Q&A, 영상 URL 지원, 중복 출처 처리
+- styles/globals.css: Footer와 편집형 상세·피드 UI 스타일
+- lib/api.js: 3~5개 역할형 콘텐츠 생성 프롬프트, 중복 Fact 방지, 상세 제목 분리
+- lib/editorialContent.js: 정확성 fallback의 문장·조사·Q&A·구역 고도화
+- lib/feedFirstPipeline.js: 다중 Fact 요약·맥락·포인트 생성
+- lib/kv.js: 공개 출처와 연관 자료 canonical URL 중복 제거
+- lib/contentGrade.js: Fact 양에 맞춘 현실적 목표 분량
+- pages/api/version.js: 8.0.35 정책 정보
+- lib/jobs.js: QStash dedupe key update-trends-v835
+- lib/trendRefreshJob.js, pages/admin.js: 버전·콘텐츠 버전 동기화
+- package.json, package-lock.json: 8.0.35 및 test:v8035
+- 과거 회귀 테스트 일부: v8.0.35 호환 기대값 갱신

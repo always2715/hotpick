@@ -1,26 +1,32 @@
-STELLATE v8.0.33 REPLACE-ONLY MANIFEST
-Baseline: v8.0.32
-Generated: 2026-06-24
+STELLATE v8.0.35 REPLACE-ONLY FILE LIST
+================================================
 
-Replacement files: 37
+변경 파일: 36
+신규 파일: 6
+삭제 파일: 1
+
+덮어쓰기 파일
 README.md
-README_v8.0.33.md
-STELLATE_PROJECT_HANDOFF_v8.0.33.txt
-STELLATE_v8.0.33_CHANGED_FILES.txt
-STELLATE_v8.0.33_TEST_REPORT.txt
+README_v8.0.35.md
+STELLATE_PROJECT_HANDOFF_v8.0.35.txt
+STELLATE_v8.0.35_CHANGED_FILES.txt
+STELLATE_v8.0.35_TEST_REPORT.txt
+components/SiteFooter.js
 lib/api.js
-lib/editorialTitle.js
+lib/contentGrade.js
+lib/editorialContent.js
+lib/feedFirstPipeline.js
 lib/jobs.js
 lib/kv.js
-lib/runSnapshotStore.js
-lib/stageIdentityPolicy.js
 lib/trendRefreshJob.js
-lib/trendSelectionPolicy.js
-lib/trends.js
 package-lock.json
 package.json
+pages/_app.js
 pages/admin.js
 pages/api/version.js
+pages/feed.js
+pages/feed/[slug].js
+styles/globals.css
 tests/v8010-editorial-content.test.mjs
 tests/v8012-atomic-top30-independent-detail.test.mjs
 tests/v8015-preview-feed-instagram.test.mjs
@@ -37,9 +43,11 @@ tests/v8030-stop-and-feed-recovery.test.mjs
 tests/v8031-top20-stage-durability.test.mjs
 tests/v8032-runtime-stage-identity.test.mjs
 tests/v8033-root-cause-refresh.test.mjs
+tests/v8034-strict-accuracy-completion.test.mjs
+tests/v8035-editorial-product-quality.test.mjs
 tests/v806-auto-publication.test.mjs
 tests/v808-naver-discovery.test.mjs
 tests/v809-resumable-refresh.test.mjs
 
-Manual deletions: 0
-None
+삭제 대상
+STELLATE_PROJECT_HANDOFF_v8.0.34.txt

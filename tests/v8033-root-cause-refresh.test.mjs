@@ -53,19 +53,19 @@ assert.equal(selectedTop20.rows.some(row=>invalidSelectionCandidates.some(invali
 const runId='run-v8033';
 const trend={slug:'kim-jong-un',candidateId:'r2-new',publicationStageId:`${runId}:r2-new`,keyword:'김정은',topKeyword:'김정은',displayTitle:'김정은',rank:2};
 const priorRunContent={slug:'kim-jong-un',candidateId:'r7-old',publicationStageId:'run-v8032:r7-old',contentVersion:129,keyword:'김정은',topKeyword:'김정은',displayTitle:'김정은'};
-const migrated=assessStageIdentity(priorRunContent,trend,runId,1,130);
+const migrated=assessStageIdentity(priorRunContent,trend,runId,1,131);
 assert.equal(migrated.matched,true,'과거 실행 ID가 달라도 같은 slug와 키워드면 현재 실행 원본으로 복구해야 합니다.');
 assert.equal(migrated.versionMatched,false,'이전 콘텐츠 버전은 동일성만 인정하고 Fact 기반 재구성을 거쳐야 합니다.');
 assert.equal(migrated.matchType,'legacy_cross_run_slug_keyword');
 
-const sameRunConflict={...priorRunContent,publicationStageId:`${runId}:r99-other`,candidateId:'r99-other',contentVersion:130};
-assert.equal(assessStageIdentity(sameRunConflict,trend,runId,1,130).matched,false,'현재 실행 안의 다른 후보 stage는 잘못 승격하면 안 됩니다.');
+const sameRunConflict={...priorRunContent,publicationStageId:`${runId}:r99-other`,candidateId:'r99-other',contentVersion:131};
+assert.equal(assessStageIdentity(sameRunConflict,trend,runId,1,131).matched,false,'현재 실행 안의 다른 후보 stage는 잘못 승격하면 안 됩니다.');
 
 // 실행 원본은 candidateId, slug alias, stage alias 모두에 저장되어야 합니다.
 const redis=new MemoryRedis();
 const snapshotKey=runSnapshotKey('stellate:v7',runId);
 const stageKey=`stellate:v7:publication_stage:${trend.publicationStageId}`;
-const serialized=JSON.stringify({...trend,contentVersion:130,blog:'검증 사실 기반 상세 콘텐츠'});
+const serialized=JSON.stringify({...trend,contentVersion:131,blog:'검증 사실 기반 상세 콘텐츠'});
 const written=await writeDualRunSnapshot(redis,{stageKey,snapshotKey,candidateId:trend.candidateId,aliases:[`slug:${trend.slug}`,`stage:${trend.publicationStageId}`],serialized});
 assert.equal(written.verified,true);
 assert.ok(await redis.hget(snapshotKey,trend.candidateId));
@@ -82,8 +82,8 @@ assert.match(refreshSource,/throw new TrendRefreshError\('trend_step_lock_busy'/
 assert.doesNotMatch(refreshSource,/stepAlreadyRunning:true/,'lock 충돌을 200 성공으로 반환하던 실패 유발 경로가 없어야 합니다.');
 assert.match(refreshSource,/snapshot_preflight_verified/,'task 상태와 무관하게 저장된 실행 원본을 먼저 확인해야 합니다.');
 assert.match(refreshSource,/MAX_AUTOMATIC_ATTEMPTS = Math\.min\(3/,'자동 시도는 최대 3회로 제한해야 합니다.');
-assert.match(jobsSource,/update-trends-v834/,'이전 QStash dedupe key와 분리해야 합니다.');
-assert.match(versionSource,/contentVersion:\s*130/);
+assert.match(jobsSource,/update-trends-v835/,'이전 QStash dedupe key와 분리해야 합니다.');
+assert.match(versionSource,/contentVersion:\s*(?:130|131)/);
 assert.match(versionSource,/trendCacheVersion:\s*50/);
 assert.match(versionSource,/publicTopCount:\s*20/);
 

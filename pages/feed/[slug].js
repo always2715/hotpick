@@ -78,12 +78,18 @@ export default function KeywordPage({content,trend,related,previous,next,initial
 
   const title=content.detailTitle||content.card?.detailTitle||content.card?.feedTitle||content.displayTitle||content.keyword;
   const category=CATEGORIES[content.category]||CATEGORIES.general;
-  const points=Array.isArray(content.card?.points)?content.card.points.slice(0,3):[];
-  const videos=(Array.isArray(content.relatedVideos)?content.relatedVideos:Array.isArray(content.videos)?content.videos:[]).filter(video=>video?.id&&video?.title).slice(0,2);
+  const points=Array.isArray(content.card?.points)?content.card.points.slice(0,5):[];
+  const summary=content.card?.lead||content.card?.summary||'';
+  const summaryContext=content.card?.context||content.card?.why||'';
+  const qa=(Array.isArray(content.qa)?content.qa:[]).filter(row=>row?.q&&row?.a).slice(0,3);
+  const videos=(Array.isArray(content.relatedVideos)?content.relatedVideos:Array.isArray(content.videos)?content.videos:[]).filter(video=>video?.title&&(video?.id||video?.url)).slice(0,2);
   const relatedNews=dedupeSources(Array.isArray(content.relatedNews)?content.relatedNews:[]).slice(0,3);
   const relatedLinks=new Set(relatedNews.map(sourceKey));
   const evidence=dedupeSources(Array.isArray(content.evidenceSources)?content.evidenceSources:Array.isArray(content.sourceItems)?content.sourceItems:[])
     .filter(item=>!relatedLinks.has(sourceKey(item)));
+  const officialSourceCount=evidence.filter(item=>item.sourceType==='official'||item.sourceType==='authorized').length;
+  const verifiedSourceCount=Number(content.factSummary?.sourceCount||content.trustSummary?.evidenceSources||evidence.length||0);
+  const verifiedFactCount=Number(content.factSummary?.factCount||content.verifiedFactCount||0);
   const adEligible=content.adEligible!==false;
   const middleIndex=Math.max(0,Math.floor(mainSections.length/2)-1);
 
@@ -102,16 +108,33 @@ export default function KeywordPage({content,trend,related,previous,next,initial
           <div className="article-hero-content"><div className="article-badges"><span>{category.label}</span>{trend?.rank&&<span>TOP {trend.rank}</span>}{evidence.length>0&&Number(content.groundingScore||0)>=90&&<span>근거 연결 {content.groundingScore}</span>}</div><h1>{title}</h1><div className="article-meta"><span>{new Date(content.generatedAt).toLocaleString('ko-KR')}</span><span>조회 {views.toLocaleString()}</span></div></div>
         </header>
 
+        <section className="quick-summary editorial-summary-card">
+          <p className="eyebrow">핵심 요약</p>
+          <h2>{summary}</h2>
+          {summaryContext&&summaryContext!==summary&&<p className="summary-context">{summaryContext}</p>}
+          {points.length>0&&<ul>{points.map((point,index)=><li key={index}><span>{index+1}</span><p>{point}</p></li>)}</ul>}
+        </section>
+
+        <div className="evidence-summary" aria-label="콘텐츠 검증 정보">
+          <span>검증 출처 {verifiedSourceCount || evidence.length}개</span>
+          {officialSourceCount>0&&<span>공식·공인 자료 {officialSourceCount}개</span>}
+          {verifiedFactCount>0&&<span>확인 사실 {verifiedFactCount}개</span>}
+          {relatedNews.length>0&&<span>연관 뉴스 {relatedNews.length}개</span>}
+          {videos.length>0&&<span>관련 영상 {videos.length}개</span>}
+        </div>
+
         {adEligible&&<MonetizationSlot slot={process.env.NEXT_PUBLIC_ADSENSE_DETAIL_SLOT} label="이 주제와 함께 많이 보는 콘텐츠" items={related} className="article-ad-slot"/>}
 
         <section className="article-body">{mainSections.map((section,index)=><Fragment key={`${section.title}-${index}`}><SectionBlock section={section}/>{adEligible&&mainSections.length>2&&index===middleIndex&&<MonetizationSlot slot={process.env.NEXT_PUBLIC_ADSENSE_DETAIL_SLOT} label="STELLATE에서 더 보기" items={related} compact className="article-inline-ad"/>}</Fragment>)}</section>
 
-        {relatedNews.length>0&&<section className="sources-section related-news-section"><p className="eyebrow">연관 뉴스</p>{relatedNews.map((item,index)=><a key={index} href={item.link} target="_blank" rel="noopener noreferrer" onClick={()=>fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'related_news_click',slug:content.slug})}).catch(()=>{})}><strong>{item.displayTitle||item.title||item.label||`${content.topKeyword||content.keyword} 관련 보도`}</strong><span>{item.source}{(item.date||item.publishedAt)?` · ${item.date||new Date(item.publishedAt).toLocaleDateString('ko-KR')}`:''} · 기사 보기</span></a>)}</section>}
+        {qa.length>0&&<section className="qa-section"><p className="eyebrow">자주 묻는 내용</p>{qa.map((row,index)=><details key={index} open={index===0}><summary>{row.q}</summary><p>{row.a}</p></details>)}</section>}
+
+        {relatedNews.length>0&&<section className="sources-section related-news-section"><p className="eyebrow">연관 뉴스</p>{relatedNews.map((item,index)=><a key={index} href={item.link||item.url} target="_blank" rel="noopener noreferrer" onClick={()=>fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'related_news_click',slug:content.slug})}).catch(()=>{})}><strong>{item.displayTitle||item.title||item.label||`${content.topKeyword||content.keyword} 관련 보도`}</strong><span>{item.source}{(item.date||item.publishedAt)?` · ${item.date||new Date(item.publishedAt).toLocaleDateString('ko-KR')}`:''} · 기사 보기</span></a>)}</section>}
 
         {videos.length>0&&<section className="youtube-section"><p className="eyebrow">관련 영상</p><div className="youtube-grid">{videos.map(video=><a key={video.id} className="youtube-card" href={video.url||`https://www.youtube.com/watch?v=${video.id}`} target="_blank" rel="noopener noreferrer" onClick={()=>fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'youtube_click',slug:content.slug})}).catch(()=>{})}><div className="youtube-thumb">{video.thumbnail?<img src={video.thumbnail} alt={video.title} loading="lazy"/>:<span>▶</span>}<i>▶</i></div><div className="youtube-copy"><strong>{video.title}</strong><span>{video.channel||'YouTube'}{video.publishedAt?` · ${new Date(video.publishedAt).toLocaleDateString('ko-KR')}`:''}</span></div></a>)}</div></section>}
 
 
-        {evidence.length>0&&<section className="sources-section compact-sources"><p className="eyebrow">자료 출처</p>{evidence.slice(0,8).map((item,index)=><a key={index} href={item.link} target="_blank" rel="noopener noreferrer" onClick={()=>fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'source_click',slug:content.slug})}).catch(()=>{})}><strong>{item.title||item.label||'자료 보기'}</strong><span>{item.source} · {sourceTypeLabel(item.sourceType)}{(item.date||item.publishedAt)?` · ${item.date||new Date(item.publishedAt).toLocaleDateString('ko-KR')}`:''}</span></a>)}</section>}
+        {evidence.length>0&&<section className="sources-section compact-sources"><p className="eyebrow">자료 출처</p>{evidence.slice(0,8).map((item,index)=><a key={index} href={item.link||item.url} target="_blank" rel="noopener noreferrer" onClick={()=>fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'source_click',slug:content.slug})}).catch(()=>{})}><strong>{item.title||item.label||'자료 보기'}</strong><span>{item.source} · {sourceTypeLabel(item.sourceType)}{(item.date||item.publishedAt)?` · ${item.date||new Date(item.publishedAt).toLocaleDateString('ko-KR')}`:''}</span></a>)}</section>}
 
         <section className="share-section"><button onClick={share}>공유하기</button>{shareMessage&&<span>{shareMessage}</span>}</section>
         {content.imageMeta?.photographerName&&<div className="photo-credit">Photo by <a href={content.imageMeta.photographerProfileUrl||content.imageMeta.unsplashPhotoUrl} target="_blank" rel="noopener noreferrer">{content.imageMeta.photographerName}</a> on Unsplash</div>}

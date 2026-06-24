@@ -65,7 +65,7 @@ assert.match(api,/selected-v8018/);
 assert.match(api,/selected-v8017/);
 assert.match(refresh,/previewSummary:content\.card\?\.listSummary/);
 assert.match(refresh,/TOP_POLICY_VERSION/);
-assert.match(version,/contentVersion:130/);
+assert.match(version,/contentVersion:131/);
 assert.match(version,/trendCacheVersion:50/);
 assert.match(version,/fixed-keyword-content-stop-control-v8025/);
 console.log('v8.0.18 sample-aligned TOP, summary card, feed, fallback, image, and Instagram tests passed');

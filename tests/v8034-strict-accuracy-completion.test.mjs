@@ -30,7 +30,7 @@ for(const row of cases){
   assert.equal(accuracy.passed,true,`${row.keyword}: ${accuracy.problems.join(' / ')}`);
   assert.equal(pkg.titleReady,true,`${row.keyword} 최소 사실형 패키지는 최종 제목까지 준비돼야 합니다.`);
   assert.match(pkg.topTitle,new RegExp(`^${row.keyword} · .{4,18}$`));
-  assert.equal(pkg.accuracyProjection,'fact_ledger_literal_v2');
+  assert.match(pkg.accuracyProjection,/^fact_ledger_literal_v(?:2|3_editorial)$/);
   assert.ok(pkg.blog.includes(row.keyword));
 }
 
@@ -47,7 +47,7 @@ assert.match(apiSource,/const revisedAccuracy=validateGeneratedPackageAccuracy\(
 assert.match(apiSource,/const strictPkg=buildVerifiedFallback\(topicTitle,factLedger,sourceWindowHours,contentTier\)/,'마지막 정확성 실패 시 Fact Ledger 결정론적 재작성 경로가 있어야 합니다.');
 assert.match(apiSource,/aiStatus='verified_literal_fallback'/,'결정론적 정확성 복구 성공 상태를 기록해야 합니다.');
 assert.match(refreshSource,/STRICT_CONTENT_ACCURACY_FAILED\|NO_ACCURATE_CONTENT/,'정확성 실패가 남으면 한 번에 영구 실패시키지 말고 제한된 추가 조사를 허용해야 합니다.');
-assert.match(versionSource,/contentVersion:130/);
+assert.match(versionSource,/contentVersion:131/);
 assert.match(versionSource,/trendCacheVersion:50/);
 assert.match(versionSource,/publicTopCount:20/);
 

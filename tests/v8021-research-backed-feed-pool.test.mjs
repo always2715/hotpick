@@ -72,7 +72,7 @@ assert.match(job,/prepareSelectedTopCandidates\(\(prepared\.trends \|\| \[\]\)\.
 assert.match(job,/assessResearchBackedFeedSet/);
 assert.match(job,/확정된 TOP20 키워드|같은 20개 키워드/);
 assert.match(trends,/researchPool/);
-assert.match(version,/contentVersion:130/);
+assert.match(version,/contentVersion:131/);
 assert.match(version,/trendCacheVersion:50/);
 assert.match(version,/fixed-keyword-content-stop-control-v8025/);
 assert.match(version,/fixed_keyword_content_v16_top20/);

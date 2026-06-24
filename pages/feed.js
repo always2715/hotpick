@@ -92,7 +92,9 @@ export default function Feed({ initialPosts, initialTotal, initialTopMap, recomm
                   <div className="feed-thumb">{post.thumbnail || post.image ? <><img src={optimizeImageUrl(post.thumbnail || post.image, 180, 72)} alt="" loading="lazy" />{post.imageMeta?.photographerName && <span className="thumb-credit" title={`Photo by ${post.imageMeta.photographerName} on Unsplash`}>U · {post.imageMeta.photographerName}</span>}</> : <span className="thumb-fallback">{cat.emoji || '🔥'}</span>}</div>
                   <div className="feed-copy">
                     <div className="feed-labels"><span style={{ color: cat.color }}>{cat.label}</span><span>{new Date(post.updatedAt || post.generatedAt).toLocaleDateString('ko-KR')} · 조회 {Number(post.viewCount || 0).toLocaleString()}</span></div>
-                    <h2>{post.feedTitle || post.displayTitle || post.keyword}</h2><p>{post.why || post.summary}</p>
+                    <h2>{post.feedTitle || post.displayTitle || post.keyword}</h2>
+                    <p className="feed-excerpt">{post.previewSummary || post.summary || post.why}</p>
+                    <div className="feed-trust"><span>검증 출처 {Number(post.verifiedEvidenceCount || post.trustSummary?.evidenceSources || post.sourceItems?.length || 0)}개</span>{Number(post.verifiedFactCount||0)>0&&<span>확인 사실 {Number(post.verifiedFactCount)}개</span>}</div>
                   </div>
                 </Link>
                 {showSlot && <MonetizationSlot slot={process.env.NEXT_PUBLIC_ADSENSE_FEED_SLOT} label={index === 4 ? '놓치면 아쉬운 최신 콘텐츠' : 'STELLATE 추천'} items={recommendations} compact />}

@@ -22,7 +22,7 @@ assert.equal(card.infoLine,'박서진에 대한 정보');
 assert.equal(card.summaryLabel,'요약 정보');
 assert.equal(card.pointsLabel,'주요 내용');
 assert.equal(card.ctaLabel,'상세 정보 피드 보기');
-assert.equal(card.source,'feed_summary_v4_accuracy_first');
+assert.equal(card.source,'feed_summary_v5_editorial');
 assert.ok(card.summaryParagraphs.length>=1&&card.summaryParagraphs.length<=2);
 assert.match(card.summary,/전국투어|예매/);
 assert.ok(card.points.length>=3&&card.points.length<=5);
@@ -41,7 +41,7 @@ assert.match(job,/TOP_POLICY_VERSION/);
 const api=fs.readFileSync(new URL('../lib/api.js',import.meta.url),'utf8');
 assert.match(api,/첫 번째는 ‘박서진은 어떤 가수인가’/);
 assert.match(api,/실제 요약정보 카드는 전체 피드 작성 후/);
-assert.match(api,/CONTENT_VERSION = 130/);
+assert.match(api,/CONTENT_VERSION = 131/);
 assert.match(api,/TREND_CACHE_VERSION = 50/);
 
 const preview=fs.readFileSync(new URL('../pages/[slug].js',import.meta.url),'utf8');
@@ -63,7 +63,7 @@ assert.match(adminAction,/manual_explicit_retry/);
 assert.match(adminAction,/retryableCount/);
 
 const version=fs.readFileSync(new URL('../pages/api/version.js',import.meta.url),'utf8');
-assert.match(version,/contentVersion:130/);
+assert.match(version,/contentVersion:131/);
 assert.match(version,/trendCacheVersion:50/);
 assert.match(version,/fixed-keyword-content-stop-control-v8025/);
 assert.match(version,/fixed_keyword_content_v16_top20/);
