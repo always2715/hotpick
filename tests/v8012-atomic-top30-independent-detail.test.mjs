@@ -54,8 +54,8 @@ assert.match(page,/>관련 영상</);
 assert.match(page,/>자료 출처</);
 assert.doesNotMatch(page,/related-content-section/);
 
-assert.match(version,/contentVersion:129/);
-assert.match(version,/trendCacheVersion:49/);
+assert.match(version,/contentVersion:130/);
+assert.match(version,/trendCacheVersion:50/);
 assert.match(version,/fixed-keyword-content-stop-control-v8025/);
 assert.match(version,/fixed_keyword_content_v16_top20/);
 

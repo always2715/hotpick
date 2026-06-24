@@ -1,6 +1,6 @@
 {
   "name": "hotpick",
-  "version": "8.0.33",
+  "version": "8.0.34",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -19,7 +19,7 @@
     "test:quality": "node tests/trend-selection-policy.test.mjs",
     "test:publication": "node tests/v8-publication-policy.test.mjs",
     "test:online-reactions": "node tests/online-reaction-separation.test.mjs",
-    "test:v8": "npm run test:ranking && npm run test:images && npm run test:content && npm run test:jobs && npm run test:fallback && npm run test:top-feed && npm run test:refresh && npm run test:admin-refresh && npm run test:selection && npm run test:copyright-policy && npm run test:research && npm run test:publication && npm run test:online-reactions && npm run test:title-approval && npm run test:v802 && npm run test:v803 && npm run test:v805 && npm run test:v806 && npm run test:v807 && npm run test:v808 && npm run test:v809 && npm run test:v8010 && npm run test:v8011 && npm run test:v8012 && npm run test:v8013 && npm run test:v8014 && npm run test:v8015 && npm run test:v8016 && npm run test:v8017 && npm run test:v8018 && npm run test:v8019 && npm run test:v8020 && npm run test:v8021 && npm run test:v8022 && npm run test:v8023 && npm run test:v8024 && npm run test:v8025 && npm run test:v8026 && npm run test:v8027 && npm run test:v8028 && npm run test:v8029 && npm run test:v8030 && npm run test:v8031 && npm run test:v8032 && npm run test:v8033",
+    "test:v8": "npm run test:ranking && npm run test:images && npm run test:content && npm run test:jobs && npm run test:fallback && npm run test:top-feed && npm run test:refresh && npm run test:admin-refresh && npm run test:selection && npm run test:copyright-policy && npm run test:research && npm run test:publication && npm run test:online-reactions && npm run test:title-approval && npm run test:v802 && npm run test:v803 && npm run test:v805 && npm run test:v806 && npm run test:v807 && npm run test:v808 && npm run test:v809 && npm run test:v8010 && npm run test:v8011 && npm run test:v8012 && npm run test:v8013 && npm run test:v8014 && npm run test:v8015 && npm run test:v8016 && npm run test:v8017 && npm run test:v8018 && npm run test:v8019 && npm run test:v8020 && npm run test:v8021 && npm run test:v8022 && npm run test:v8023 && npm run test:v8024 && npm run test:v8025 && npm run test:v8026 && npm run test:v8027 && npm run test:v8028 && npm run test:v8029 && npm run test:v8030 && npm run test:v8031 && npm run test:v8032 && npm run test:v8033 && npm run test:v8034",
     "test:title-approval": "node tests/top-title-admin-approval.test.mjs",
     "test:v802": "node tests/v802-refresh-unblock.test.mjs",
     "test:v803": "node tests/v803-refresh-resilience.test.mjs",
@@ -51,7 +51,8 @@
     "test:v8030": "node tests/v8030-stop-and-feed-recovery.test.mjs",
     "test:v8031": "node tests/v8031-top20-stage-durability.test.mjs",
     "test:v8032": "node tests/v8032-runtime-stage-identity.test.mjs",
-    "test:v8033": "node tests/v8033-root-cause-refresh.test.mjs"
+    "test:v8033": "node tests/v8033-root-cause-refresh.test.mjs",
+    "test:v8034": "node tests/v8034-strict-accuracy-completion.test.mjs"
   },
   "dependencies": {
     "@upstash/qstash": "^2.11.1",
