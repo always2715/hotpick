@@ -1,0 +1,20 @@
+SECUFOCUS NOW PATCH MANIFEST v1.6.3
+Baseline: v1.6.2
+Date: 2026-06-24 Asia/Seoul
+
+Purpose:
+- Continue NVD detail backfill when a vulnerability payload is blocked by Supabase Cloudflare WAF.
+
+Runtime changes:
+- Structured Supabase HTTP error class and WAF/Ray-ID detection.
+- New partial PATCH helper.
+- Bulk -> single row -> field isolation fallback.
+- published_at completion patch before optional fields.
+- WAF/partial metrics in API and site_settings state.
+- Improved PowerShell response diagnostics.
+
+Compatibility:
+- No DB migration.
+- No new environment variables.
+- Existing CRON_SECRET, NVD_API_KEY and Supabase variables remain unchanged.
+- Existing KEV/EPSS/CISA metadata preservation rules remain mandatory.

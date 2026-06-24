@@ -1,0 +1,74 @@
+STELLATE v8.0.31 TEST REPORT
+============================
+
+Version
+-------
+appVersion: 8.0.31
+contentVersion: 127
+trendCacheVersion: 47
+publicTopCount: 20
+policy: fixed_keyword_content_v16_top20
+
+Test Results
+------------
+[PASS] npm run test:v8031
+[PASS] npm run test:v8
+[PASS] npm run build
+
+Core v8.0.31 Cases
+------------------
+[PASS] Public TOP count is centrally fixed to 20.
+[PASS] Candidate selection defaults to exactly 20.
+[PASS] 20 candidateIds are unique.
+[PASS] Run-specific publicationStageIds are generated.
+[PASS] Memory-cache reuse writes the requested run stage.
+[PASS] Redis-cache reuse writes the requested run stage.
+[PASS] Source-signature-unchanged reuse writes the requested run stage.
+[PASS] Newly generated content writes the requested run stage before return.
+[PASS] Legacy slug stage can be validated and promoted to run stage.
+[PASS] Finalize prefers verified stage over stale task status.
+[PASS] Generic Fact sentences are removed before publication.
+[PASS] Concrete verified facts remain after generic Fact removal.
+[PASS] Generic-only content is rejected.
+[PASS] Old TOP30 runs are blocked from resuming as TOP20.
+[PASS] Atomic publication requires exactly 20 trends and 20 contents.
+[PASS] Feed publication count requires exactly 20.
+[PASS] Admin/public copy uses TOP20 and 21st-or-lower wording.
+[PASS] Main page limits the list to 20.
+[PASS] Existing TOP10 Instagram policy remains unchanged.
+[PASS] .gitignore excludes node_modules and Next.js build output.
+
+Full Regression
+---------------
+The complete npm run test:v8 chain passed, including ranking, images,
+content architecture, jobs, publication, online-reaction separation,
+admin recovery, bounded retry, completion recovery, content accuracy,
+stop control, feed recovery, and v8.0.31 TOP20 durability tests.
+
+Production Build
+----------------
+Next.js: 14.2.35
+[PASS] Linting and type validation
+[PASS] Optimized production compilation
+[PASS] Page data collection
+[PASS] Static page generation (2/2)
+[PASS] Final page optimization
+
+Verified routes include:
+/
+/admin
+/admin-login
+/feed
+/feed/[slug]
+/api/admin-action
+/api/admin/status
+/api/feed
+/api/jobs/update-trends
+/api/version
+
+Non-blocking Warnings
+---------------------
+Node emitted MODULE_TYPELESS_PACKAGE_JSON performance warnings for several
+ES module test imports. These warnings did not cause test or build failures.
+The package module mode was not changed because that would affect the existing
+Next.js/CommonJS compatibility surface and should be handled separately.

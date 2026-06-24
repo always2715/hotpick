@@ -1,0 +1,5 @@
+Application package: v1.6.3
+Previous package baseline: v1.6.2
+Documentation/Handoff: v1.6.3
+Date: 2026-06-24 Asia/Seoul
+Current target: Deploy Cloudflare-WAF-safe Supabase field fallback and finish the remaining NVD detail backfill

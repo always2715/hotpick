@@ -5,7 +5,7 @@ import Header from '../components/Header';
 import MonetizationSlot from '../components/MonetizationSlot';
 import { CATEGORIES } from '../lib/categories';
 import { getCachedTrends, getTrendsUpdatedAt } from '../lib/kv';
-import { optimizeImageUrl } from '../lib/images';
+import { optimizeImageUrl, isUnsplashImageUrl } from '../lib/images';
 import { PUBLIC_TOP_COUNT } from '../lib/topConfig';
 
 const CAT_BG = {
@@ -64,7 +64,7 @@ export default function Home({ trends, updatedAt }) {
                   if (typeof navigator !== 'undefined') navigator.sendBeacon?.('/api/event', new Blob([JSON.stringify({ type:'top_click', slug:item.slug })], { type:'application/json' }));
                 }}>
                   <div className={`rank-number ${index < 3 ? 'top3' : ''}`}><strong>{item.rank}</strong><RankChange item={item} /></div>
-                  <div className="rank-thumb">{item.thumbnail ? <><img src={optimizeImageUrl(item.thumbnail, 180, 72)} alt="" loading="lazy" />{item.imageMeta?.photographerName && <span className="thumb-credit" title={`Photo by ${item.imageMeta.photographerName} on Unsplash`}>U · {item.imageMeta.photographerName}</span>}</> : <span className="thumb-fallback" style={{ background:CAT_BG[item.category] || CAT_BG.general }}>{cat.emoji || '🔥'}</span>}</div>
+                  <div className="rank-thumb">{isUnsplashImageUrl(item.thumbnail) ? <><img src={optimizeImageUrl(item.thumbnail, 180, 72)} alt="" loading="lazy" />{item.imageMeta?.photographerName && <span className="thumb-credit" title={`Photo by ${item.imageMeta.photographerName} on Unsplash`}>U · {item.imageMeta.photographerName}</span>}</> : <span className="thumb-fallback" style={{ background:CAT_BG[item.category] || CAT_BG.general }}>{cat.emoji || '🔥'}</span>}</div>
                   <div className="rank-copy"><div className="rank-title-row"><h2>{topic ? <><strong className="top-keyword">{keyword}</strong><span className="top-separator">·</span><span className="top-topic">{topic}</span></> : title}</h2>{item.badge === 'HOT' && <em className="hot-badge">HOT</em>}</div>{(item.previewSummary||item.listSummary)&&<p className="rank-summary">{item.previewSummary||item.listSummary}</p>}<div className="rank-meta"><span style={{ color:cat.color }}>{cat.label}</span><span>검증 출처 {item.independentSources||0}개</span></div></div>
                   <span className="chevron">›</span>
                 </Link>

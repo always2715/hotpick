@@ -1,0 +1,27 @@
+SECUFOCUS NOW v1.6.3 BUILD / TEST CHECK
+Date: 2026-06-24
+Node: v22.16.0
+npm: 10.9.2
+
+PASS npm run typecheck
+PASS npm run test:nvd-enrichment
+  - existing KEV/EPSS merge fixture
+  - batch selection fixture
+  - Supabase Cloudflare 403 detection
+  - Cloudflare Ray ID extraction
+  - compact error message excludes raw HTML
+PASS npm run test:kisa-parser (4/4)
+PASS npm run test:kisa-query
+PASS npm run test:threat-intel-parser
+PASS npm run test:cve-query
+PASS npm run build
+  - Next.js 16.2.0 production compile
+  - TypeScript
+  - static page generation 10/10
+  - /api/cron/nvd-enrichment dynamic route included
+  - /api/cron/daily dynamic route included
+
+Not executable in local package without production secrets:
+- live Supabase WAF fallback request
+- live remaining-count verification
+These require GitHub/Vercel deployment with existing environment variables.

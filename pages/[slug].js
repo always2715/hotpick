@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import { CATEGORIES } from '../lib/categories';
 import { getContent, getCachedTrends, getContentStatus, getViewCount, getSlugRedirect } from '../lib/kv';
-import { optimizeImageUrl } from '../lib/images';
+import { optimizeImageUrl, isUnsplashImageUrl } from '../lib/images';
 
 function StatusPage({content,trend}){
   const title=content?.detailTitle||content?.displayTitle||trend?.displayTitle||trend?.keyword||'콘텐츠';
@@ -38,7 +38,7 @@ export default function TopPreview({content,trend,initialViews}){
     <main className="preview-shell">
       <article className="feed-preview-card">
         <header className="preview-hero" style={{background:content.image?'#111':category.heroBg}}>
-          {content.image&&<img src={optimizeImageUrl(content.image,1200,80)} alt="" className="preview-hero-image" loading="eager"/>}<div className="preview-hero-overlay"/>
+          {isUnsplashImageUrl(content.image)&&<img src={optimizeImageUrl(content.image,1200,80)} alt="" className="preview-hero-image" loading="eager"/>}<div className="preview-hero-overlay"/>
           <div className="preview-hero-content"><div className="article-badges"><span>{category.label}</span>{trend?.rank&&<span>TOP {trend.rank}</span>}</div><h1>{title}</h1></div>
         </header>
         <section className="preview-copy">

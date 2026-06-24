@@ -1,0 +1,54 @@
+STELLATE v8.0.39 변경 파일 목록
+작성일: 2026-06-24
+기준: STELLATE v8.0.38 FULL
+
+[신규]
+- lib/trendEnginePolicy.js
+  동일 TOP25→TOP20 정책 실행의 버전 호환 판정 및 현재 엔진 메타데이터
+- lib/feedRecoveryPolicy.js
+  기존 공개 콘텐츠와 구형 피드 레코드의 비파괴 복구 판정
+- tests/v8039-run-compatibility-feed-recovery.test.mjs
+  v8.0.37~v8.0.39 재개 호환 및 피드 복구 회귀 테스트
+- README_v8.0.39.md
+- STELLATE_PROJECT_HANDOFF_v8.0.39.txt
+- STELLATE_v8.0.39_CHANGED_FILES.txt
+- STELLATE_v8.0.39_TEST_REPORT.txt
+- STELLATE_v8.0.39_DEPLOY_GUIDE.txt
+
+[변경]
+- lib/trendRefreshJob.js
+  하드코딩된 엔진 버전 비교를 정책 구조 호환 판정으로 교체
+- lib/kv.js
+  실행 엔진 메타데이터 저장, 누적 피드 비파괴 복구, 구형 레코드 업그레이드,
+  현재 TOP 스냅샷 비상 fallback, 전체 피드 인덱스 재구성
+- lib/api.js
+  외부 요청 User-Agent 버전 갱신
+- pages/api/admin-action.js
+  재개 요청 시 동일 TOP25→TOP20 정책 호환성 검증
+- pages/api/version.js
+  v8.0.39 실행 호환 및 피드 복구 정책 식별값 추가
+- pages/admin.js
+  failed/completed_with_errors 동일 정책 실행의 재개 버튼 표시, 버전 표기 갱신
+- package.json
+  appVersion 8.0.39, test:v8039 연결
+- package-lock.json
+  패키지 버전 동기화
+- tests/v8026-admin-runtime-recovery.test.mjs
+  현재 앱 버전 기대값 갱신
+- README.md
+  현재 버전 및 핵심 안정화 내용 갱신
+
+[변경하지 않은 TOP 핵심]
+- lib/topConfig.js
+- lib/top30Selection.js
+- lib/trends.js 후보 수집·상대순위 계산
+- TOP25 후보 고정 수
+- selectionRank 정렬
+- 성공 후보 TOP20 원자적 공개
+- 21~25위 예비 후보 승격
+
+[변경하지 않은 썸네일 핵심]
+- lib/thumbnailPoolCatalog.js
+- lib/thumbnailPool.js
+- lib/thumbnailPoolService.js
+- Unsplash 100개 사전 풀 정책

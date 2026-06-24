@@ -1,0 +1,555 @@
+SECUFOCUS NOW / 시큐포커스 NOW — 프로젝트 전체 인수인계
+======================================================================
+문서 역할: 새 채팅·새 개발자가 이 ZIP 하나만으로 프로젝트 전체를 파악하는 최우선 문서
+문서 버전: v1.6.3
+작성일: 2026-06-24 (Asia/Seoul)
+저장소: always2715/secufocus-now-web
+서비스: 시큐포커스 NOW / SECUFOCUS NOW
+태그라인: 보안사고부터 취약점까지, 한눈에
+
+[현재 확정 상태]
+----------------------------------------------------------------------
+1. 사용자 확인 완료 운영 기능:
+   - v1.3.2 KISA 유형별 원문 상세 및 백필 정상
+   - v1.4.0 CISA KEV/FIRST EPSS 주요 기능 및 백필 정상
+   - v1.4.1 페이지 번호 그룹화·모바일 겹침 방지·KISA 참고사이트 접기 정상
+   - v1.5.0 CVE 서버측 페이지네이션·EPSS 기준일 반영
+   - v1.5.1 주요 목록 페이지당 10건 반영
+   - v1.5.2 CVE·KISA 정렬 및 기본 최신순 반영
+2. v1.6.2 NVD `cveIds` 다건 조회는 운영 로그에서 정상 작동했다.
+3. 최초 NVD 상세 보강 후보 1,603건 중 최소 1,392건이 완료됐고 마지막 확인 잔여는 약 211건이다.
+4. v1.6.2 batch=1 재실행이 502로 종료됐으나 응답 본문으로 실제 원인이 확인됐다.
+5. 실제 원인은 NVD 또는 Vercel 장애가 아니라 특정 CVE 전체 행을 Supabase에 upsert할 때 Supabase 앞단 Cloudflare WAF가 HTTP 403으로 차단한 것이다.
+6. v1.6.3은 정상 CVE의 기존 bulk upsert를 유지하면서 차단 CVE만 CVE별·필드별 PATCH로 분리 저장한다.
+7. 차단 CVE는 `published_at`을 먼저 저장해 같은 CVE가 백필 전체를 영구 차단하지 않도록 한다.
+8. 선택 필드가 계속 차단되면 해당 필드만 보류하고 저장 가능한 CVSS·CWE·공개일·제품 정보는 유지한다.
+9. PATCH는 지정 필드만 변경하며 기존 CISA KEV·FIRST EPSS·요구조치·기한·랜섬웨어 metadata를 제거하지 않는다.
+10. 신규 DB 테이블·컬럼·SQL 마이그레이션과 신규 환경변수는 없다. site_settings 상태 JSON만 확장한다.
+11. 모든 신규 버전 ZIP은 전체본, 이전 버전 대비 패치본, 최신 PROJECT_HANDOFF.txt를 포함한다.
+
+[새 채팅에서 재개 방법]
+----------------------------------------------------------------------
+새 채팅에 이 ZIP 하나를 업로드하고 아래 문장만 전달한다.
+
+  "PROJECT_HANDOFF.txt를 먼저 읽고 시큐포커스 NOW v1.6.3 기준으로 이어서 진행해줘."
+
+상태가 충돌하면 PROJECT_HANDOFF.txt → CURRENT_VERSION.txt → PROJECT_STATE.md → NEXT_TASKS.md → CHANGELOG.md 순으로 본다.
+
+[v1.6.3 Supabase Cloudflare WAF 안전 저장]
+----------------------------------------------------------------------
+확인된 오류:
+- `/api/cron/nvd-enrichment?batch=1`이 HTTP 502를 반환했다.
+- 실제 응답 detail은 `Supabase admin upsert failed (vulnerabilities): 403`이었다.
+- 응답은 Supabase 앞단 Cloudflare의 `Sorry, you have been blocked` HTML이었다.
+- 따라서 NVD 상세 조회 실패가 아니라 NVD 조회 후 DB 저장 payload가 WAF에 차단된 것이다.
+
+수정:
+- Supabase select/upsert/patch HTTP 오류를 구조화하고 Cloudflare 차단과 Ray ID를 짧게 식별
+- 정상 batch는 기존 전체 bulk upsert 유지
+- bulk WAF 차단 시 CVE별 단건 upsert로 문제 행 격리
+- 차단 CVE는 `published_at` 최소 PATCH를 먼저 실행해 후보에서 완료 처리
+- 나머지 필드를 그룹별 PATCH하고 차단 그룹은 필드 단위로 재분할
+- 차단된 필드만 보류하며 기존 행의 다른 필드는 건드리지 않음
+- `partialCount`, `wafFallbackCount`, `wafSamples`와 누적 WAF 통계를 상태 JSON에 저장
+- PowerShell이 5xx 응답 본문, Cloudflare Ray ID, WAF fallback 결과를 표시
+- 첫 전송 재시도 중에도 `resetCursor=1` 유지
+- daily cron은 부분 저장을 partial 상태로 표시
+
+배포 후 실행:
+  .\scripts\backfill-nvd-details.ps1 `
+    -BaseUrl "https://secufocus-now-web.vercel.app" `
+    -Batch 1 `
+    -MaxRounds 300 `
+    -MaxTransportRetries 5 `
+    -RequestTimeoutSec 180
+
+정상 판단:
+- 첫 차단 CVE에서 `WAF fallback : 1`이 나올 수 있음
+- `Partial : 1`이어도 `Enriched : 1`이고 `Remaining`이 감소하면 정상
+- `Cloudflare-safe fallback samples`에 실제 차단 필드와 Ray ID가 표시됨
+- 최종 `Remaining : 0` 및 완료 문구 확인
+
+신규 DB SQL·환경변수 없음.
+
+[v1.6.2 NVD 다건 상세 백필]
+----------------------------------------------------------------------
+발생 확인:
+- v1.6.1 단건 조회는 일부 성공했으나 12초 timeout과 HTTP 503이 반복됐다.
+- Missing in NVD는 0이었으므로 데이터 부재가 아니라 NVD 전송 지연·서비스 오류였다.
+- 3회 연속 무진전 종료가 서로 다른 CVE batch에서도 작동해 전체 순회 전에 조기 종료됐다.
+
+수정:
+- NVD CVE API 2.0 `cveIds` 파라미터 사용
+- 한 요청에 기본 25개, 최대 100개 CVE 조회
+- 한 serverless invocation당 NVD 요청 1회
+- timeout 45초, 1회 시도 후 다음 순환으로 이월
+- 전체 batch 실패 시 PowerShell batch 자동 축소
+- 성공 호출 사이 6초 대기
+- 무진전 종료 기준 10회
+- daily batch 10
+
+배포 후 실행:
+  .\scripts\backfill-nvd-details.ps1 -BaseUrl "https://secufocus-now-web.vercel.app"
+
+신규 DB SQL·환경변수 없음.
+
+[v1.6.1 NVD 상세 백필 timeout 긴급 수정]
+----------------------------------------------------------------------
+발생 오류:
+- v1.6.0 스크립트 기본 batch=20 실행 시 Invoke-RestMethod가 120초를 넘겨 timeout.
+- NVD 단건 요청은 기존 최대 25초 x 2회 + 재시도 대기가 가능해 20건을 한 함수에서 처리할 수 없었다.
+
+수정:
+- scripts/backfill-nvd-details.ps1 기본 batch=2, 최대 5
+- timeout 시 batch=1로 자동 축소하고 최대 3회 transport 재시도
+- lib/nvd-enrichment.ts 기본 2, 최대 5, 함수 처리 예산 45초
+- 상세 단건 조회는 12초, 1회 시도 후 다음 순환으로 이월
+- 시간 예산 도달 시 실제 시도한 마지막 CVE까지만 cursor 저장
+- daily 자동 보강도 2건
+
+배포 후 실행:
+  .\scripts\backfill-nvd-details.ps1 -BaseUrl "https://secufocus-now-web.vercel.app"
+
+긴급 임시 실행(v1.6.0 배포 상태):
+  .\scripts\backfill-nvd-details.ps1 -BaseUrl "https://secufocus-now-web.vercel.app" -Batch 1 -MaxRounds 500
+
+신규 DB SQL·환경변수 없음.
+
+[v1.6.0 CISA-only CVE NVD 상세 보강]
+----------------------------------------------------------------------
+목적:
+- CISA KEV 전체 동기화로 생성됐지만 기존 NVD 최근 증분 범위에 포함되지 않아 CVSS·CWE·영향 버전·공개일이 비어 있는 CVE를 공식 NVD 데이터로 보강한다.
+
+대상:
+- vulnerabilities.is_kev = true
+- published_at is null
+- is_sample = false
+
+구현:
+- /api/cron/nvd-enrichment
+- lib/nvd-enrichment.ts
+- lib/nvd-enrichment-normalize.ts
+- scripts/backfill-nvd-details.ps1
+- scripts/test-nvd-enrichment.mjs
+
+처리:
+1. 후보 CVE ID를 cve_id 순으로 조회
+2. site_settings의 cursorCveId 이후 항목을 기본 5건, 최대 20건 선택
+3. NVD CVE API 2.0에 cveId 단건 요청
+4. CVSS·벡터·CWE·공급사·제품·영향/수정 버전·공개/수정일·NVD references 정규화
+5. 기존 CISA KEV·FIRST EPSS·CISA 요구조치·기한·랜섬웨어 metadata와 병합
+6. 성공 항목은 published_at이 채워져 후보에서 자동 제외
+7. NVD 미등록·일시 실패 항목은 커서가 지나가고 다음 순환/daily에서 재시도
+8. 3회 연속 진전이 없으면 stalled=true로 무한 반복 방지
+
+요청 안전:
+- 기존 NVD_API_KEY 사용
+- 요청 간 1.5초 지연
+- 429/5xx는 1회 재시도
+- 단건 timeout 25초
+- daily cron은 5건만 처리
+
+추가 보호:
+- 일반 NVD 증분 수집도 upsert 전에 기존 행과 병합해 EPSS·KEV metadata 초기화를 방지한다.
+- CVE 일련번호 정규식은 최대 19자리까지 허용한다.
+- CVE 화면에 NVD API 사용 및 비보증·비인증 고지를 표시한다.
+
+공식 근거:
+- NVD CVE API 2.0은 cveId 파라미터로 단일 CVE를 조회한다.
+- API key 사용 시 rolling 30초 기준 요청 한도가 높아지지만 NVD는 요청 사이 수초 지연을 권고한다.
+
+[v1.5.0 서버 페이지네이션 + v1.5.1 목록 10건 통일]
+----------------------------------------------------------------------
+기존 문제:
+- /cve 진입 시 최대 2,500건을 한꺼번에 서버에서 받아 브라우저에서 검색·필터·페이지 분할했다.
+- CVE가 늘수록 초기 응답 크기, 렌더링 시간, 브라우저 메모리가 계속 증가하는 구조였다.
+- EPSS 점수·백분위는 저장했지만 FIRST 응답의 공식 기준일(date)은 버렸다.
+
+변경:
+- /cve 최초 로드는 10건만 조회한다.
+- /api/cve 동적 API를 추가했다.
+- 검색·필터·정렬·페이지 범위를 Supabase/PostgREST에서 처리한다.
+- `limit`, `offset`, `Prefer: count=exact`, `Content-Range`로 전체 건수와 마지막 페이지를 계산한다.
+- 검색 대상: cve_id, title, summary, vendor, product.
+- 검색은 350ms debounce를 적용하고 이전 요청은 AbortController로 취소한다.
+- 로딩 중 기존 목록을 유지하고 Supabase 오류 시 오류 메시지를 표시한다.
+- 주요 목록은 페이지당 10건, 페이지 버튼 10개 단위, << < > >> UI를 사용한다.
+- FIRST EPSS 응답의 date를 references_json에 저장한다.
+- 목록과 상세 화면에 EPSS 데이터 기준일을 표시한다.
+- threat_intel_collector 상태 JSON에 lastEpssDataDate를 저장한다.
+
+공식 기술 근거:
+- Supabase Data REST API는 PostgREST 기반이다.
+- PostgREST는 limit/offset 또는 Range와 Prefer: count=exact, Content-Range를 지원한다.
+- FIRST EPSS API 응답은 cve, epss, percentile, date를 제공한다.
+
+[프로젝트 목적]
+----------------------------------------------------------------------
+국내외 보안 뉴스, KISA 공식 보안정보, NVD CVE, CISA KEV, FIRST EPSS,
+날짜별 보안 브리핑과 인기 이슈를 한 곳에서 제공하는 보안정보 웹서비스다.
+수집 결과는 Supabase에 저장하고 Next.js 웹에서 목록·검색·상세·페이지네이션·조회수 형태로 제공한다.
+
+[기술 스택]
+----------------------------------------------------------------------
+- Next.js 16.2.0
+- React / React DOM 19.2.0
+- TypeScript 5.7 계열
+- Node.js 22.x
+- npm 10.9.2
+- 배포: Vercel
+- DB: Supabase REST/PostgREST
+- 정기 수집: Vercel Cron, 매일 22:00 UTC(한국시간 오전 7시대)
+- 정기 경로: /api/cron/daily
+
+[주요 화면]
+----------------------------------------------------------------------
+- /                         홈
+- /incidents                보안 뉴스
+- /incidents/[slug]         보안 뉴스 상세
+- /cve                      CVE 목록
+- /cve/[id]                 CVE 상세
+- /kisa                     KISA 목록
+- /kisa/[slug]              KISA 유형별 상세
+- /briefing                 날짜별 보안 브리핑
+- /briefing/[date]          브리핑 상세
+- /popular                  인기 이슈
+- /search                   통합 검색
+
+[주요 API]
+----------------------------------------------------------------------
+- /api/cve                  CVE 검색·필터·서버 페이지 조회(v1.5.0, 기본 10건은 v1.5.1)
+- /api/cron/daily           KISA + NVD + CISA KEV/FIRST EPSS 통합 수집
+- /api/cron/kisa            KISA RSS + 제한된 상세 수집
+- /api/cron/kisa-backfill   KISA 미완료 상세 소량 반복 백필
+- /api/cron/nvd             NVD 단독 수집
+- /api/cron/nvd-enrichment  CISA-only CVE NVD 상세 보강
+- /api/cron/threat-intel    CISA KEV + FIRST EPSS 단독 수집·백필
+- /api/page-view            조회수 누적
+
+[환경변수]
+----------------------------------------------------------------------
+실제 값은 ZIP·GitHub·문서·로그에 넣지 않는다.
+
+- NEXT_PUBLIC_SUPABASE_URL
+- NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+- SUPABASE_SECRET_KEY
+- CRON_SECRET
+- NVD_API_KEY
+
+v1.6.0 신규 환경변수 없음.
+
+[DB]
+----------------------------------------------------------------------
+주요 테이블:
+- security_news
+- news_sources
+- news_timeline
+- vulnerabilities
+- kisa_items
+- daily_briefings
+- page_views
+- news_candidates
+- site_settings
+
+중복 기준:
+- KISA: external_id
+- CVE: cve_id
+
+vulnerabilities 주요 필드:
+- cve_id
+- title / summary / description_ko
+- severity / cvss_score / cvss_vector
+- epss_score / epss_percentile
+- is_kev / kev_date_added
+- vendor / product / affected_versions / fixed_versions
+- cwe_ids / references_json / official_url
+- published_at / modified_at
+- is_published / is_featured / is_sample
+
+CISA KEV 메타데이터 저장 예:
+references_json[]
+- source: "CISA KEV"
+- url
+- dateAdded
+- dueDate
+- requiredAction
+- knownRansomwareCampaignUse
+- notes
+
+FIRST EPSS 메타데이터 저장 예(v1.5.0):
+references_json[]
+- source: "FIRST EPSS"
+- url: https://api.first.org/data/v1/epss
+- date: YYYY-MM-DD
+- score: 0~1
+- percentile: 0~1
+
+수집 상태:
+site_settings.setting_key = threat_intel_collector
+주요 상태값:
+- lastKevCatalogVersion
+- lastKevDateReleased
+- lastKevCount
+- lastKevSha256
+- lastKevSourceUrl
+- lastKevUpserted
+- lastKevRemoved
+- epssOffset
+- epssTotal
+- epssCycleStartedAt
+- epssCycleCompletedAt
+- lastEpssUpdated
+- lastEpssMissing
+- lastEpssDataDate (v1.5.0)
+- lastError
+
+NVD 상세 보강 상태:
+site_settings.setting_key = nvd_detail_enrichment
+주요 상태값:
+- lastStartedAt / lastCompletedAt
+- cursorCveId / cycleCount
+- totalCandidates
+- lastAttempted / lastEnriched / lastMissing / lastFailed / lastRemaining
+- noProgressRounds
+- lastErrorSamples / lastError
+
+[기존 KISA 확정 구조]
+----------------------------------------------------------------------
+KISA RSS 4종:
+- B0000133 / security_notice / 보안공지
+- B0000302 / vulnerability / 취약점정보
+- B0000127 / report_guide / 보고서·가이드
+- B0000342 / alert_level / 경보단계
+
+유형별 UI:
+- 보안공지: 개요·설명·영향 제품·해결 방안·참고자료
+- 취약점정보: CVE·CVSS·심각도·영향·제품/해결 버전
+- 보고서·가이드: 자료 유형·TLP·목차·첨부자료
+- 경보단계: 정상→관심→주의→경계→심각, 이전/현재 단계, 변경 방향, 적용 시각, 행동요령
+
+공식 상세 허용 호스트:
+- boho.or.kr
+- krcert.or.kr
+
+KISA 원문에 없는 사실은 생성하지 않는다.
+상세 수집 실패 시 기존 성공 데이터를 stale로 보존한다.
+사용자는 v1.3.2 백필 후 실제 원문 상세가 정상 표시되는 것을 확인했다.
+
+[KISA 참고사이트 UI v1.4.1]
+----------------------------------------------------------------------
+- 상위 3개만 기본 표시
+- 나머지는 native details/summary 접기·펼치기
+- 구조화 referenceLinks가 별도로 있으면 본문 references 중복 섹션은 표시하지 않음
+- 모바일 하단 고정 메뉴에 페이지네이션이 가려지지 않도록 page-shell 하단 여백 확보
+
+[NVD 수집 구조]
+----------------------------------------------------------------------
+기본:
+- NVD CVE API 2.0 증분 수집
+
+장애 fallback:
+- NVD 공식 Recent JSON 2.0 gzip
+- gzip 실패 시 공식 ZIP
+
+확정 유지 기능:
+- 25초 API timeout
+- API 실패 시 6시간 cooldown
+- Recent feed 최근 구간만 필터링·정규화
+- ETag / Last-Modified / SHA-256 동일 피드 재처리 방지
+- 동일 feed면 totalUpserted=0, upsertSkipped=true
+- API 성공 시에만 API checkpoint 전진
+
+[CISA KEV]
+----------------------------------------------------------------------
+공식 JSON:
+- 1순위: https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json
+- 2순위: CISA 공식 GitHub 미러 cisagov/kev-data raw JSON
+
+처리:
+1. 전체 카탈로그 수신
+2. CVE 형식 검증·중복 제거
+3. 기존 vulnerabilities 행을 읽어 NVD 정보 보존
+4. is_kev=true, kev_date_added와 CISA 메타데이터 병합
+5. DB에 없는 KEV도 CISA 원문 정보로 신규 등록
+6. 카탈로그에서 제거된 기존 KEV는 is_kev=false로 복원
+7. 신규 KEV는 is_published=true, is_featured=true
+8. 공식 count와 정규화 건수가 다르거나 유효 항목이 비정상적으로 적으면 reconciliation 중단
+9. KEV/EPSS 대상 CVE ID는 Supabase 1,000행 제한을 피하도록 분할 조회
+
+CISA-only 신규 행은 CVSS가 없을 수 있으므로 severity=info, cvss_score=null로 저장한다.
+CVSS를 임의 생성하지 않는다.
+
+[FIRST EPSS]
+----------------------------------------------------------------------
+공식 API:
+- https://api.first.org/data/v1/epss
+
+처리:
+1. 공개 CVE ID를 정렬해 목록화
+2. 100개씩 FIRST batch API 호출
+3. epss_score와 epss_percentile 갱신
+4. v1.5.0부터 응답 date를 FIRST EPSS references_json 항목에 저장
+5. 기본 1회 실행당 300건
+6. site_settings.epssOffset으로 다음 실행 위치 기억
+7. 전체 순환 완료 시 offset을 0으로 돌리고 epssCycleCompletedAt 기록
+8. 수동 백필 스크립트는 500건씩 반복하며 cycleComplete=true까지 실행
+9. 최신 batch의 date를 lastEpssDataDate에 기록
+
+[CVE 대응 우선순위 — 시큐포커스 운영 규칙]
+----------------------------------------------------------------------
+이 등급은 CISA/FIRST 공식 등급이 아니라 시큐포커스의 표시 규칙이다.
+- 최우선: CISA KEV 등록
+- 우선: EPSS score >= 0.50 또는 percentile >= 0.95
+- 점검: KEV/고EPSS는 아니지만 CVSS 긴급 또는 높음
+- 일반: 그 외
+
+화면에는 우선순위와 판단 근거를 함께 표시한다.
+CISA KEV 행은 공식 요구조치, 조치기한, 랜섬웨어 사용 여부, 비고를 표시한다.
+EPSS는 실제 악용 확인이 아니라 향후 악용 가능성 예측 값으로 표시한다.
+
+[CVE 서버측 페이지네이션 v1.5.0]
+----------------------------------------------------------------------
+파일:
+- lib/cve-query.ts
+  필터 코드, 검색 문자열 정제, 페이지 파라미터, PostgREST 파라미터, Content-Range 파싱
+- lib/supabase-data.ts
+  getVulnerabilityPage(), exact count, 페이지 범위 조회, EPSS date 해석
+- app/api/cve/route.ts
+  q, filter, page, pageSize를 받는 공개 페이지 API
+- app/cve/page.tsx
+  최초 10건 서버 렌더링
+- components/cve-browser.tsx
+  서버 검색·필터·페이지 이동, debounce, AbortController, 오류/로딩 상태
+- app/cve/[id]/page.tsx
+  EPSS 데이터 기준일 상세 표시
+
+필터 매핑:
+- all: 전체
+- priority: is_kev=true
+- kev: is_kev=true
+- epss-top-10: epss_percentile>=0.9
+- critical: severity=critical
+- high: severity=high
+
+정렬:
+1. is_kev desc
+2. epss_score desc nulls last
+3. cvss_score desc nulls last
+4. published_at desc nulls last
+5. cve_id asc
+
+검색 안전처리:
+- 쉼표, 괄호, 따옴표, %, 역슬래시 등 PostgREST 문법 충돌 문자 제거
+- 공백 정규화
+- 최대 80자
+
+[배포 절차 v1.6.0]
+----------------------------------------------------------------------
+1. v1.5.2 저장소 루트에 v1.6.0 패치 ZIP 내용물을 덮어쓰기
+2. GitHub Desktop 변경 파일 확인
+3. Commit: v1.6.0 enrich CISA-only CVEs with NVD details
+4. Push origin
+5. Vercel 배포 Ready 확인
+6. scripts/backfill-nvd-details.ps1 실행
+7. /cve에서 기존 미보강 KEV CVE의 CVSS·CWE·영향 버전·공개일 확인
+8. KEV·EPSS·CISA 요구조치가 유지되는지 확인
+9. DB SQL·신규 환경변수 없음
+
+[배포 후 검증]
+----------------------------------------------------------------------
+1. /cve 최초 화면과 서버 응답이 10건
+2. /kisa 첫 화면 10건
+3. /incidents, /briefing, /popular 첫 화면 각 10건
+4. 11건 이상이면 목록 아래 페이지 순번 표시
+5. 페이지 번호 최대 10개 단위와 `<<`, `<`, `>`, `>>` 정상
+6. 검색·필터 변경 시 1페이지로 복귀하고 전체 건수·마지막 페이지 정상
+7. CVE ID/제품/공급사 검색과 우선순위 필터 정상
+8. 모바일 페이지네이션과 하단 메뉴 겹침 없음
+9. EPSS 기준일, KISA 4종 상세, 참고사이트 접기 회귀 없음
+10. /api/cve는 비밀키 없이 공개 RLS 범위만 조회
+
+Supabase 확인 SQL:
+
+select
+  count(*) filter (where is_kev = true) as kev_count,
+  count(*) filter (where epss_score is not null) as epss_ready,
+  count(*) filter (where is_published = true) as published_count
+from public.vulnerabilities
+where is_sample = false;
+
+select setting_key, setting_value, updated_at
+from public.site_settings
+where setting_key in ('nvd_collector', 'threat_intel_collector', 'nvd_detail_enrichment');
+
+중복 확인:
+select cve_id, count(*)
+from public.vulnerabilities
+where is_sample = false
+group by cve_id
+having count(*) > 1;
+
+[검증 이력]
+----------------------------------------------------------------------
+- KISA parser fixture: 4/4 통과
+- CISA KEV + FIRST EPSS normalizer fixture: 통과
+- FIRST EPSS date 정규화 fixture: 통과
+- CVE query/filter/offset/Content-Range helper fixture: 통과
+- TypeScript strict 검사: 통과
+- Next.js 16.2.0 production build: 통과
+- Static page generation: 10/10 통과
+- /api/cve dynamic route build manifest 확인
+- Mock Supabase 통합: page 2 = 10/40, totalPages=4 통과
+- Mock Supabase 통합: KEV filter 4/4, CVE 검색 1/1 통과
+- Supabase Cloudflare WAF 403 감지·Ray ID 추출·원문 HTML 비노출 테스트 통과
+- 패키지 버전 package.json/package-lock.json 1.6.3 일치
+- 운영 Supabase 자격증명은 로컬 ZIP에 없으므로 실제 WAF fallback과 잔여 0건 검증은 배포 후 필요
+
+[알려진 제한·주의]
+----------------------------------------------------------------------
+- exact count는 정확하지만 데이터가 수십만 건 이상으로 커지면 비용이 증가할 수 있다. 현재 규모에서는 정확성을 우선한다.
+- 통합검색 /search는 아직 CVE 최대 2,500건을 읽어 서버 메모리에서 검색한다. 다음 P1 개선 대상이다.
+- CISA-only 행은 NVD 상세 보강 대상이다. NVD에 아직 없는 CVE는 임의 생성하지 않고 daily에서 재시도한다.
+- Cloudflare WAF가 특정 선택 필드를 차단하면 v1.6.3은 해당 필드만 기존 값으로 남기고 `lastWafSamples`에 기록한다.
+- EPSS 기준일은 v1.5.0 배포 이후 threat-intel 동기화가 실행된 CVE부터 채워진다. 전체 반영은 백필 필요.
+- EPSS는 예측 확률이며 실제 악용 확인을 의미하지 않는다. 실제 악용 확인은 KEV 기준이다.
+- Secret, .env.local, node_modules, .next, .git, tsbuildinfo는 배포 ZIP에 포함하지 않는다.
+
+[다음 작업]
+----------------------------------------------------------------------
+P0. v1.6.3 배포
+P0. batch=1로 NVD 상세 백필 재개
+P0. WAF fallback 발생 시 Enriched 증가와 Remaining 감소 확인
+P0. Supabase 잔여 건수 0, 중복 0건, CVE 상세·KEV·EPSS 보존 확인
+P0. daily cron 회귀 확인
+P1. 통합검색 CVE 서버측 검색 전환
+P1. KISA 서버측 검색·정렬·exact count 전환
+P1. 수집 현황 관리자 UI
+P2. 국내외 보안 뉴스 자동수집 및 브리핑 출처 관리 고도화
+
+[절대 유지 원칙]
+----------------------------------------------------------------------
+- 원문에 없는 사실·버전·조치·CVE·점수를 생성하지 않는다.
+- 공식기관 원문과 공식 API를 우선한다.
+- KEV 실제 악용과 EPSS 예측 확률을 구분한다.
+- 기존 NVD/KISA 성공 데이터는 외부 장애로 삭제하지 않는다.
+- 공개 목록 API는 Supabase RLS를 우회하지 않는다.
+- 새 버전마다 전체 ZIP + 이전 버전 대비 패치 ZIP을 함께 제공한다.
+- 새 버전 ZIP마다 PROJECT_HANDOFF.txt를 최신 상태로 갱신한다.
+======================================================================
+
+[v1.5.2 변경사항]
+----------------------------------------------------------------------
+- CVE 정렬: 최신순(기본), 오래된순, CVSS 높은순, EPSS 높은순, 실제 악용 우선
+- KISA 정렬: 최신순(기본), 오래된순, 제목 가나다순, 유형순
+- CVE sort는 `/api/cve?sort=`로 전달하며 서버 allowlist로 검증
+- 검색·필터·정렬 변경 시 1페이지 복귀
+- DB/환경변수/백필 변경 없음
+
+
+[v1.6.0 변경사항]
+----------------------------------------------------------------------
+- CISA-only CVE NVD 상세 보강 API·백필·daily 자동 처리
+- 기존 KEV·EPSS·CISA metadata 보존 병합
+- NVD 증분 upsert의 threat-intel 초기화 방지
+- NVD 비보증·비인증 고지
+- DB schema/환경변수 변경 없음

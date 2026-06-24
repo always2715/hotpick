@@ -71,8 +71,8 @@ assert.match(admin,/추가 검색/);
 assert.doesNotMatch(admin,/검토기준 미충족/);
 
 const version=fs.readFileSync(new URL('../pages/api/version.js',import.meta.url),'utf8');
-assert.match(version,/contentVersion:132/);
-assert.match(version,/trendCacheVersion:51/);
+assert.match(version,/contentVersion:133/);
+assert.match(version,/trendCacheVersion:52/);
 assert.match(version,/fixed-keyword-content-stop-control-v8025/);
 assert.match(version,/ranked_candidate_pool_v17_top20_from25/);
 assert.match(version,/maxKeywordAttempts:3/);

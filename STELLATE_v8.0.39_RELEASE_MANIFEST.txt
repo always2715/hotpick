@@ -1,0 +1,34 @@
+STELLATE v8.0.39 RELEASE MANIFEST
+작성일: 2026-06-24
+
+릴리스 목적:
+1. v8.0.37 동일 TOP25→TOP20 실행의 버전 오판 재개 차단 수정
+2. 실패 작업 이후 피드가 0건으로 보일 수 있는 파괴적 인덱스 복구 수정
+3. 누적 공개 피드와 현재 TOP 스냅샷 비상 fallback 추가
+
+주요 정책 유지:
+- generationPoolCount 25
+- publicTopCount 20
+- selectionRank 원순위 공개
+- 21~25위 성공 후보 승격
+- 성공 후보 20개 미만 시 기존 TOP 유지
+- Unsplash 100개 사전 썸네일 풀
+- Redis namespace stellate:v7
+- QStash dedupe update-trends-v837
+
+배포 산출물:
+- STELLATE_v8.0.39_FULL.zip
+- STELLATE_v8.0.39_REPLACE_ONLY.zip
+- STELLATE_v8.0.39_SHA256.txt
+
+검증:
+- npm run test:v8 PASS
+- npm run build PASS
+- next start PASS
+- /api/version HTTP 200, appVersion 8.0.39
+
+운영 주의:
+- Redis FLUSHALL 금지
+- 기존 TOP/피드 선삭제 금지
+- 동일 정책 v8.0.37 실패 실행은 배포 후 관리자에서 재개 가능
+- 정책이 다른 v8.0.36 이하 실행은 재개 금지

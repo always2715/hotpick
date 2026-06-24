@@ -3,13 +3,14 @@ import {
   updateVisibility, updateContentFields, updateTrendFields, permanentlyDeleteContent,
   resetFeed, getCachedTrends, getContent, addAudit, rebuildMissingTopFeeds,
   approveReviewDraft, rejectReviewDraft, saveSlugRedirect, migrateContentSlug, updateTrendRule, updateTrendCandidateApproval, clearGenerationHistory,
-  getCronRunTasks, getTrendRunCandidates, patchCronRun, updateCronRunTask, requestTrendRefreshStop, clearTrendRefreshStop,
+  getCronRunTasks, getTrendRunCandidates, getCronRun, patchCronRun, updateCronRunTask, requestTrendRefreshStop, clearTrendRefreshStop,
 } from '../../lib/kv';
 import { CATEGORIES } from '../../lib/categories';
 import { requireAdmin } from '../../lib/adminAuth';
 import { enqueueTrendRefresh, enqueueTrendRefreshStep, enqueueMissingContentJobs, enqueueSelectedContentJobs, selectTopContentCandidates, createTrendRefreshRun } from '../../lib/jobs';
 import { executeTrendRefreshRun, MAX_CANDIDATE_ATTEMPTS } from '../../lib/trendRefreshJob';
 import { PUBLIC_TOP_COUNT, TOP_GENERATION_POOL_COUNT } from '../../lib/topConfig';
+import { assessTrendRunCompatibility, CURRENT_TREND_ENGINE_VERSION } from '../../lib/trendEnginePolicy';
 import { bootstrapThumbnailPool, updateThumbnailPoolAdminItem, manualThumbnailMeta } from '../../lib/thumbnailPoolService.js';
 
 export const config = { maxDuration: 300 };
@@ -140,8 +141,12 @@ export default async function handler(req, res) {
     if (action === 'resume_trend_run') {
       const runId=String(values?.runId||value||'').trim();
       if(!runId)return res.status(400).json({error:'재개할 runId가 필요합니다.'});
-      const [candidates,tasks]=await Promise.all([getTrendRunCandidates(runId),getCronRunTasks(runId)]);
+      const [run,candidates,tasks]=await Promise.all([getCronRun(runId),getTrendRunCandidates(runId),getCronRunTasks(runId)]);
       if(!candidates.length)return res.status(409).json({error:'이 실행의 저장된 후보 목록이 없습니다. 새 TOP 갱신을 실행하세요.'});
+      const compatibility=assessTrendRunCompatibility(run||{});
+      if(!compatibility.compatible){
+        return res.status(409).json({error:`이 실행은 ${compatibility.engineVersion||'이전'} 엔진 기준이라 현재 TOP25 생성·TOP20 공개 정책으로 재개할 수 없습니다.`,topCountMigrationRequired:true,currentEngineVersion:CURRENT_TREND_ENGINE_VERSION,...compatibility});
+      }
       const needsIdentityMigration=candidates.some(candidate=>!candidate?.candidateId||!candidate?.publicationStageId);
       const needsFixedTop20Migration=candidates.length!==TOP_GENERATION_POOL_COUNT||candidates.some(candidate=>candidate?.fixedTop25Pool!==true);
       if(needsFixedTop20Migration){

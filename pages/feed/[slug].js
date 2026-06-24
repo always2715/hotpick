@@ -5,7 +5,7 @@ import Header from '../../components/Header';
 import MonetizationSlot from '../../components/MonetizationSlot';
 import { CATEGORIES } from '../../lib/categories';
 import { getContent, getCachedTrends, getContentStatus, getViewCount, getSlugRedirect, queryFeedPosts } from '../../lib/kv';
-import { optimizeImageUrl } from '../../lib/images';
+import { optimizeImageUrl, isUnsplashImageUrl } from '../../lib/images';
 
 function parseBlog(text='') {
   const sections=[];
@@ -104,7 +104,7 @@ export default function KeywordPage({content,trend,related,previous,next,initial
     <main className="article-shell">
       <article>
         <header className="article-hero" style={{background:content.image?'#111':category.heroBg}}>
-          {content.image&&<img src={optimizeImageUrl(content.image,1400,80)} alt="" className="article-hero-image" loading="eager"/>}<div className="article-hero-overlay"/>
+          {isUnsplashImageUrl(content.image)&&<img src={optimizeImageUrl(content.image,1400,80)} alt="" className="article-hero-image" loading="eager"/>}<div className="article-hero-overlay"/>
           <div className="article-hero-content"><div className="article-badges"><span>{category.label}</span>{trend?.rank&&<span>TOP {trend.rank}</span>}{evidence.length>0&&Number(content.groundingScore||0)>=90&&<span>근거 연결 {content.groundingScore}</span>}</div><h1>{title}</h1><div className="article-meta"><span>{new Date(content.generatedAt).toLocaleString('ko-KR')}</span><span>조회 {views.toLocaleString()}</span></div></div>
         </header>
 
@@ -131,7 +131,7 @@ export default function KeywordPage({content,trend,related,previous,next,initial
 
         {relatedNews.length>0&&<section className="sources-section related-news-section"><p className="eyebrow">연관 뉴스</p>{relatedNews.map((item,index)=><a key={index} href={item.link||item.url} target="_blank" rel="noopener noreferrer" onClick={()=>fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'related_news_click',slug:content.slug})}).catch(()=>{})}><strong>{item.displayTitle||item.title||item.label||`${content.topKeyword||content.keyword} 관련 보도`}</strong><span>{item.source}{(item.date||item.publishedAt)?` · ${item.date||new Date(item.publishedAt).toLocaleDateString('ko-KR')}`:''} · 기사 보기</span></a>)}</section>}
 
-        {videos.length>0&&<section className="youtube-section"><p className="eyebrow">관련 영상</p><div className="youtube-grid">{videos.map(video=><a key={video.id} className="youtube-card" href={video.url||`https://www.youtube.com/watch?v=${video.id}`} target="_blank" rel="noopener noreferrer" onClick={()=>fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'youtube_click',slug:content.slug})}).catch(()=>{})}><div className="youtube-thumb">{video.thumbnail?<img src={video.thumbnail} alt={video.title} loading="lazy"/>:<span>▶</span>}<i>▶</i></div><div className="youtube-copy"><strong>{video.title}</strong><span>{video.channel||'YouTube'}{video.publishedAt?` · ${new Date(video.publishedAt).toLocaleDateString('ko-KR')}`:''}</span></div></a>)}</div></section>}
+        {videos.length>0&&<section className="youtube-section"><p className="eyebrow">관련 영상</p><div className="youtube-grid">{videos.map(video=><a key={video.id} className="youtube-card" href={video.url||`https://www.youtube.com/watch?v=${video.id}`} target="_blank" rel="noopener noreferrer" onClick={()=>fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'youtube_click',slug:content.slug})}).catch(()=>{})}><div className="youtube-thumb youtube-thumb-safe"><span aria-hidden="true">▶</span></div><div className="youtube-copy"><strong>{video.title}</strong><span>{video.channel||'YouTube'}{video.publishedAt?` · ${new Date(video.publishedAt).toLocaleDateString('ko-KR')}`:''}</span></div></a>)}</div></section>}
 
 
         {evidence.length>0&&<section className="sources-section compact-sources"><p className="eyebrow">자료 출처</p>{evidence.slice(0,8).map((item,index)=><a key={index} href={item.link||item.url} target="_blank" rel="noopener noreferrer" onClick={()=>fetch('/api/event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'source_click',slug:content.slug})}).catch(()=>{})}><strong>{item.title||item.label||'자료 보기'}</strong><span>{item.source} · {sourceTypeLabel(item.sourceType)}{(item.date||item.publishedAt)?` · ${item.date||new Date(item.publishedAt).toLocaleDateString('ko-KR')}`:''}</span></a>)}</section>}

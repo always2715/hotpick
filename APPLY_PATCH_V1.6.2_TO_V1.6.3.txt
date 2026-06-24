@@ -1,0 +1,20 @@
+SECUFOCUS NOW v1.6.2 -> v1.6.3 PATCH APPLY
+============================================================
+1. Stop any currently exited/failed backfill console; no DB reset is needed.
+2. Extract the patch ZIP.
+3. Copy all extracted files into the repository root and overwrite.
+4. Commit: v1.6.3 handle Supabase Cloudflare WAF during NVD enrichment
+5. Push origin.
+6. Wait for Vercel Production Ready.
+7. Run:
+
+.\scripts\backfill-nvd-details.ps1 `
+  -BaseUrl "https://secufocus-now-web.vercel.app" `
+  -Batch 1 `
+  -MaxRounds 300 `
+  -MaxTransportRetries 5 `
+  -RequestTimeoutSec 180
+
+A WAF fallback or Partial count is acceptable when Enriched increases and Remaining decreases.
+No SQL migration and no new environment variables are required.
+============================================================
