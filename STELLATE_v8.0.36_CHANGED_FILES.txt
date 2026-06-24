@@ -1,12 +1,12 @@
-STELLATE v8.0.36 REPLACE-ONLY FILE LIST
+STELLATE v8.0.36 CHANGED FILES
 ======================================================================
 
-Changed files: 42
-New files: 5
-Delete files: 1
+Changed: 42
+New: 5
+Deleted: 1
 
-COPY/OVERWRITE
---------------
+CHANGED
+-------
 README.md
 lib/api.js
 lib/editorialContent.js
@@ -49,12 +49,15 @@ tests/v805-top30-instagram.test.mjs
 tests/v806-auto-publication.test.mjs
 tests/v808-naver-discovery.test.mjs
 tests/v809-resumable-refresh.test.mjs
+
+NEW
+---
 README_v8.0.36.md
 STELLATE_PROJECT_HANDOFF_v8.0.36.txt
 STELLATE_v8.0.36_CHANGED_FILES.txt
 STELLATE_v8.0.36_TEST_REPORT.txt
 tests/v8036-top25-successful-top20-precision.test.mjs
 
-DELETE
-------
+DELETED
+-------
 STELLATE_PROJECT_HANDOFF_v8.0.35.txt

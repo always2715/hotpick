@@ -1,3 +1,1 @@
-다음 과거 통합 인수인계 파일을 기존 hotpick 폴더에서 삭제하세요.
-
-STELLATE_PROJECT_HANDOFF_v8.0.34.txt
+STELLATE_PROJECT_HANDOFF_v8.0.35.txt

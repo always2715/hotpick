@@ -23,9 +23,9 @@ for(let i=0;i<6;i++)candidates.push({keyword:`후속 ${i}`,topKeyword:`후속 ${
 for(let i=0;i<4;i++)candidates.push({keyword:`관심 ${i}`,topKeyword:`관심 ${i}`,topTopic:'',candidateType:'interest',causeStatus:'unconfirmed',rankingScore:50-i,category:'trend',rankingComponents:{search:8,newsVelocity:0},eventSignatures:[`interest-${i}`]});
 for(let i=0;i<5;i++)candidates.push({keyword:`유지 ${i}`,topKeyword:`유지 ${i}`,topTopic:'',candidateType:'interest',causeStatus:'unconfirmed',previousSeed:true,previousRank:20+i,rankingScore:10-i,category:'general',rankingComponents:{search:0,newsVelocity:0},eventSignatures:[`maintained-${i}`]});
 const selected=selectStableTop30(candidates);
-assert.equal(selected.rows.length,20);
-assert.equal(selected.diagnostics.finalTopCount,20);
-assert.ok(['base','expanded','disabled'].includes(selected.diagnostics.categoryCapPhase),'카테고리 상한을 적용하되 TOP20 완성을 우선해야 합니다.');
+assert.equal(selected.rows.length,25);
+assert.equal(selected.diagnostics.finalTopCount,25);
+assert.ok(['base','expanded','disabled'].includes(selected.diagnostics.categoryCapPhase),'카테고리 상한을 적용하되 TOP25 생성 후보 풀 완성을 우선해야 합니다.');
 
 const d=buildTrendBrief({topicTitle:'원인 미확인 키워드',category:{label:'일반'},trendMeta:{keyword:'원인 미확인 키워드',category:'general'},newsBundle:{relatedNews:[],relatedContent:[],maxAgeHours:36}});
 assert.equal(d.contentGrade,'D');

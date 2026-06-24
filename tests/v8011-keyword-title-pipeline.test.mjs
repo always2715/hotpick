@@ -59,8 +59,9 @@ const sportsTitle=derivePostResearchTitle(
   {detailContent:'손흥민의 소속팀은 경기 결과에 따라 결승 진출을 확정했습니다. 공식 일정도 확인됐습니다.'},
 );
 assert.equal(sportsTitle.topKeyword,'손흥민');
-assert.equal(sportsTitle.topTitle,'손흥민 · 결승 진출 확정');
-assert.equal(sportsTitle.titleSource,'ai_after_detail');
+assert.equal(sportsTitle.topTitle,'손흥민 · 소속팀 결승 진출');
+assert.equal(sportsTitle.titleSource,'fact_ledger_fallback');
+assert.deepEqual(sportsTitle.titleEvidenceFactIds,['F1']);
 
 const outageLedger={
   facts:[{id:'F1',text:'카카오톡 서비스가 장애 복구 후 정상화됐다.',subject:'카카오톡',status:'confirmed',sourceIds:['S1','S2']}],

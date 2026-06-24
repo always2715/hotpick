@@ -82,9 +82,9 @@ assert.match(refreshSource,/throw new TrendRefreshError\('trend_step_lock_busy'/
 assert.doesNotMatch(refreshSource,/stepAlreadyRunning:true/,'lock 충돌을 200 성공으로 반환하던 실패 유발 경로가 없어야 합니다.');
 assert.match(refreshSource,/snapshot_preflight_verified/,'task 상태와 무관하게 저장된 실행 원본을 먼저 확인해야 합니다.');
 assert.match(refreshSource,/MAX_AUTOMATIC_ATTEMPTS = Math\.min\(3/,'자동 시도는 최대 3회로 제한해야 합니다.');
-assert.match(jobsSource,/update-trends-v835/,'이전 QStash dedupe key와 분리해야 합니다.');
-assert.match(versionSource,/contentVersion:\s*(?:130|131)/);
-assert.match(versionSource,/trendCacheVersion:\s*50/);
+assert.match(jobsSource,/update-trends-v836/,'이전 QStash dedupe key와 분리해야 합니다.');
+assert.match(versionSource,/contentVersion:\s*132/);
+assert.match(versionSource,/trendCacheVersion:\s*51/);
 assert.match(versionSource,/publicTopCount:\s*20/);
 
 console.log('STELLATE v8.0.33 root-cause refresh tests: PASS');

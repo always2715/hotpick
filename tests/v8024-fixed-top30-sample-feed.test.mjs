@@ -22,7 +22,7 @@ assert.equal(card.infoLine,'박서진에 대한 정보');
 assert.equal(card.summaryLabel,'요약 정보');
 assert.equal(card.pointsLabel,'주요 내용');
 assert.equal(card.ctaLabel,'상세 정보 피드 보기');
-assert.equal(card.source,'feed_summary_v5_editorial');
+assert.equal(card.source,'feed_summary_v6_precise_editorial');
 assert.ok(card.summaryParagraphs.length>=1&&card.summaryParagraphs.length<=2);
 assert.match(card.summary,/전국투어|예매/);
 assert.ok(card.points.length>=3&&card.points.length<=5);
@@ -31,40 +31,40 @@ assert.doesNotMatch(card.points.join(' '),/방송과 공연 무대를 통해 이
 assert.doesNotMatch(card.points.join(' '),/확인할 수$/);
 
 const job=fs.readFileSync(new URL('../lib/trendRefreshJob.js',import.meta.url),'utf8');
-assert.match(job,/prepareSelectedTopCandidates\(\(prepared\.trends \|\| \[\]\)\.slice\(0, TARGET_TOP_COUNT\),runId,TARGET_TOP_COUNT\)/);
+assert.match(job,/prepareSelectedTopCandidates\(\(prepared\.trends \|\| \[\]\)\.slice\(0, RESEARCH_POOL_LIMIT\),runId,RESEARCH_POOL_LIMIT\)/);
 assert.doesNotMatch(job,/prepared\.researchPool/);
 assert.doesNotMatch(job,/TOP_RESEARCH_CANDIDATE_LIMIT/);
 assert.doesNotMatch(job,/status:\s*'skipped'/);
-assert.match(job,/21위 이하 후보로 교체하지 않습니다/);
+assert.match(job,/다음 순위 성공 후보가 자동 승격됩니다/);
 assert.match(job,/TOP_POLICY_VERSION/);
 
 const api=fs.readFileSync(new URL('../lib/api.js',import.meta.url),'utf8');
 assert.match(api,/첫 번째는 ‘박서진은 어떤 가수인가’/);
 assert.match(api,/실제 요약정보 카드는 전체 피드 작성 후/);
-assert.match(api,/CONTENT_VERSION = 131/);
-assert.match(api,/TREND_CACHE_VERSION = 50/);
+assert.match(api,/CONTENT_VERSION = 132/);
+assert.match(api,/TREND_CACHE_VERSION = 51/);
 
 const preview=fs.readFileSync(new URL('../pages/[slug].js',import.meta.url),'utf8');
 assert.match(preview,/summaryParagraphs/);
 assert.match(preview,/상세 정보 피드 보기/);
 
 const admin=fs.readFileSync(new URL('../pages/admin.js',import.meta.url),'utf8');
-assert.match(admin,/TOP 키워드 20개 선확정/);
-assert.match(admin,/21위 이하 후보 교체 없음/);
+assert.match(admin,/상대순위 상위 25개를 생성 후보로 고정/);
+assert.match(admin,/성공 후보 상위 20개 공개/);
 assert.match(admin,/재시도 대기 \{run\.retryWait\|\|0\}/);
 assert.doesNotMatch(admin,/<p>전체 \{total\}.*후순위 생략/);
 
 
 const adminAction=fs.readFileSync(new URL('../pages/api/admin-action.js',import.meta.url),'utf8');
 assert.match(adminAction,/needsFixedTop20Migration/);
-assert.match(adminAction,/candidates\.length!==PUBLIC_TOP_COUNT/);
-assert.match(adminAction,/candidate\?\.fixedTop20!==true/);
+assert.match(adminAction,/candidates\.length!==TOP_GENERATION_POOL_COUNT/);
+assert.match(adminAction,/candidate\?\.fixedTop25Pool!==true/);
 assert.match(adminAction,/manual_explicit_retry/);
 assert.match(adminAction,/retryableCount/);
 
 const version=fs.readFileSync(new URL('../pages/api/version.js',import.meta.url),'utf8');
-assert.match(version,/contentVersion:131/);
-assert.match(version,/trendCacheVersion:50/);
+assert.match(version,/contentVersion:132/);
+assert.match(version,/trendCacheVersion:51/);
 assert.match(version,/fixed-keyword-content-stop-control-v8025/);
-assert.match(version,/fixed_keyword_content_v16_top20/);
+assert.match(version,/ranked_candidate_pool_v17_top20_from25/);
 console.log('STELLATE v8.0.31 fixed TOP20 and sample-aligned feed compatibility tests: PASS');

@@ -49,9 +49,9 @@ assert.match(admin,/현재 TOP 피드 목록 재구성/);
 assert.match(admin,/원본에서 피드 목록·최신순·게시번호·조회수·카테고리 인덱스를 강제로 다시 만듭니다/);
 
 const version=fs.readFileSync(new URL('../pages/api/version.js',import.meta.url),'utf8');
-assert.match(version,/contentVersion:131/);
-assert.match(version,/trendCacheVersion:50/);
+assert.match(version,/contentVersion:132/);
+assert.match(version,/trendCacheVersion:51/);
 assert.match(version,/fixed-keyword-content-stop-control-v8025/);
-assert.match(version,/source-of-truth-force-rebuild-with-schema-validation/);
+assert.match(version,/published-content-source-of-truth-and-index-rebuild-v8030-plus-canonical-run-snapshot-alias-v8036/);
 
 console.log('STELLATE v8.0.23 feed index source rebuild tests: PASS');

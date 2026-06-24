@@ -1,26 +1,26 @@
-STELLATE v8.0.35 GitHub Desktop 교체파일
-================================================
+STELLATE v8.0.36 GitHub Desktop 교체파일
+============================================
 
-이 폴더 안의 파일과 폴더 전체를 기존 hotpick 저장소 최상위에 복사해 덮어쓰세요.
+이 폴더 안의 파일과 폴더 전체를 기존 hotpick 저장소 최상위에 복사해 덮어씁니다.
 
 적용 순서
 1. GitHub Desktop에서 hotpick 선택
 2. Fetch origin, 필요 시 Pull origin
 3. Repository > Show in Explorer
-4. 이 폴더 안의 항목 전체를 기존 hotpick 루트에 복사
-5. Windows에서 대상 폴더의 파일 덮어쓰기 선택
-6. DELETE_OLD_FILES.txt에 적힌 과거 파일 삭제
+4. 이 폴더 안의 항목 전체 복사
+5. 기존 hotpick 루트에 붙여넣고 대상 파일 덮어쓰기
+6. DELETE_OLD_FILES.txt에 적힌 파일 삭제
 7. GitHub Desktop Changes 확인
-8. node_modules, .next, .env, .env.local, .vercel이 없음을 확인
+8. node_modules, .next, .env, .env.local, .vercel이 Changes에 없는지 확인
 9. Commit to main
 10. Push origin
-11. Vercel 배포 후 /api/version에서 8.0.35 / 131 확인
-12. 기존 실행을 중단하고 새 TOP20 실행 또는 개별 콘텐츠 재생성
+11. Vercel /api/version에서 8.0.36 확인
+12. 이전 실행 중단 후 새 TOP 작업 시작
 
-커밋 예시
-feat: STELLATE v8.0.35 editorial product quality
+커밋 예: feat: STELLATE v8.0.36 top25 pool and precise content
 
 중요
-- .git 폴더를 삭제하거나 교체하지 마세요.
-- 기존 공개 콘텐츠는 배포만으로 바뀌지 않습니다. 새 생성이 필요합니다.
-- STELLATE_PROJECT_HANDOFF_v8.0.35.txt가 최신 단일 인수인계 기준입니다.
+- .git 폴더를 삭제하거나 교체하지 않습니다.
+- 교체 폴더 자체를 hotpick 아래에 중첩해서 넣지 않습니다.
+- 기존 v8.0.35 전체 소스 기준 교체 패키지입니다.
+- ZIP 안의 STELLATE_PROJECT_HANDOFF_v8.0.36.txt가 최신 통합 기준입니다.

@@ -1,21 +1,21 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { PUBLIC_TOP_COUNT, TOP_POLICY_VERSION } from '../lib/topConfig.js';
+import { PUBLIC_TOP_COUNT, TOP_GENERATION_POOL_COUNT, TOP_POLICY_VERSION } from '../lib/topConfig.js';
 import { prepareSelectedTopCandidates } from '../lib/candidateIdentity.js';
 import { selectStableTop30 } from '../lib/top30Selection.js';
 import { sanitizeFactLedgerForPublication, isGenericFactText } from '../lib/contentAccuracy.js';
 import { publicContentRejectionReasons } from '../lib/publicationPolicy.js';
 
 assert.equal(PUBLIC_TOP_COUNT,20,'공개 TOP 수는 20이어야 합니다.');
-assert.equal(TOP_POLICY_VERSION,'fixed_keyword_content_v16_top20');
+assert.equal(TOP_POLICY_VERSION,'ranked_candidate_pool_v17_top20_from25');
 
 const selected=prepareSelectedTopCandidates(
   Array.from({length:25},(_,index)=>({slug:`topic-${index+1}`,keyword:`키워드 ${index+1}`,displayTitle:`키워드 ${index+1}`})),
   'run-v8031',
-  PUBLIC_TOP_COUNT,
+  TOP_GENERATION_POOL_COUNT,
 );
-assert.equal(selected.length,20,'후보 확정은 정확히 TOP20이어야 합니다.');
-assert.equal(new Set(selected.map(row=>row.candidateId)).size,20,'TOP20 candidateId가 고유해야 합니다.');
+assert.equal(selected.length,25,'생성 후보 확정은 정확히 TOP25여야 합니다.');
+assert.equal(new Set(selected.map(row=>row.candidateId)).size,25,'TOP25 candidateId가 고유해야 합니다.');
 assert.ok(selected.every(row=>row.publicationStageId.startsWith('run-v8031:')),'실행별 stage id를 생성해야 합니다.');
 
 const stableSelection=selectStableTop30(Array.from({length:25},(_,index)=>({
@@ -24,8 +24,8 @@ const stableSelection=selectStableTop30(Array.from({length:25},(_,index)=>({
   independentSources:2,officialSources:1,interestSignals:['search','news'],rankingComponents:{search:12,newsVelocity:8},
   category:index%2?'tech':'entertainment',eventSignatures:[`event-${index+1}`],
 })));
-assert.equal(stableSelection.rows.length,20,'선정 함수의 기본값도 TOP20이어야 합니다.');
-assert.equal(stableSelection.diagnostics.target,20);
+assert.equal(stableSelection.rows.length,25,'선정 함수의 기본값은 TOP25 생성 후보 풀이어야 합니다.');
+assert.equal(stableSelection.diagnostics.target,25);
 
 const ledger={
   sources:[{id:'S1',url:'https://example.com/report',sourceType:'official'}],
@@ -72,11 +72,11 @@ assert.match(apiSource,/source_signature_unchanged/,'출처 지문이 같아 기
 assert.match(apiSource,/sanitizeFactLedgerForPublication/,'일반화 Fact 제거를 적용해야 합니다.');
 assert.match(apiSource,/\[\.\.\.directEvidence,\.\.\.ledgerEvidence\]/,'직접 출처가 일부 손상돼도 Ledger 출처를 함께 사용해야 합니다.');
 assert.match(kvSource,/trends\.length !== PUBLIC_TOP_COUNT/,'TOP 저장과 공개 수를 중앙 설정으로 검증해야 합니다.');
-assert.match(adminSource,/TOP 키워드 20개/,'관리자 안내가 TOP20이어야 합니다.');
+assert.match(adminSource,/성공 후보 상위 20개 공개|공개 목표 20/,'관리자 안내가 공개 TOP20이어야 합니다.');
 assert.doesNotMatch(adminSource,/TOP 키워드 30개|31위 이하 후보/,'관리자 화면에 TOP30 기준이 남으면 안 됩니다.');
 assert.match(adminActionSource,/needsFixedTop20Migration/,'이전 실행 재개를 차단해야 합니다.');
 assert.match(versionSource,/publicTopCount:20/);
-assert.match(versionSource,/contentVersion:131/);
-assert.match(versionSource,/trendCacheVersion:50/);
+assert.match(versionSource,/contentVersion:132/);
+assert.match(versionSource,/trendCacheVersion:51/);
 
 console.log('STELLATE v8.0.31 TOP20 and stage durability tests: PASS');

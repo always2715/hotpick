@@ -9,7 +9,7 @@ import {
 import { selectVisibleTrendPool } from '../lib/trendSelectionPolicy.js';
 import { assessTrendSetHealth } from '../lib/trendRefreshPolicy.js';
 
-assert.equal(TOP_TARGET_COUNT,20);
+assert.equal(TOP_TARGET_COUNT,25);
 assert.equal(TOP_RESEARCH_POOL_LIMIT,120);
 assert.equal(TOP_DISCOVERY_POOL_LIMIT,240);
 assert.equal(extractNewsDiscoveryKeyword('[속보] 삼성전자 신제품 공개 - 연합뉴스'),'삼성전자');
@@ -54,8 +54,8 @@ const statusSource=fs.readFileSync(new URL('../pages/api/admin/status.js',import
 assert.ok(statusSource.includes("cronMode:'external'"));
 const jobSource=fs.readFileSync(new URL('../lib/trendRefreshJob.js',import.meta.url),'utf8');
 assert.match(jobSource,/TARGET_TOP_COUNT\s*=\s*PUBLIC_TOP_COUNT/);
-assert.match(jobSource,/RESEARCH_POOL_LIMIT\s*=\s*PUBLIC_TOP_COUNT/);
-assert.ok(jobSource.includes("top20_fixed_content_incomplete"));
+assert.match(jobSource,/RESEARCH_POOL_LIMIT\s*=\s*TOP_GENERATION_POOL_COUNT/);
+assert.ok(jobSource.includes("top20_from25_content_incomplete"));
 assert.doesNotMatch(jobSource,/carryoverMigratedFrom|validCarryoverRows|combinePublicationRows/);
 
 console.log('v8.0.31 TOP20 and vertical Instagram compatibility tests passed');

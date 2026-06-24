@@ -9,7 +9,7 @@ import { CATEGORIES } from '../../lib/categories';
 import { requireAdmin } from '../../lib/adminAuth';
 import { enqueueTrendRefresh, enqueueTrendRefreshStep, enqueueMissingContentJobs, enqueueSelectedContentJobs, selectTopContentCandidates, createTrendRefreshRun } from '../../lib/jobs';
 import { executeTrendRefreshRun, MAX_CANDIDATE_ATTEMPTS } from '../../lib/trendRefreshJob';
-import { PUBLIC_TOP_COUNT } from '../../lib/topConfig';
+import { PUBLIC_TOP_COUNT, TOP_GENERATION_POOL_COUNT } from '../../lib/topConfig';
 
 export const config = { maxDuration: 300 };
 
@@ -142,9 +142,9 @@ export default async function handler(req, res) {
       const [candidates,tasks]=await Promise.all([getTrendRunCandidates(runId),getCronRunTasks(runId)]);
       if(!candidates.length)return res.status(409).json({error:'이 실행의 저장된 후보 목록이 없습니다. 새 TOP 갱신을 실행하세요.'});
       const needsIdentityMigration=candidates.some(candidate=>!candidate?.candidateId||!candidate?.publicationStageId);
-      const needsFixedTop20Migration=candidates.length!==PUBLIC_TOP_COUNT||candidates.some(candidate=>candidate?.fixedTop20!==true);
+      const needsFixedTop20Migration=candidates.length!==TOP_GENERATION_POOL_COUNT||candidates.some(candidate=>candidate?.fixedTop25Pool!==true);
       if(needsFixedTop20Migration){
-        return res.status(409).json({error:`이 실행은 이전 TOP${candidates.length} 기준 작업이라 TOP${PUBLIC_TOP_COUNT}으로 안전하게 재개할 수 없습니다. 기존 작업을 중단하고 새 TOP 갱신을 시작하세요.`,topCountMigrationRequired:true,currentCandidateCount:candidates.length,targetTopCount:PUBLIC_TOP_COUNT});
+        return res.status(409).json({error:`이 실행은 ${candidates.length}개 후보 기준 작업이라 25개 생성 후보 중 성공한 상위 20개 공개 정책으로 안전하게 재개할 수 없습니다. 기존 작업을 중단하고 새 TOP 갱신을 시작하세요.`,topCountMigrationRequired:true,currentCandidateCount:candidates.length,targetTopCount:PUBLIC_TOP_COUNT,generationPoolCount:TOP_GENERATION_POOL_COUNT});
       }
       const ready=tasks.filter(task=>['generated','reused'].includes(task.status)).length;
       let phase='start';

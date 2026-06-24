@@ -25,7 +25,7 @@ for(let i=0;i<34;i++)accurate.push({
 });
 accurate.push({keyword:'영상',topKeyword:'영상',topTopic:'',candidateType:'interest',causeStatus:'unconfirmed',rankingScore:100,keywordConfidence:10,eventCoherence:10,youtubeSupport:1,interestSignals:['youtube'],category:'general',eventSignatures:['weak-video']});
 const selection=selectStableTop30(accurate);
-assert.equal(selection.rows.length,20,'검출 정확도 보정을 적용해도 TOP20은 유지되어야 합니다.');
+assert.equal(selection.rows.length,25,'검출 정확도 보정을 적용해도 TOP25 생성 후보 풀은 유지되어야 합니다.');
 assert.equal(selection.rows.some(row=>row.topKeyword==='영상'),false,'개인 영상 하나뿐인 불완전 키워드는 충분한 정상 후보보다 앞서면 안 됩니다.');
 
 const blog=`피드에서 확인된 내용을 정리했습니다.\n\n## 아이폰 18을 이해하는 핵심\n아이폰 18은 애플의 차세대 스마트폰 제품군입니다.\n\n## 공개 일정이 구체화됐습니다\n공개 일정 관련 발표가 확인됐습니다. 가격은 아직 공식적으로 확인되지 않았습니다.\n\n## STELLATE 인사이트\n현재 핵심은 확인된 일정과 아직 확인되지 않은 가격 정보를 구분해서 보는 것입니다.`;
@@ -65,7 +65,7 @@ assert.match(api,/selected-v8017/);
 assert.match(api,/Upstash\/직전 정상 이미지 값을 지우지 않습니다/);
 assert.match(api,/feed_first_content/);
 assert.match(refresh,/TOP_POLICY_VERSION/);
-assert.match(version,/contentVersion:131/);
-assert.match(version,/trendCacheVersion:50/);
+assert.match(version,/contentVersion:132/);
+assert.match(version,/trendCacheVersion:51/);
 assert.match(version,/fixed-keyword-content-stop-control-v8025/);
 console.log('v8.0.17 compatibility tests passed under v8.0.20');
