@@ -1,13 +1,9 @@
-STELLATE v8.0.33 REPLACE-ONLY MANIFEST
+STELLATE v8.0.33 CHANGED FILES
 Baseline: v8.0.32
 Generated: 2026-06-24
 
-Replacement files: 37
+Changed files: 32
 README.md
-README_v8.0.33.md
-STELLATE_PROJECT_HANDOFF_v8.0.33.txt
-STELLATE_v8.0.33_CHANGED_FILES.txt
-STELLATE_v8.0.33_TEST_REPORT.txt
 lib/api.js
 lib/editorialTitle.js
 lib/jobs.js
@@ -36,10 +32,16 @@ tests/v8027-bounded-refresh-retry.test.mjs
 tests/v8030-stop-and-feed-recovery.test.mjs
 tests/v8031-top20-stage-durability.test.mjs
 tests/v8032-runtime-stage-identity.test.mjs
-tests/v8033-root-cause-refresh.test.mjs
 tests/v806-auto-publication.test.mjs
 tests/v808-naver-discovery.test.mjs
 tests/v809-resumable-refresh.test.mjs
 
-Manual deletions: 0
+New files: 5
+README_v8.0.33.md
+STELLATE_PROJECT_HANDOFF_v8.0.33.txt
+STELLATE_v8.0.33_CHANGED_FILES.txt
+STELLATE_v8.0.33_TEST_REPORT.txt
+tests/v8033-root-cause-refresh.test.mjs
+
+Deleted files: 0
 None

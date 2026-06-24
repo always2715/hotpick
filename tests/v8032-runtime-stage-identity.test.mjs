@@ -30,24 +30,24 @@ const content={
   slug:trend.slug,
   candidateId:trend.candidateId,
   publicationStageId:trend.publicationStageId,
-  contentVersion:128,
+  contentVersion:129,
   topKeyword:'HBM4',
   keyword:'HBM4',
   displayTitle:'HBM4',
 };
 
 assert.equal(
-  stageMatchesTrend(content,trend,runId,0,128),
+  stageMatchesTrend(content,trend,runId,0,129),
   true,
   '전체 검색어와 생성된 대표 키워드가 달라도 candidateId/publicationStageId가 같으면 동일 stage로 인정해야 합니다.',
 );
 
 const idlessSameSlug={...content,candidateId:'',publicationStageId:'',topKeyword:'HBM4'};
-assert.equal(stageMatchesTrend(idlessSameSlug,trend,runId,0,128),true,'레거시 콘텐츠도 같은 slug와 대표 키워드 포함 관계면 복구할 수 있어야 합니다.');
+assert.equal(stageMatchesTrend(idlessSameSlug,trend,runId,0,129),true,'레거시 콘텐츠도 같은 slug와 대표 키워드 포함 관계면 복구할 수 있어야 합니다.');
 
 const unrelated={...content,candidateId:'r99-other',publicationStageId:'other-run:r99-other',slug:'other-topic',topKeyword:'다른 키워드'};
-assert.equal(stageMatchesTrend(unrelated,trend,runId,0,128),false,'식별자와 slug가 모두 다른 콘텐츠는 거부해야 합니다.');
-assert.equal(stageMatchesTrend({...content,contentVersion:127},trend,runId,0,128),false,'이전 콘텐츠 버전은 재사용하면 안 됩니다.');
+assert.equal(stageMatchesTrend(unrelated,trend,runId,0,129),false,'식별자와 slug가 모두 다른 콘텐츠는 거부해야 합니다.');
+assert.equal(stageMatchesTrend({...content,contentVersion:128},trend,runId,0,129),false,'이전 콘텐츠 버전은 재사용하면 안 됩니다.');
 
 const redis=new MemoryRedis();
 const stageKey=`stellate:v7:publication_stage:${trend.publicationStageId}`;
@@ -68,4 +68,4 @@ const healed=await writeDualRunSnapshot(redis,{stageKey,snapshotKey,candidateId:
 assert.equal(healed.verified,true);
 assert.equal(JSON.parse(await redis.hget(snapshotKey,trend.candidateId)).slug,trend.slug,'한쪽 저장소만 남은 경우 다른 쪽을 복구해야 합니다.');
 
-console.log('STELLATE v8.0.32 runtime identity and dual snapshot tests: PASS');
+console.log('STELLATE v8.0.32 compatibility identity and dual snapshot tests: PASS');

@@ -45,8 +45,8 @@ assert.match(feedDetail,/연관 뉴스/);
 assert.match(feedDetail,/관련 영상/);
 
 const version=fs.readFileSync(new URL('../pages/api/version.js',import.meta.url),'utf8');
-assert.match(version,/contentVersion:128/);
-assert.match(version,/trendCacheVersion:48/);
+assert.match(version,/contentVersion:129/);
+assert.match(version,/trendCacheVersion:49/);
 assert.match(version,/fixed-keyword-content-stop-control-v8025/);
 assert.match(version,/hide-research-window-phrases/);
 assert.match(version,/cover-feed-sections-insight-promo/);

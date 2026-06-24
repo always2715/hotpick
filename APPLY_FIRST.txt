@@ -1,31 +1,33 @@
-STELLATE v8.0.32 GitHub Desktop 교체파일
-================================================
+STELLATE v8.0.33 GitHub Desktop 교체파일 적용 안내
+======================================================
 
-적용 대상: 기존 STELLATE v8.0.31 hotpick 저장소
+기준 소스: STELLATE v8.0.32
+적용 결과: STELLATE v8.0.33
 
-1. GitHub Desktop에서 hotpick 저장소 선택
-2. Repository > Show in Explorer
-3. 이 폴더 안의 파일과 폴더를 모두 선택
-4. 기존 hotpick 최상위 폴더에 붙여넣기
-5. Windows 확인창에서 대상 폴더의 파일 덮어쓰기 선택
-6. GitHub Desktop Changes 확인
-7. Commit to main
-8. Push origin
-9. Vercel 배포 완료 후 /api/version 확인
-
-정상 버전:
-- appVersion 8.0.32
-- contentVersion 128
-- trendCacheVersion 48
-- publicTopCount 20
+1. GitHub Desktop에서 hotpick 저장소를 선택합니다.
+2. Fetch origin을 누르고 Pull origin이 나오면 먼저 실행합니다.
+3. Repository > Show in Explorer를 누릅니다.
+4. 이 폴더(STELLATE_v8.0.33_REPLACE_ONLY) 안의 파일과 폴더 전체를 선택합니다.
+5. 기존 hotpick 저장소 최상위 폴더에 붙여넣습니다.
+6. Windows에서 '대상 폴더의 파일 덮어쓰기'를 선택합니다.
+7. GitHub Desktop Changes에서 변경 파일을 확인합니다.
+8. node_modules, .next, .env, .env.local, .vercel이 보이면 커밋하지 않습니다.
+9. Commit message 예:
+   fix: STELLATE v8.0.33 root QStash retry and candidate identity
+10. Commit to main > Push origin
+11. Vercel 배포 완료 후 /api/version에서 다음 값을 확인합니다.
+   appVersion=8.0.33
+   contentVersion=129
+   trendCacheVersion=49
+   publicTopCount=20
+12. 관리자에서 기존 실패 실행을 즉시 중단합니다.
+13. 이전 실행은 재개하지 말고 새 TOP20 작업을 시작합니다.
 
 중요:
 - .git 폴더를 삭제하거나 교체하지 마세요.
-- node_modules, .next, .env.local, .vercel은 복사하거나 커밋하지 마세요.
-- 기존 실패 실행은 재개하지 말고 관리자에서 즉시 중단한 뒤 새 TOP20 작업을 시작하세요.
-- 이번 교체본은 v8.0.31 기준입니다. 더 오래된 버전에는 전체본을 적용하세요.
+- 교체폴더 자체를 hotpick 아래에 통째로 넣지 마세요.
+- package.json은 hotpick/package.json 위치에 있어야 합니다.
+- STELLATE_PROJECT_HANDOFF_v8.0.33.txt를 새 채팅 인수인계 기준으로 사용하세요.
 
-권장 확인:
-npm install
-npm run test:v8032
-npm run build
+삭제해야 할 파일:
+없음

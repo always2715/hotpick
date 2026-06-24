@@ -62,7 +62,7 @@ const detailPage=fs.readFileSync(new URL('../pages/feed/[slug].js',import.meta.u
 assert.match(detailPage,/const relatedNews=dedupeSources\(Array\.isArray\(content\.relatedNews\)\?content\.relatedNews:\[\]\)\.slice\(0,3\)/);
 assert.match(detailPage,/item\.displayTitle\|\|item\.title\|\|item\.label/);
 const version=fs.readFileSync(new URL('../pages/api/version.js',import.meta.url),'utf8');
-assert.match(version,/contentVersion:128/);
-assert.match(version,/trendCacheVersion:48/);
+assert.match(version,/contentVersion:129/);
+assert.match(version,/trendCacheVersion:49/);
 assert.match(version,/fixed-keyword-content-stop-control-v8025/);
 console.log('v8.0.12 post-research title compatibility tests passed');

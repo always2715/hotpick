@@ -36,8 +36,8 @@ assert.equal(isFixedKeywordFeedReady(content),true,JSON.stringify(fixedKeywordFe
 const job=fs.readFileSync(new URL('../lib/trendRefreshJob.js',import.meta.url),'utf8');
 const processBlock=job.slice(job.indexOf('async function processTrendCandidate'),job.indexOf('export async function startTrendRefreshRun'));
 assert.match(job,/TOP_KEYWORD_MAX_ATTEMPTS\|\|3/);
-assert.match(job,/TOP_REFRESH_MAX_STEPS\|\|18/);
-assert.match(job,/TOP_REFRESH_MAX_MINUTES\|\|60/);
+assert.match(job,/TOP_REFRESH_MAX_STEPS\|\|72/);
+assert.match(job,/TOP_REFRESH_MAX_MINUTES\|\|120/);
 assert.match(job,/trend_refresh_cancelled/);
 assert.match(job,/trend_refresh_step_limit/);
 assert.match(job,/trend_refresh_time_limit/);
@@ -71,12 +71,12 @@ assert.match(admin,/추가 검색/);
 assert.doesNotMatch(admin,/검토기준 미충족/);
 
 const version=fs.readFileSync(new URL('../pages/api/version.js',import.meta.url),'utf8');
-assert.match(version,/contentVersion:128/);
-assert.match(version,/trendCacheVersion:48/);
+assert.match(version,/contentVersion:129/);
+assert.match(version,/trendCacheVersion:49/);
 assert.match(version,/fixed-keyword-content-stop-control-v8025/);
 assert.match(version,/fixed_keyword_content_v16_top20/);
 assert.match(version,/maxKeywordAttempts:3/);
-assert.match(version,/maxRunSteps:18/);
-assert.match(version,/maxRunMinutes:60/);
+assert.match(version,/maxRunSteps:72/);
+assert.match(version,/maxRunMinutes:120/);
 
 console.log('STELLATE v8.0.25 fixed keyword content and stop control tests: PASS');
