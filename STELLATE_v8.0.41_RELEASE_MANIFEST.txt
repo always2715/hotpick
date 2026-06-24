@@ -1,0 +1,13 @@
+STELLATE v8.0.41 release manifest
+
+App version: 8.0.41
+Content version: 133
+Trend cache version: 52
+Primary fix: Windows CMD-safe ASCII CRLF cleanup BAT
+TOP policy: unchanged, fixed TOP25 pool and successful TOP20 publication
+Feed policy: unchanged, non-destructive recovery
+Thumbnail policy: unchanged, curated Unsplash pool
+
+Full regression suite: PASS
+Production compile: PASS
+Runtime /api/version: HTTP 200

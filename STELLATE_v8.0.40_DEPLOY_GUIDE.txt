@@ -1,0 +1,27 @@
+STELLATE v8.0.40 배포·정리 순서
+
+1. GitHub Desktop에서 hotpick 저장소를 선택합니다.
+2. Repository → Show in Explorer를 엽니다.
+3. STELLATE_v8.0.40_REPLACE_ONLY.zip을 별도 폴더에 압축 해제합니다.
+4. 압축 해제 폴더 안의 파일·폴더 전체를 hotpick 최상위에 덮어씁니다.
+5. hotpick 최상위의 APPLY_STELLATE_v8.0.40_CLEANUP.bat을 실행합니다.
+6. GitHub Desktop Changes에서 다음 삭제가 표시되는지 확인합니다.
+   - app/ 디렉터리 전체
+   - .next/ 디렉터리 전체(추적돼 있던 경우)
+   - 시큐포커스 전용 NVD/KISA/Supabase 파일
+7. 변경과 삭제를 모두 커밋합니다.
+   권장 메시지: fix: remove foreign app router package and deploy v8.0.40
+8. Push origin을 실행합니다.
+9. Vercel 로그에서 다음 순서를 확인합니다.
+   - npm ci
+   - [STELLATE cleanup] 메시지
+   - npm run build
+   - Compiled successfully
+10. /api/version에서 appVersion 8.0.40을 확인합니다.
+
+중요
+- 단순 덮어쓰기만 하면 Git에 이미 존재하는 app/ 파일은 삭제되지 않습니다.
+- 반드시 CLEANUP BAT 실행 또는 app/ 수동 삭제 후 삭제 변경까지 커밋해야 합니다.
+- v8.0.40은 preinstall에서도 app/을 자동 제거하므로, app/ 삭제 커밋을 놓쳐도 Vercel 빌드는 방어적으로 진행됩니다. 다만 .next 경고를 없애려면 로컬 삭제 변경을 반드시 커밋해야 합니다.
+- .git, .env, .env.local, .vercel은 삭제하거나 덮어쓰지 않습니다.
+- Redis FLUSHALL, 기존 TOP 삭제, 피드 초기화는 필요하지 않습니다.

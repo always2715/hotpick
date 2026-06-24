@@ -1,0 +1,37 @@
+STELLATE v8.0.41 test report
+Date: 2026-06-24
+
+1. Windows BAT encoding validation: PASS
+- ASCII-only bytes: PASS
+- UTF-8 BOM absent: PASS
+- CRLF-only line endings: PASS
+- Required direct CMD delete commands: PASS
+- Old v8.0.40 BAT removal command: PASS
+
+2. Cleanup regression: PASS
+- Foreign app/ removal: PASS
+- src/app removal policy: PASS
+- NVD/KISA/Supabase foreign module removal: PASS
+- Vercel preinstall keeps restored .next cache while removing foreign app/: PASS
+
+3. Full regression suite
+- npm run test:v8: PASS
+- TOP25 generation pool and successful TOP20 publication: PASS
+- v8.0.37-v8.0.41 compatible run resume: PASS
+- Non-destructive feed recovery: PASS
+- Curated Unsplash 100-image pool: PASS
+
+4. Production build
+- Next.js 14.2.35 compiled successfully: PASS
+- Static pages 2/2 generated: PASS
+- Pages Router and API route table generated: PASS
+
+5. Runtime smoke test
+- next start -p 3210: PASS
+- /api/version HTTP 200: PASS
+- appVersion 8.0.41: PASS
+- contentVersion 133: PASS
+- trendCacheVersion 52: PASS
+
+Operational limitation:
+- Production Upstash Redis/QStash credentials were not available, so live TOP execution and production feed data were not modified or tested.

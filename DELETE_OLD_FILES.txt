@@ -1,8 +1,30 @@
-배포 후 저장소 루트에서 다음 구버전 최신 문서만 삭제해도 됩니다.
-코드 동작에는 영향이 없으며, 버전별 기록을 남기려면 삭제하지 않아도 됩니다.
+반드시 삭제 후 GitHub Desktop에서 삭제 변경까지 커밋할 항목
 
-STELLATE_PROJECT_HANDOFF_v8.0.38.txt
+app/
+.next/
+next-env.d.ts
+middleware.ts
+middleware.js
+lib/cron-auth.ts
+lib/cron-auth.js
+lib/kisa-rss.ts
+lib/kisa-rss.js
+lib/nvd-enrichment.ts
+lib/nvd-enrichment.js
+lib/nvd-cve.ts
+lib/nvd-cve.js
+lib/supabase-admin.ts
+lib/supabase-admin.js
+scripts/backfill-nvd-details.ps1
+
+가장 쉬운 방법:
+저장소 최상위에서 APPLY_STELLATE_v8.0.40_CLEANUP.bat 실행
 
 주의:
-- README_v8.0.38.md와 STELLATE_THUMBNAIL_POOL_POLICY_v8.0.38.txt는 버전 이력 및 썸네일 정책 원본이므로 유지 권장
-- node_modules, .next, .env, .env.local, .vercel은 ZIP에 포함하지 않았으며 Git에 커밋하지 않음
+STELLATE는 pages/ 기반 Pages Router 프로젝트입니다. app/은 STELLATE 소스가 아닙니다.
+README_v8.0.40.md
+STELLATE_PROJECT_HANDOFF_v8.0.40.txt
+STELLATE_v8.0.40_CHANGED_FILES.txt
+STELLATE_v8.0.40_DEPLOY_GUIDE.txt
+STELLATE_v8.0.40_RELEASE_MANIFEST.txt
+STELLATE_v8.0.40_TEST_REPORT.txt

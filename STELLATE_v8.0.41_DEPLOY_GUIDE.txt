@@ -1,0 +1,14 @@
+STELLATE v8.0.41 Windows cleanup and deployment guide
+
+1. Extract STELLATE_v8.0.41_REPLACE_ONLY.zip to a separate folder.
+2. Copy all extracted files into the hotpick repository root and overwrite existing files.
+3. Run APPLY_STELLATE_v8.0.41_CLEANUP.bat from the hotpick repository root.
+4. The final lines must show:
+   Cleanup completed.
+   Commit the deleted app and .next files in GitHub Desktop, then push.
+5. In GitHub Desktop, include deleted app/, .next/, and foreign files in the commit.
+6. Commit message example: fix: use ASCII Windows cleanup and deploy v8.0.41
+7. Push origin and wait for Vercel deployment.
+8. Confirm /api/version returns appVersion 8.0.41.
+
+Do not run Redis FLUSHALL. Do not delete existing public TOP or feed data.
