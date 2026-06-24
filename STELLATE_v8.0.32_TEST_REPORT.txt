@@ -1,0 +1,51 @@
+STELLATE v8.0.32 TEST REPORT
+================================
+
+Version
+- appVersion: 8.0.32
+- contentVersion: 128
+- trendCacheVersion: 48
+- publicTopCount: 20
+
+Root cause reproduced
+- Candidate query: HBM4 출하 4개월만
+- Generated representative keyword: HBM4
+- v8.0.31 behavior: exact keyword mismatch could reject an existing stage
+- v8.0.32 behavior: same candidateId/publicationStageId is accepted
+
+Runtime-oriented test
+- Command: npm run test:v8032
+- Result: PASS
+- Verifies candidate identity matching
+- Verifies unrelated candidate rejection
+- Verifies old contentVersion rejection
+- Verifies publication stage + durable run snapshot dual write
+- Verifies run snapshot remains when stage key is deleted
+- Uses in-memory Redis implementation, not production Upstash
+
+Regression suite
+- Command: npm run test:v8
+- Result: PASS
+
+Production build
+- Command: NEXT_TELEMETRY_DISABLED=1 npm run build
+- Result: PASS
+- Next.js 14.2.35 compiled successfully
+- Static pages generated successfully
+- Build traces completed
+
+Local production smoke test
+- Command: npm run start -- -p 3112
+- GET /api/version: 200
+- Response appVersion: 8.0.32
+- Response contentVersion: 128
+- Response trendCacheVersion: 48
+- Response publicTopCount: 20
+
+Not verified in this environment
+- Live Upstash Redis credentials
+- Live QStash delivery/retry behavior
+- Live Vercel function timeout behavior
+- Production TOP20 publication completion
+
+These must be checked after deployment with a brand-new v8.0.32 run.
