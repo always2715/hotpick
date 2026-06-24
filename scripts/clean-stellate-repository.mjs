@@ -31,6 +31,11 @@ const removableFiles = [
   'lib/supabase-admin.js',
   'scripts/backfill-nvd-details.ps1',
   'APPLY_STELLATE_v8.0.40_CLEANUP.bat',
+  'APPLY_STELLATE_v8.0.41_CLEANUP.bat',
+  'APPLY_STELLATE_v8.0.42_CLEANUP.bat',
+  'STELLATE_PROJECT_HANDOFF_v8.0.38.txt',
+  'STELLATE_PROJECT_HANDOFF_v8.0.41.txt',
+  'STELLATE_PROJECT_HANDOFF_v8.0.42.txt',
 ];
 
 function readPackageName() {

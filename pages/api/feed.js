@@ -1,4 +1,5 @@
 import { getCachedTrends, queryFeedPosts } from '../../lib/kv';
+import { guaranteeFeedPage } from '../../lib/feedPresentation';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
@@ -12,7 +13,7 @@ export default async function handler(req, res) {
   try {
     const trends = await getCachedTrends();
     const topSlugs = trends.map(item => item.slug);
-    const { items, total, recovered=false, errorCode='' } = await queryFeedPosts({
+    const queried = await queryFeedPosts({
       limit,
       offset: (page - 1) * limit,
       category,
@@ -21,6 +22,10 @@ export default async function handler(req, res) {
       search,
       topSlugs,
     });
+    const guaranteed=guaranteeFeedPage({items:queried.items,total:queried.total,trends,limit,offset:(page-1)*limit,category,scope,sort,search});
+    const {items,total}=guaranteed;
+    const recovered=Boolean(queried.recovered||guaranteed.emergency);
+    const errorCode=guaranteed.emergency?'FEED_PAGE_EMERGENCY_TOP_FALLBACK':(queried.errorCode||'');
     const topMap = {};
     trends.forEach(item => { topMap[item.slug] = { rank: item.rank, displayTitle: item.displayTitle || item.keyword }; });
     res.setHeader('Cache-Control', 'private, no-store');

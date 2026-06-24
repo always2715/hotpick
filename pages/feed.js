@@ -6,6 +6,7 @@ import MonetizationSlot from '../components/MonetizationSlot';
 import { CATEGORIES } from '../lib/categories';
 import { getCachedTrends, queryFeedPosts } from '../lib/kv';
 import { optimizeImageUrl, isUnsplashImageUrl } from '../lib/images';
+import { guaranteeFeedPage } from '../lib/feedPresentation';
 
 const PER_PAGE = 20;
 
@@ -15,8 +16,8 @@ export default function Feed({ initialPosts, initialTotal, initialTopMap, recomm
   const [sort, setSort] = useState('latest');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
-  const [posts, setPosts] = useState(initialPosts);
-  const [total, setTotal] = useState(initialTotal);
+  const [posts, setPosts] = useState(Array.isArray(initialPosts) ? initialPosts.filter(Boolean) : []);
+  const [total, setTotal] = useState(Number(initialTotal || 0));
   const [topMap, setTopMap] = useState(initialTopMap);
   const [loading, setLoading] = useState(false);
   const first = useRef(true);
@@ -116,7 +117,9 @@ export default function Feed({ initialPosts, initialTotal, initialTopMap, recomm
 export async function getServerSideProps({ res }) {
   const trends = await getCachedTrends();
   const topSlugs = trends.map(item => item.slug);
-  const { items, total } = await queryFeedPosts({ limit: PER_PAGE, offset: 0, topSlugs });
+  const queried = await queryFeedPosts({ limit: PER_PAGE, offset: 0, topSlugs });
+  const guaranteed = guaranteeFeedPage({items:queried.items,total:queried.total,trends,limit:PER_PAGE,offset:0,category:'all',scope:'all',sort:'latest',search:''});
+  const {items,total}=guaranteed;
   const topMap = {};
   trends.forEach(item => { topMap[item.slug] = { rank: item.rank, displayTitle: item.displayTitle || item.keyword, independentSources:item.independentSources }; });
   res.setHeader('Cache-Control', 'private, no-store');

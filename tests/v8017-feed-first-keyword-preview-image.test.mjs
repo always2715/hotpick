@@ -61,7 +61,7 @@ assert.match(preview,/상세 정보 피드 보기/);
 assert.match(detail,/TOP \$\{previous\.rank\} · 이전 글/);
 assert.match(detail,/TOP \$\{next\.rank\} · 다음 글/);
 assert.match(detail,/compact-sources/);
-assert.match(api,/v6-curated-pool-100/);
+assert.match(api,/v7-curated-pool-500/);
 assert.match(api,/콘텐츠별 실시간 검색을 하지 않고 Redis의 사전 풀 안에서만 선택합니다/);
 assert.match(api,/feed_first_content/);
 assert.match(refresh,/TOP_POLICY_VERSION/);

@@ -1,7 +1,10 @@
-# STELLATE v8.0.42
+# STELLATE v8.0.43
 
-This release guarantees that the public feed can be rebuilt directly from current TOP detail content even when all feed indexes are empty. It also automatically prepares the curated Unsplash pool before TOP work, uses a valid partial pool when API limits prevent all 100 images from being filled at once, and backfills missing thumbnails on the current TOP.
+이 버전은 운영 `/feed`에서 총 개수만 계산되고 실제 카드가 0개로 표시되던 문제를 최종 방어합니다.
+피드 인덱스 결과와 무관하게 현재 공개 TOP 상세 원본을 목록에 병합하고, 페이지/API 단계에도 최종 fallback을 둡니다.
 
-TOP25 selection, successful TOP20 publication, reserve promotion, ranking scores, and manual thumbnail precedence are unchanged.
+썸네일 사전 풀은 기존 100개에서 10개 카테고리 × 50개, 총 500개로 확장했습니다.
+기존 이미지 ID와 수동 지정 이미지는 유지하며 TOP 선정·점수·승격 정책에는 영향을 주지 않습니다.
 
-Use `STELLATE_v8.0.42_REPLACE_ONLY.zip` for GitHub Desktop replacement.
+GitHub Desktop 적용에는 `STELLATE_v8.0.43_REPLACE_ONLY.zip`을 사용하고,
+덮어쓰기 후 `APPLY_STELLATE_v8.0.43_CLEANUP.bat`을 실행해 혼입 파일을 삭제한 다음 변경·삭제 전체를 커밋하십시오.

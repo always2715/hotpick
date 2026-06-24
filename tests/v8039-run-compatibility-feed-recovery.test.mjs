@@ -3,13 +3,14 @@ import fs from 'node:fs';
 import { assessTrendRunCompatibility, CURRENT_TREND_ENGINE_VERSION } from '../lib/trendEnginePolicy.js';
 import { isPersistedPublishedContentForFeed, upgradeTrustedPersistedFeedRecord } from '../lib/feedRecoveryPolicy.js';
 
-assert.equal(CURRENT_TREND_ENGINE_VERSION,'8.0.42');
+assert.equal(CURRENT_TREND_ENGINE_VERSION,'8.0.43');
 assert.equal(assessTrendRunCompatibility({engineVersion:'8.0.37'}).compatible,true,'동일 TOP25→TOP20 구조의 v8.0.37 실행은 재개 가능해야 합니다.');
 assert.equal(assessTrendRunCompatibility({engineVersion:'8.0.38'}).compatible,true);
 assert.equal(assessTrendRunCompatibility({engineVersion:'8.0.39'}).compatible,true);
 assert.equal(assessTrendRunCompatibility({engineVersion:'8.0.40'}).compatible,true);
 assert.equal(assessTrendRunCompatibility({engineVersion:'8.0.41'}).compatible,true);
 assert.equal(assessTrendRunCompatibility({engineVersion:'8.0.42'}).compatible,true);
+assert.equal(assessTrendRunCompatibility({engineVersion:'8.0.43'}).compatible,true);
 assert.equal(assessTrendRunCompatibility({engineVersion:'8.0.36'}).compatible,false,'구형 구조 실행은 차단해야 합니다.');
 assert.equal(assessTrendRunCompatibility({engineVersion:'legacy',enginePolicy:'ranked_candidate_pool_v17_top20_from25',generationPoolCount:25,publicTopCount:20}).compatible,true,'정확한 정책 메타데이터가 있으면 패치 버전 문자열과 무관하게 재개할 수 있어야 합니다.');
 assert.equal(assessTrendRunCompatibility({engineVersion:'8.0.40',generationPoolCount:20,publicTopCount:20}).compatible,false);
@@ -49,4 +50,4 @@ assert.match(refresh,/repairPublishedFeedIndexes\(\{topOnly:true,force:true\}\)/
 const version=fs.readFileSync(new URL('../pages/api/version.js',import.meta.url),'utf8');
 assert.match(version,/non-destructive-published-feed-recovery-plus-top-snapshot-emergency-fallback-v8040/);
 
-console.log('STELLATE v8.0.42 run compatibility and non-destructive feed recovery tests: PASS');
+console.log('STELLATE v8.0.43 run compatibility and non-destructive feed recovery tests: PASS');

@@ -1,0 +1,91 @@
+STELLATE v8.0.43 배포 및 운영 복구 안내
+작성일: 2026-06-24
+
+1. 권장 파일
+- 기존 GitHub 저장소 교체: STELLATE_v8.0.43_REPLACE_ONLY.zip
+- 신규 복구·전체 검토: STELLATE_v8.0.43_FULL.zip
+
+2. GitHub Desktop 적용
+1) GitHub Desktop에서 hotpick 저장소 선택
+2) Fetch origin 후 필요 시 Pull origin
+3) Repository > Show in Explorer
+4) STELLATE_v8.0.43_REPLACE_ONLY.zip을 별도 폴더에 압축 해제
+5) 압축 해제 폴더 내부 파일·폴더 전체를 hotpick 저장소 최상위에 덮어쓰기
+6) 저장소 최상위에서 APPLY_STELLATE_v8.0.43_CLEANUP.bat 실행
+7) GitHub Desktop Changes에서 변경과 삭제를 모두 확인
+8) node_modules, .next, .env, .env.local, .vercel은 커밋하지 않음
+9) Commit to main
+10) Push origin
+
+권장 커밋:
+fix: guarantee feed rows and expand thumbnail pool to 500 v8.0.43
+
+3. 반드시 포함되어야 하는 변경
+- lib/feedPresentation.js
+- lib/kv.js
+- pages/feed.js
+- pages/api/feed.js
+- lib/thumbnailPoolCatalog.js
+- lib/thumbnailPoolService.js
+- lib/thumbnailPool.js
+- lib/topConfig.js
+- pages/api/version.js
+- package.json
+
+REPLACE_ONLY ZIP은 위 파일만이 아니라 전체 런타임 디렉터리를 포함합니다.
+일부 파일만 선택 복사하지 말고 ZIP 내부 전체를 덮어쓰십시오.
+
+4. 배포 후 버전 확인
+/api/version에서 다음 값을 확인합니다.
+- appVersion: 8.0.43
+- contentVersion: 133
+- trendCacheVersion: 52
+- generationPoolCount: 25
+- publicTopCount: 20
+- thumbnailPoolSize: 500
+- feedFallbackV8043 존재
+- deploymentIntegrityV8043 존재
+
+메인 화면이 TOP n/30으로 보이면 구버전 파일이 남은 혼합 배포입니다.
+정상 정책은 공개 TOP20입니다.
+
+5. 피드 확인
+- /feed를 새로 엽니다.
+- 현재 TOP 상세 콘텐츠가 존재하면 피드 인덱스가 비어 있어도 목록 카드가 보여야 합니다.
+- 총 개수만 표시되고 카드가 0개면 브라우저 캐시 문제가 아니라 배포 파일 혼합 여부를 먼저 확인합니다.
+- /api/version이 8.0.43인지 확인합니다.
+- /api/feed?page=1&limit=20 응답의 items 배열과 total을 확인합니다.
+- 정상 복구 시 errorCode가 FEED_CURRENT_TOP_MERGED 또는 FEED_PAGE_EMERGENCY_TOP_FALLBACK일 수 있습니다.
+
+피드 복구를 위해 다음 작업은 하지 않습니다.
+- Redis FLUSHALL
+- 기존 공개 TOP 삭제
+- 새 TOP 강제 생성
+- 정상 상세 콘텐츠 삭제
+
+6. 500개 썸네일 풀 구축
+필수 환경변수:
+- UNSPLASH_ACCESS_KEY
+
+관리자 > 썸네일 이미지에서 `500개까지 보충`을 실행합니다.
+- 기존 100개 및 기존 콘텐츠 연결은 유지
+- 부족한 슬롯만 추가
+- 요청 제한이나 검색 결과 부족으로 한 번에 500개가 채워지지 않으면 저장된 부분 풀을 즉시 사용
+- 이후 같은 버튼을 다시 실행하면 부족분만 이어서 보충
+- 현재 TOP에서 이미지가 비어 있는 콘텐츠도 backfill
+
+실제 사진 500개의 ID와 URL은 운영 UNSPLASH_ACCESS_KEY를 사용해 Upstash Redis에 저장됩니다.
+ZIP에는 500개 분류 슬롯과 선택 정책이 포함되며 제3자 계정의 운영 API 결과 자체를 고정 포함하지 않습니다.
+
+7. TOP 정책 보호
+이번 버전은 다음을 변경하지 않습니다.
+- 후보 수집 및 관심도 상대순위
+- 생성 후보 25개
+- 성공 후보 TOP20 공개
+- 예비 후보 승격
+- 원자적 공개 조건
+- 성공 후보 부족 시 기존 TOP 유지
+
+8. 운영 검증 한계
+로컬 테스트와 빌드는 완료했습니다.
+운영 Upstash Redis, QStash, Unsplash 자격증명에는 접근하지 못했으므로 배포 후 실제 피드 행 수와 썸네일 확보 수는 관리자 및 API에서 확인해야 합니다.

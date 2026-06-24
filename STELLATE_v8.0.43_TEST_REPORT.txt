@@ -1,0 +1,80 @@
+STELLATE v8.0.43 테스트 보고서
+작성일: 2026-06-24
+
+1. 피드 재현 테스트
+- 입력: API total=25, items=[]
+- 현재 TOP 데이터: 7건
+- 결과: 실제 렌더링 행 7건, total 7건으로 복구
+- 결과: PASS
+
+2. 피드 저장소 완전 비움 테스트
+- 피드 Hash 0건
+- 피드 ZSET 0건
+- 콘텐츠 인덱스 0건
+- 현재 TOP 상세 콘텐츠 원본 존재
+- 결과: 상세 원본에서 피드 목록 복구 PASS
+
+3. 500개 썸네일 카탈로그 테스트
+- 카테고리 10개
+- 카테고리당 슬롯 50개
+- 전체 슬롯 500개
+- ID 중복 없음
+- 기존 001~010 ID 유지
+- 결과: PASS
+
+4. TOP 정책 회귀
+- 생성 후보 25개 고정
+- 성공 후보 TOP20 공개
+- selectionRank 유지
+- 21~25위 예비 후보 승격
+- 성공 후보 20개 미만 시 기존 TOP 유지
+- 결과: PASS
+
+5. 전체 회귀
+- npm run test:v8
+- 결과: 전체 PASS
+- 참고: Node의 MODULE_TYPELESS_PACKAGE_JSON 경고는 테스트 실패가 아님
+
+6. 프로덕션 빌드
+- npm run build
+- Next.js 14.2.35
+- Compiled successfully
+- static pages 2/2
+- 전체 Pages Router 목록 생성
+- 결과: PASS
+
+7. 로컬 기동
+- next start -p 3233
+- Ready 확인
+- /api/version HTTP 200
+- appVersion 8.0.43
+- contentVersion 133
+- trendCacheVersion 52
+- thumbnailPoolSize 500
+- 결과: PASS
+
+8. 패키지 무결성
+- REPLACE_ONLY에 전체 런타임 디렉터리 포함
+- node_modules/.next/.env 제외
+- Windows BAT ASCII/CRLF 유지
+- SHA-256 별도 제공
+
+9. 운영 검증 한계
+운영 Upstash Redis·QStash·Unsplash 계정에 접근하지 못했습니다.
+따라서 배포 후 실제 /api/feed items 수와 운영 썸네일 풀 확보 수는 별도 확인이 필요합니다.
+
+10. 실제 교체 ZIP 검증
+- REPLACE_ONLY ZIP을 새 폴더에 다시 압축 해제
+- npm ci PASS
+- test:v8043 PASS
+- fresh build는 Compiled successfully, static pages 2/2까지 확인
+- 검증 환경에서 Collecting build traces 단계가 제한시간에 도달
+- 원본 작업 디렉터리의 전체 production build는 같은 소스로 정상 종료 PASS
+
+11. 혼합 저장소 덮어쓰기 재현
+- 구버전 PUBLIC_TOP_COUNT=30 파일 배치
+- 구버전 thumbnailPoolSize=100 파일 배치
+- total=25/items=[] 구버전 feed API 배치
+- 타 프로젝트 app/api/cron/daily 파일 배치
+- REPLACE_ONLY 전체 덮어쓰기 및 cleanup 실행
+- 결과: TOP20, 썸네일500, v8.0.43 feed API로 교체되고 app/ 삭제 PASS

@@ -4,10 +4,10 @@ import { buildThumbnailPoolSeeds, THUMBNAIL_POOL_TARGET_SIZE, THUMBNAIL_POOL_CAT
 import { buildThumbnailContext, determineThumbnailPoolCategory, selectThumbnailFromPool, scoreThumbnailPoolItem, hasFixedThumbnail } from '../lib/thumbnailPool.js';
 
 const seeds=buildThumbnailPoolSeeds();
-assert.equal(THUMBNAIL_POOL_TARGET_SIZE,100);
+assert.equal(THUMBNAIL_POOL_TARGET_SIZE,500);
 assert.equal(Object.keys(THUMBNAIL_POOL_CATEGORIES).length,10);
-assert.equal(seeds.length,100);
-for(const [category] of Object.entries(THUMBNAIL_POOL_CATEGORIES))assert.equal(seeds.filter(row=>row.category===category).length,10);
+assert.equal(seeds.length,500);
+for(const [category] of Object.entries(THUMBNAIL_POOL_CATEGORIES))assert.equal(seeds.filter(row=>row.category===category).length,50);
 assert.equal(RECENT_THUMBNAIL_REUSE_WINDOW,20);
 
 assert.equal(determineThumbnailPoolCategory({category:'economy',topTitle:'원·달러 환율 급등, 금융시장 변동성 확대'}),'finance');
@@ -41,7 +41,7 @@ assert.equal(hasFixedThumbnail(manual),true);
 assert.deepEqual(selectThumbnailFromPool({content,pool,recentUsage:[],existingImageMeta:manual}),{...manual,preserved:true});
 
 const api=fs.readFileSync(new URL('../lib/api.js',import.meta.url),'utf8');
-assert.match(api,/const IMAGE_SELECTOR_VERSION = 'v6-curated-pool-100'/);
+assert.match(api,/const IMAGE_SELECTOR_VERSION = 'v7-curated-pool-500'/);
 assert.match(api,/selectCuratedThumbnailForContent/);
 assert.match(api,/콘텐츠별 실시간 검색을 하지 않고 Redis의 사전 풀 안에서만 선택합니다/);
 assert.doesNotMatch(api,/api\.unsplash\.com\/search\/photos/,'콘텐츠 생성 경로에서 Unsplash 실시간 검색을 호출하면 안 됩니다.');
@@ -53,7 +53,7 @@ const refresh=fs.readFileSync(new URL('../lib/trendRefreshJob.js',import.meta.ur
 assert.match(refresh,/RESEARCH_POOL_LIMIT/);
 assert.match(refresh,/publicationRows\.slice\(0, TARGET_TOP_COUNT\)/);
 const version=fs.readFileSync(new URL('../pages/api/version.js',import.meta.url),'utf8');
-assert.match(version,/thumbnailPoolSize:100/);
+assert.match(version,/thumbnailPoolSize:500/);
 assert.match(version,/thumbnailRankingIsolation:true/);
-assert.match(version,/automatic-pool-preflight-and-missing-slot-fill-no-content-keyword-search-v8042/);
+assert.match(version,/automatic-500-pool-preflight-two-page-category-fill-no-content-keyword-search-v8043/);
 console.log('STELLATE v8.0.38 curated thumbnail pool tests: PASS');

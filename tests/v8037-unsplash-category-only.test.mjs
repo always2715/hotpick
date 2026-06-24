@@ -15,7 +15,7 @@ assert.equal(isUnsplashImageMeta({source:'unsplash',imageUrl:'https://images.uns
 assert.equal(isUnsplashImageMeta({source:'youtube',imageUrl:'https://i.ytimg.com/vi/a/hqdefault.jpg'}),false);
 
 const api=fs.readFileSync(new URL('../lib/api.js',import.meta.url),'utf8');
-assert.match(api,/const IMAGE_SELECTOR_VERSION = 'v6-curated-pool-100'/);
+assert.match(api,/const IMAGE_SELECTOR_VERSION = 'v7-curated-pool-500'/);
 assert.match(api,/selectCuratedThumbnailForContent/);
 assert.match(api,/콘텐츠별 실시간 검색을 하지 않고 Redis의 사전 풀 안에서만 선택합니다/);
 assert.doesNotMatch(api,/preferredImageMeta\|\|videoImageMeta\|\|sourceImageMeta/);
@@ -36,5 +36,5 @@ assert.match(detail,/youtube-thumb-safe/);
 const version=fs.readFileSync(new URL('../pages/api/version.js',import.meta.url),'utf8');
 assert.match(version,/contentVersion:133/);
 assert.match(version,/trendCacheVersion:52/);
-assert.match(version,/coverImagePolicy:'unsplash-curated-pool-100-no-official-press-youtube-thumbnails-v8038'/);
+assert.match(version,/coverImagePolicy:'unsplash-curated-pool-500-no-official-press-youtube-thumbnails-v8043'/);
 console.log('v8.0.37 Unsplash-only regression policy tests passed under v8.0.38');

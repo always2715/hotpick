@@ -73,7 +73,7 @@ const adminSource=fs.readFileSync(path.join(projectRoot,'pages/api/admin-action.
 const indexSource=fs.readFileSync(path.join(projectRoot,'pages/index.js'),'utf8');
 const feedSource=fs.readFileSync(path.join(projectRoot,'pages/feed.js'),'utf8');
 assert.match(kvSource,/loadCurrentTopContentFeedRows/);
-assert.match(kvSource,/FEED_SOURCE_OF_TRUTH_RECOVERED/);
+assert.match(kvSource,/FEED_CURRENT_TOP_MERGED/);
 assert.match(serviceSource,/ensureThumbnailPoolReady/);
 assert.match(refreshSource,/backfillMissingTopThumbnails/);
 assert.match(adminSource,/Unsplash 사전 썸네일 이미지 풀 구축 및 현재 TOP 누락 이미지 적용/);

@@ -1,0 +1,70 @@
+STELLATE 썸네일 사전 풀 정책 v8.0.43
+작성일: 2026-06-24
+
+1. 허용 출처
+- 대표 이미지는 Unsplash만 사용
+- 언론사 기사 이미지 사용 금지
+- 기업·기관 공식 사이트 이미지 사용 금지
+- YouTube 썸네일 사용 금지
+- 허용 이미지 호스트: images.unsplash.com
+
+2. 풀 규모
+- 총 500개 슬롯
+- 10개 카테고리 × 카테고리당 50개
+- 카테고리: 경제·금융, 기업·산업, IT·AI, 사회·생활, 정치·행정, 국제·글로벌, 문화·연예, 스포츠, 건강·교육, 환경·재난
+- 기존 001~010 ID 유지
+- 011~050 추가
+
+3. 구도 다양화
+각 카테고리의 10개 기본 분위기를 다음 5개 구도로 확장합니다.
+- 기본 구도
+- 넓은 전경
+- 상징적 디테일
+- 차분한 야간
+- 미니멀 배경
+
+4. 선택 기준
+- 카테고리 일치 +50
+- 분위기 일치 최대 +20
+- 소재 일치 최대 +15
+- 톤 일치 +10
+- 적합 유형 +10
+- 회피 유형 -50
+- 최근 사용 및 과다 사용 감점
+- 같은 TOP 화면의 동일 이미지 제외
+
+5. 지속성
+- 기존 정상 Unsplash 이미지 유지
+- 기존 콘텐츠는 순위·제목·상세가 바뀌어도 이미지 유지
+- 수동 지정 이미지는 자동 변경 금지
+- 비활성화 또는 실제 로딩 불가 시에만 재선택
+- 최근 20개 신규 배정에서 동일 이미지 우선 제외
+
+6. 구축
+- 운영 UNSPLASH_ACCESS_KEY로 사진 ID·URL·작가·원본 페이지·downloadLocation을 확보
+- 기존 풀은 삭제하지 않고 부족한 슬롯만 보충
+- 부분 성공 결과도 저장하고 즉시 사용
+- 이후 실행에서 부족분만 이어서 보충
+- 관리자에서 500개 목표와 현재 확보 개수 표시
+
+7. TOP 선정 격리
+- 이미지 유무·이미지 점수·Unsplash API 상태를 TOP 관심도 점수에 사용하지 않음
+- 이미지 오류는 콘텐츠 생성·검증·TOP 공개 실패로 전파하지 않음
+- TOP25 생성 후보·성공 TOP20 공개·예비 후보 승격 정책은 변경하지 않음
+
+8. 저장 필드
+- thumbnailImageId
+- thumbnailImageUrl 또는 imageMeta.imageUrl
+- thumbnailCategory
+- thumbnailMood
+- thumbnailSelectedAt
+- thumbnailSelectionType: curated-pool 또는 manual
+- unsplashPhotoId
+- photographerName
+- sourceUrl/unsplashPhotoUrl
+- downloadLocation
+- poolVersion: v2-500-curated
+
+9. 정확한 의미
+ZIP에는 500개의 내부 분류 슬롯·분위기·소재·선택 정책이 포함됩니다.
+실제 Unsplash 사진 500건의 API 결과는 운영 계정의 UNSPLASH_ACCESS_KEY를 사용해 Redis에 구축됩니다.

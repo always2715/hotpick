@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const projectRoot = path.resolve(new URL('..', import.meta.url).pathname);
-const batPath = path.join(projectRoot, 'APPLY_STELLATE_v8.0.41_CLEANUP.bat');
+const batPath = path.join(projectRoot, 'APPLY_STELLATE_v8.0.43_CLEANUP.bat');
 const bytes = fs.readFileSync(batPath);
 const text = bytes.toString('ascii');
 
@@ -14,16 +14,16 @@ assert.match(text, /^@echo off\r\n/);
 assert.match(text, /cd \/d "%~dp0"/);
 assert.match(text, /if exist "app" rmdir \/s \/q "app"/);
 assert.match(text, /if exist "\.next" rmdir \/s \/q "\.next"/);
-assert.match(text, /APPLY_STELLATE_v8\.0\.40_CLEANUP\.bat/);
+assert.match(text, /APPLY_STELLATE_v8\.0\.42_CLEANUP\.bat/);
 assert.match(text, /node "scripts\\clean-stellate-repository\.mjs" --local/);
 assert.match(text, /exit \/b 0/);
-assert.equal(fs.existsSync(path.join(projectRoot, 'APPLY_STELLATE_v8.0.40_CLEANUP.bat')), false, 'Broken v8.0.40 BAT must not remain.');
+assert.equal(fs.existsSync(path.join(projectRoot, 'APPLY_STELLATE_v8.0.42_CLEANUP.bat')), false, 'Old v8.0.42 BAT must not remain.');
 
 const cleanupSource = fs.readFileSync(path.join(projectRoot, 'scripts', 'clean-stellate-repository.mjs'));
 assert.equal([...cleanupSource].every((byte) => byte < 128), true, 'Cleanup script console output must be ASCII-safe.');
 
 const pkg = JSON.parse(fs.readFileSync(path.join(projectRoot, 'package.json'), 'utf8'));
-assert.equal(pkg.version, '8.0.42');
+assert.equal(pkg.version, '8.0.43');
 assert.match(pkg.scripts['test:v8041'], /v8041-windows-cleanup-batch/);
 
-console.log('STELLATE v8.0.42 Windows cleanup BAT encoding tests: PASS');
+console.log('STELLATE v8.0.43 Windows cleanup BAT encoding tests: PASS');

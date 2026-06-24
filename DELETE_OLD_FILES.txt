@@ -1,6 +1,8 @@
 반드시 삭제 후 GitHub Desktop에서 삭제 변경까지 커밋할 항목
 
+타 프로젝트 혼입 파일:
 app/
+src/app/
 .next/
 next-env.d.ts
 middleware.ts
@@ -17,13 +19,15 @@ lib/supabase-admin.ts
 lib/supabase-admin.js
 scripts/backfill-nvd-details.ps1
 
-다른 프로젝트 파일이 다시 섞인 경우 저장소 최상위에서 APPLY_STELLATE_v8.0.42_CLEANUP.bat 실행
-
-이전 최신 문서 정리 대상:
-README_v8.0.41.md
-STELLATE_PROJECT_HANDOFF_v8.0.41.txt
-STELLATE_v8.0.41_CHANGED_FILES.txt
-STELLATE_v8.0.41_DEPLOY_GUIDE.txt
-STELLATE_v8.0.41_RELEASE_MANIFEST.txt
-STELLATE_v8.0.41_TEST_REPORT.txt
+이전 정리 BAT:
+APPLY_STELLATE_v8.0.40_CLEANUP.bat
 APPLY_STELLATE_v8.0.41_CLEANUP.bat
+APPLY_STELLATE_v8.0.42_CLEANUP.bat
+
+이전 통합 인수인계 TXT:
+STELLATE_PROJECT_HANDOFF_v8.0.38.txt
+STELLATE_PROJECT_HANDOFF_v8.0.41.txt
+STELLATE_PROJECT_HANDOFF_v8.0.42.txt
+
+저장소 최상위에서 APPLY_STELLATE_v8.0.43_CLEANUP.bat을 실행하면 위 정리 대상이 자동 삭제됩니다.
+그 후 GitHub Desktop에서 변경과 삭제를 모두 커밋하고 Push하십시오.
