@@ -4,9 +4,9 @@ export default function handler(req,res){
   res.setHeader('Cache-Control','no-store');
   return res.status(200).json({
     appVersion:pkg.version,
-    contentVersion:133,
+    contentVersion:135,
     trendCacheVersion:52,
-    engine:'ranked-top25-generation-pool-successful-top20-publication-v8043',
+    engine:'ranked-top25-generation-pool-successful-top20-publication-v8045',
     feedFallback:'published-content-source-of-truth-and-index-rebuild-v8030-plus-canonical-run-snapshot-alias-v8036',
     feedFallbackV8040:'non-destructive-published-feed-recovery-plus-top-snapshot-emergency-fallback-v8040',
     feedFallbackV8042:'direct-current-top-content-source-guarantee-v8042',
@@ -56,7 +56,7 @@ export default function handler(req,res){
     stageDurability:'publication-stage-plus-run-snapshot-candidate-and-slug-alias-self-healing-v8037',
     genericFactPolicy:'remove-generic-facts-and-rebuild-from-concrete-ledger-facts',
     legacyCompatibility:'fixed-keyword-content-stop-control-v8025',
-    runCompatibility:'v8037-v8043-same-policy-run-resume-and-published-feed-preservation',
+    runCompatibility:'v8037-v8045-same-policy-run-resume-and-published-feed-preservation',
     feedIndexCompatibility:'auto-repair-published-feed-indexes',
     feedIndexRecoveryV8040:'preserve-previously-published-feed-and-rebuild-all-indexes-v8040',
     feedIndexRecoveryV8042:'direct-current-top-content-read-even-when-all-feed-indexes-are-empty-v8042',
@@ -64,5 +64,9 @@ export default function handler(req,res){
     thumbnailPoolReadinessV8042:'auto-bootstrap-partial-pool-usable-current-top-backfill-v8042',
     thumbnailPoolReadinessV8043:'ten-categories-fifty-each-target-500-auto-fill-and-backfill-v8043',
     deploymentIntegrityV8043:'replace-only-includes-complete-runtime-source-to-prevent-mixed-version-deployments',
+    feedCumulativePolicyV8044:'never-return-current-top-only-for-all-feed-scope-scan-persisted-content-and-rebuild-cumulative-index-v8044',
+    feedDetailLengthPolicy:'minimum-1000-recommended-around-5000-no-padding-v8045',
+    topPreviewLengthPolicy:'top-summary-preview-up-to-1000-characters-v8045',
+    feedDetailRecommendationV8045:'target-5000-when-evidence-supports-it-never-pad-or-repeat',
   });
 }

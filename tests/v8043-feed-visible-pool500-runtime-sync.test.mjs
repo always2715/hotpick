@@ -41,4 +41,4 @@ assert.match(version,/thumbnailPoolSize:500/);
 assert.match(version,/deploymentIntegrityV8043/);
 assert.match(topConfig,/PUBLIC_TOP_COUNT = 20/);
 
-console.log('STELLATE v8.0.43 feed visibility, 500 thumbnail pool, and runtime sync tests: PASS');
+console.log('STELLATE v8.0.45 feed visibility, 500 thumbnail pool, and runtime sync tests: PASS');

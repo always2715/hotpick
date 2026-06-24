@@ -65,7 +65,7 @@ assert.match(api,/v7-curated-pool-500/);
 assert.match(api,/콘텐츠별 실시간 검색을 하지 않고 Redis의 사전 풀 안에서만 선택합니다/);
 assert.match(api,/feed_first_content/);
 assert.match(refresh,/TOP_POLICY_VERSION/);
-assert.match(version,/contentVersion:133/);
+assert.match(version,/contentVersion:135/);
 assert.match(version,/trendCacheVersion:52/);
 assert.match(version,/fixed-keyword-content-stop-control-v8025/);
 console.log('v8.0.17 compatibility tests passed under v8.0.20');

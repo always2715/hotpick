@@ -69,7 +69,7 @@ assert.match(adminSource,/네이버 요청/);
 assert.match(adminSource,/36시간 통과/);
 assert.match(adminSource,/중복 제거 후/);
 assert.match(adminSource,/병합 투입 네이버 뉴스/);
-assert.match(versionSource,/contentVersion:133/);
+assert.match(versionSource,/contentVersion:135/);
 assert.match(versionSource,/trendCacheVersion:52/);
 assert.match(versionSource,/fixed-keyword-content-stop-control-v8025/);
 console.log('v8.0.8 Naver discovery retry and diagnostics tests passed');

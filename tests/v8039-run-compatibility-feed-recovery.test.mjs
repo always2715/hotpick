@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import { assessTrendRunCompatibility, CURRENT_TREND_ENGINE_VERSION } from '../lib/trendEnginePolicy.js';
 import { isPersistedPublishedContentForFeed, upgradeTrustedPersistedFeedRecord } from '../lib/feedRecoveryPolicy.js';
 
-assert.equal(CURRENT_TREND_ENGINE_VERSION,'8.0.43');
+assert.equal(CURRENT_TREND_ENGINE_VERSION,'8.0.45');
 assert.equal(assessTrendRunCompatibility({engineVersion:'8.0.37'}).compatible,true,'동일 TOP25→TOP20 구조의 v8.0.37 실행은 재개 가능해야 합니다.');
 assert.equal(assessTrendRunCompatibility({engineVersion:'8.0.38'}).compatible,true);
 assert.equal(assessTrendRunCompatibility({engineVersion:'8.0.39'}).compatible,true);
@@ -50,4 +50,4 @@ assert.match(refresh,/repairPublishedFeedIndexes\(\{topOnly:true,force:true\}\)/
 const version=fs.readFileSync(new URL('../pages/api/version.js',import.meta.url),'utf8');
 assert.match(version,/non-destructive-published-feed-recovery-plus-top-snapshot-emergency-fallback-v8040/);
 
-console.log('STELLATE v8.0.43 run compatibility and non-destructive feed recovery tests: PASS');
+console.log('STELLATE v8.0.45 run compatibility and non-destructive feed recovery tests: PASS');

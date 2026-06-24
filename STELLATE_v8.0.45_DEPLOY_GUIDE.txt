@@ -1,0 +1,26 @@
+STELLATE v8.0.45 배포 안내
+
+1. STELLATE_v8.0.45_REPLACE_ONLY.zip을 별도 폴더에 압축 해제합니다.
+2. 내부 파일과 폴더 전체를 hotpick 저장소 최상위에 덮어씁니다.
+3. APPLY_STELLATE_v8.0.45_CLEANUP.bat을 실행합니다.
+4. GitHub Desktop에서 변경 및 삭제 항목 전체를 커밋하고 Push합니다.
+5. Vercel 배포 완료 후 /api/version에서 다음을 확인합니다.
+   - appVersion: 8.0.45
+   - contentVersion: 135
+   - generationPoolCount: 25
+   - publicTopCount: 20
+   - thumbnailPoolSize: 500
+   - feedDetailLengthPolicy: minimum-1000-recommended-around-5000-no-padding-v8045
+
+운영 반영 범위
+- 기존 공개 피드와 TOP은 삭제하지 않습니다.
+- 기존 콘텐츠는 자동 재작성하지 않습니다.
+- 새로 생성하거나 재생성한 콘텐츠부터 최소 1,000자·약 5,000자 권장 정책을 사용합니다.
+- 5,000자에 미달한다는 이유만으로 공개 실패시키지 않습니다.
+- TOP 클릭 요약은 계속 최대 1,000자입니다.
+
+금지
+- Redis FLUSHALL
+- 기존 누적 피드 초기화
+- 분량을 맞추기 위한 근거 없는 문장 추가
+- REPLACE_ONLY에서 일부 파일만 골라 복사

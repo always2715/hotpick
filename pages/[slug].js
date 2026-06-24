@@ -5,6 +5,7 @@ import Header from '../components/Header';
 import { CATEGORIES } from '../lib/categories';
 import { getContent, getCachedTrends, getContentStatus, getViewCount, getSlugRedirect } from '../lib/kv';
 import { optimizeImageUrl, isUnsplashImageUrl } from '../lib/images';
+import { compactTopPreviewContent } from '../lib/topPreviewPolicy';
 
 function StatusPage({content,trend}){
   const title=content?.detailTitle||content?.displayTitle||trend?.displayTitle||trend?.keyword||'콘텐츠';
@@ -23,10 +24,16 @@ export default function TopPreview({content,trend,initialViews}){
   const title=content.feedTitle||content.card?.feedTitle||content.detailTitle||content.displayTitle||content.keyword;
   const keyword=content.topKeyword||content.keyword||trend?.topKeyword||trend?.keyword||title;
   const category=CATEGORIES[content.category]||CATEGORIES.general;
-  const points=Array.isArray(content.card?.points)?content.card.points.slice(0,5):[];
+  const rawPoints=Array.isArray(content.card?.points)?content.card.points.slice(0,5):[];
   const summaryParagraphs=Array.isArray(content.card?.summaryParagraphs)?content.card.summaryParagraphs.filter(Boolean):[];
-  const summary=summaryParagraphs[0]||content.card?.summary||content.summary||'';
-  const why=summaryParagraphs[1]||content.card?.why||'';
+  const preview=compactTopPreviewContent({
+    summary:summaryParagraphs[0]||content.card?.summary||content.summary||'',
+    why:summaryParagraphs[1]||content.card?.why||'',
+    points:rawPoints,
+  });
+  const points=preview.points;
+  const summary=preview.summary;
+  const why=preview.why;
   const infoLine=content.card?.infoLine||`${keyword}에 대한 정보`;
   const summaryLabel=content.card?.summaryLabel||'요약 정보';
   const pointsLabel=content.card?.pointsLabel||'주요 내용';

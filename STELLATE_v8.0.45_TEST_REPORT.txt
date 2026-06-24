@@ -1,0 +1,41 @@
+STELLATE v8.0.45 TEST REPORT
+
+Test date: 2026-06-25
+
+1. Full regression
+- Command: npm run test:v8
+- Result: PASS
+- Includes TOP25 generation pool, successful TOP20 publication, reserve promotion, cumulative feed, feed recovery, 500 thumbnail pool, Windows cleanup, and v8.0.45 length policy.
+
+2. Flexible feed detail length
+- 999 characters: FAIL as expected
+- 1,000 characters: PASS
+- 2,000 characters: PASS
+- 5,000 characters: PASS and recommended range
+- 7,500 characters: PASS by length alone
+- Missing the 5,000-character recommendation is not a publication failure.
+- Publication policy checks only the 1,000-character minimum.
+
+3. TOP preview
+- summary + why + points maximum 1,000 characters: PASS
+
+4. Production build
+- Command: npm run build
+- Result: PASS
+- Compiled successfully
+- Static pages: 2/2 generated
+- Build traces completed
+
+5. Runtime
+- next start -p 3215: PASS
+- /api/version: HTTP 200
+- appVersion: 8.0.45
+- contentVersion: 135
+- generationPoolCount: 25
+- publicTopCount: 20
+- thumbnailPoolSize: 500
+- feedDetailLengthPolicy: minimum-1000-recommended-around-5000-no-padding-v8045
+
+Operational limitation
+- Live Upstash Redis, QStash, Anthropic, and Unsplash credentials were not available in this environment.
+- Existing published content is not automatically rewritten. New or regenerated content uses v8.0.45.

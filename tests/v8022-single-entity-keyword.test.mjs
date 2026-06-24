@@ -81,7 +81,7 @@ assert.match(editorial,/ENTITY_ROLE_PREFIXES/);
 assert.match(editorial,/ENTITY_TRAILING_NOISE/);
 assert.match(editorial,/PRODUCT_ROOTS/);
 assert.match(editorial,/multiple_entities/);
-assert.match(version,/contentVersion:133/);
+assert.match(version,/contentVersion:135/);
 assert.match(version,/trendCacheVersion:52/);
 assert.match(version,/fixed-keyword-content-stop-control-v8025/);
 assert.match(version,/ranked_candidate_pool_v17_top20_from25/);
