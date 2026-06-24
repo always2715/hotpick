@@ -1,0 +1,54 @@
+STELLATE v8.0.38 TEST REPORT
+================================
+
+Version
+- appVersion: 8.0.38
+- contentVersion: 133
+- trendCacheVersion: 52
+- generationPoolCount: 25
+- publicTopCount: 20
+- thumbnailPoolSize: 100
+- thumbnailPoolCategories: 10
+
+Change scope
+- Unsplash representative-image policy retained.
+- Per-content Unsplash search removed from the content-generation path.
+- One-time/admin 100-image pool bootstrap added.
+- Category, mood, subject, tone, recent-use, usage-count, and same-screen scoring added.
+- Existing valid Unsplash images and manual assignments are preserved.
+- Thumbnail failures are fail-safe and do not fail content generation or TOP publication.
+- Admin pool management and manual assignment added.
+
+Tests executed
+- npm ci --no-audit --no-fund: PASS
+- npm run test:v8: PASS
+- npm run test:v8038: PASS
+- node --check for lib, pages/api, tests JavaScript/MJS: PASS
+- npm run build: PASS
+- next start -p 3210: PASS
+- GET /api/version: HTTP 200
+
+Dedicated v8.0.38 checks
+- Exactly 100 metadata seeds and 10 categories are defined.
+- Every category has exactly 10 slots.
+- Content-time code does not contain Unsplash search/photos calls.
+- Unsplash search exists only in the administrator pool-bootstrap service.
+- Category/mood/subject/tone scoring works on representative examples.
+- Recent 20 image reuse is avoided when another image is available.
+- Same-screen used image IDs are excluded.
+- Manual/existing image metadata is preserved.
+- Thumbnail pool read/write failures are isolated from content/TOP success.
+- /api/version exposes thumbnailRankingIsolation: true.
+- Existing v8.0.37 TOP25 generation pool and successful TOP20 publication regression test passes.
+
+Build result
+- Next.js 14.2.35 compiled successfully.
+- Static pages generated 2/2.
+- Admin thumbnail-pool API route included in production manifest.
+- Production server became ready and /api/version returned appVersion 8.0.38.
+
+Operational limitations
+- Live Unsplash pool bootstrap was not executed because production UNSPLASH_ACCESS_KEY and Redis credentials are not available in the build environment.
+- Actual 100 photo records must be built once after deployment from the admin thumbnail page.
+- Pool photos currently use Unsplash CDN URLs. Optional 16:9 WebP copying to a separate service storage is not implemented because the current project has no object-storage provider or credentials.
+- Live Upstash/QStash end-to-end TOP25 generation and TOP20 publication were not executed in this local environment.

@@ -1,1 +1,8 @@
-STELLATE_PROJECT_HANDOFF_v8.0.35.txt
+STELLATE v8.0.38 DELETE OLD FILES
+================================
+
+After copying the replacement files into the hotpick repository root, delete:
+- STELLATE_PROJECT_HANDOFF_v8.0.37.txt
+
+Do not delete previous README/test history files unless you intentionally want to clean historical documentation.
+Do not delete Redis data, .git, .env.local, or .vercel.

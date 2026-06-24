@@ -1,0 +1,48 @@
+STELLATE v8.0.38 DEPLOY GUIDE
+================================
+
+1. Apply files
+- GitHub Desktop users should use STELLATE_v8.0.38_REPLACE_ONLY.zip.
+- Copy the contents of the replacement folder into the hotpick repository root.
+- Do not create a nested STELLATE_v8.0.38_REPLACE_ONLY folder inside hotpick.
+- Do not overwrite .git, .env.local, or .vercel.
+- Do not commit node_modules or .next.
+
+2. Commit example
+feat: STELLATE v8.0.38 curated thumbnail pool
+
+3. Deployment verification
+- Confirm Vercel Deployment is Ready.
+- Open /api/version.
+- Confirm appVersion=8.0.38.
+- Confirm contentVersion=133 and trendCacheVersion=52.
+- Confirm generationPoolCount=25 and publicTopCount=20.
+- Confirm thumbnailPoolSize=100 and thumbnailRankingIsolation=true.
+
+4. Build the image pool once
+- Log in to Admin.
+- Open the `썸네일 이미지` tab.
+- Click `100개 풀 구축`.
+- This requires UNSPLASH_ACCESS_KEY and Upstash Redis settings.
+- The operation saves only when all 100 items are available; a partial pool is not committed.
+- Review samples and disable or edit unsuitable images.
+
+5. Operation
+- Existing content keeps its existing valid Unsplash thumbnail.
+- Manual assignments remain fixed.
+- New content receives a pool image after content generation completes.
+- Ranking changes alone do not reselect thumbnails.
+- If the pool is empty or Redis image operations fail, content/TOP processing continues and public category fallback is used.
+
+6. Do not do
+- Do not run Redis FLUSHALL.
+- Do not delete the current public TOP before pool construction.
+- Do not change stellate:v7 namespace.
+- Do not change the TOP25/TOP20 policy.
+- Do not add image score to ranking score.
+- Do not restore official, press, article OG, or YouTube thumbnails as representative images.
+
+7. Existing run compatibility
+- The TOP engine remains v8.0.37-compatible.
+- A normal in-progress v8.0.37 TOP run does not need to be stopped only because v8.0.38 is deployed.
+- Existing rules for stopping old v8.0.35-or-earlier runs remain unchanged.

@@ -8,14 +8,15 @@ import {
   getTrendCandidateReport, getTrendRules, getTrendsUpdatedAt, getTrendRefreshHealth, getActiveTrendRefreshRunId,
 } from '../lib/kv';
 import { isAdminRequest } from '../lib/adminAuth';
-import { optimizeImageUrl } from '../lib/images';
+import { optimizeImageUrl, isUnsplashImageUrl } from '../lib/images';
 import { ensurePromoCard, buildInstagramCaption } from '../lib/instagram';
 import { PUBLIC_TOP_COUNT, TOP_GENERATION_POOL_COUNT } from '../lib/topConfig';
+import { getThumbnailPoolAdminState } from '../lib/thumbnailPoolService.js';
 
 const VISIBILITY_OPTIONS=[['published','공개'],['hidden_top','TOP만 숨김'],['hidden_feed','피드만 숨김'],['private','전체 비공개'],['trashed','휴지통']];
 const TERMINAL=new Set(['completed','completed_with_errors','failed','cancelled','stopped_timeout']);
 const TASK_OPEN=new Set(['queued','processing','retry_wait','failed']);
-const CURRENT_CONTENT_VERSION=132;
+const CURRENT_CONTENT_VERSION=133;
 
 export default function Admin(props){
   const {tokenUsage=[],events=[],top10History=[]}=props;
@@ -44,6 +45,9 @@ export default function Admin(props){
   const [cardIndex,setCardIndex]=useState(0);
   const [instagramSearch,setInstagramSearch]=useState('');
   const [instagramPage,setInstagramPage]=useState(1);
+  const [thumbnailPool,setThumbnailPool]=useState(props.thumbnailPool||{items:[],usage:[],targetSize:100});
+  const [imageCategory,setImageCategory]=useState('all');
+  const [thumbnailTargetSlug,setThumbnailTargetSlug]=useState('');
   const INSTAGRAM_PAGE_SIZE=10;
   const cardRef=useRef(null),allCardRefs=useRef([]);
 
@@ -70,10 +74,10 @@ export default function Admin(props){
   }
   async function refreshData(){
     try{
-      const [c,a,r,t,f]=await Promise.all([fetch('/api/admin/contents?limit=1000',{cache:'no-store'}),fetch('/api/admin/audit?limit=100',{cache:'no-store'}),fetch('/api/admin/candidates',{cache:'no-store'}),fetch('/api/admin/trends',{cache:'no-store'}),fetch('/api/feed?page=1&limit=40&scope=all&sort=latest',{cache:'no-store'})]);
-      if(c.status===401||a.status===401||r.status===401||t.status===401){location.href='/admin-login';return;}
-      const [cd,ad,rd,td,fd]=await Promise.all([c.json(),a.json(),r.json(),t.json(),f.json()]);
-      if(c.ok){setContents(cd.contents||[]);setReviewDrafts(cd.reviewDrafts||[]);}if(a.ok)setAudit(ad.audit||[]);if(r.ok){setCandidateReport(rd.latest||null);setPreviewReport(rd.preview||null);setTrendRules(rd.rules||{excludedKeywords:[]});}if(t.ok)setTrends(td.trends||[]);if(f.ok)setFeed(fd.items||[]);
+      const [c,a,r,t,f,i]=await Promise.all([fetch('/api/admin/contents?limit=1000',{cache:'no-store'}),fetch('/api/admin/audit?limit=100',{cache:'no-store'}),fetch('/api/admin/candidates',{cache:'no-store'}),fetch('/api/admin/trends',{cache:'no-store'}),fetch('/api/feed?page=1&limit=40&scope=all&sort=latest',{cache:'no-store'}),fetch('/api/admin/thumbnail-pool',{cache:'no-store'})]);
+      if(c.status===401||a.status===401||r.status===401||t.status===401||i.status===401){location.href='/admin-login';return;}
+      const [cd,ad,rd,td,fd,id]=await Promise.all([c.json(),a.json(),r.json(),t.json(),f.json(),i.json()]);
+      if(c.ok){setContents(cd.contents||[]);setReviewDrafts(cd.reviewDrafts||[]);}if(a.ok)setAudit(ad.audit||[]);if(r.ok){setCandidateReport(rd.latest||null);setPreviewReport(rd.preview||null);setTrendRules(rd.rules||{excludedKeywords:[]});}if(t.ok)setTrends(td.trends||[]);if(f.ok)setFeed(fd.items||[]);if(i.ok)setThumbnailPool(id||{items:[],usage:[],targetSize:100});
     }catch{}
   }
   useEffect(()=>{refreshRuns(false);},[]);
@@ -132,7 +136,7 @@ export default function Admin(props){
     const targetKeyword=keyword.trim();if(!targetKeyword)return;
     requestConfirmation({title:'수동 콘텐츠를 생성할까요?',description:`“${targetKeyword}” 키워드로 검증형 콘텐츠 생성을 시작합니다.`,impact:'외부 출처 조회와 AI 토큰 사용이 발생하며, 검증 결과에 따라 즉시 공개되거나 검토 대기로 저장됩니다.',confirmLabel:'생성 실행',tone:'warning',execute:()=>executeManualGeneration(targetKeyword)});
   }
-  async function backup(){const r=await fetch('/api/backup');if(!r.ok){setMessage('❌ 백업 오류');return;}const b=await r.blob(),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`stellate-v8.0.36-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(a.href);}
+  async function backup(){const r=await fetch('/api/backup');if(!r.ok){setMessage('❌ 백업 오류');return;}const b=await r.blob(),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`stellate-v8.0.38-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(a.href);}
   async function logout(){await fetch('/api/admin/logout',{method:'POST'});location.href='/admin-login';}
   async function ensureHtml2Canvas(){if(window.html2canvas)return;await new Promise((ok,no)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';s.onload=ok;s.onerror=no;document.head.appendChild(s);});}
   async function trackUnsplashDownload(){const location=selectedPost?.imageMeta?.downloadLocation;if(!location)return;await fetch('/api/unsplash-download',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({downloadLocation:location})}).catch(()=>{});}
@@ -150,10 +154,14 @@ export default function Admin(props){
   const runTasks=(latestRun?.tasks||[]).filter(task=>TASK_OPEN.has(task.status)).map(task=>({...task,runId:latestRun.runId,trigger:latestRun.trigger}));
   const taskRows=[...new Map([...runTasks,...pending,...failed].map(x=>[x.slug,x])).values()];
   const totalEvents=useMemo(()=>events.reduce((sum,row)=>sum+Number(row.detail_view||0),0),[events]);
-  const tabs=[['overview','현황'],['candidates','TOP 후보 심사'],['review','검토 대기'],['top','TOP 관리'],['feed','피드 관리'],['failures','생성 상태'],['instagram','인스타'],['audit','변경 이력'],['settings','설정']];
+  const thumbnailItems=Array.isArray(thumbnailPool?.items)?thumbnailPool.items:[];
+  const thumbnailCategories=[...new Set(thumbnailItems.map(item=>item.category).filter(Boolean))];
+  const filteredThumbnailItems=imageCategory==='all'?thumbnailItems:thumbnailItems.filter(item=>item.category===imageCategory);
+  const thumbnailTargets=[...new Map([...trends,...feed,...contents].filter(item=>item?.slug).map(item=>[item.slug,item])).values()].filter(item=>item.visibility!=='trashed');
+  const tabs=[['overview','현황'],['candidates','TOP 후보 심사'],['review','검토 대기'],['top','TOP 관리'],['feed','피드 관리'],['failures','생성 상태'],['images','썸네일 이미지'],['instagram','인스타'],['audit','변경 이력'],['settings','설정']];
 
-  return <><Head><title>관리자 — STELLATE v8.0.36</title></Head><Header/><main className="admin-shell">
-    <section className="admin-heading"><div><p className="eyebrow">STELLATE v8.0.36</p><h1>검증형 운영 관리자</h1></div><button className="admin-logout" onClick={logout}>로그아웃</button></section>
+  return <><Head><title>관리자 — STELLATE v8.0.38</title></Head><Header/><main className="admin-shell">
+    <section className="admin-heading"><div><p className="eyebrow">STELLATE v8.0.38</p><h1>검증형 운영 관리자</h1></div><button className="admin-logout" onClick={logout}>로그아웃</button></section>
     {message&&<div className="admin-message">{message}</div>}
     {props.initialLoadError&&<div className="admin-message">⚠️ 일부 관리자 데이터를 불러오지 못했습니다. 화면은 안전 모드로 열렸으며 새로고침하거나 실행 환경을 확인해 주세요.</div>}
     {(!trendsUpdatedAt||Date.now()-new Date(trendsUpdatedAt).getTime()>4*60*60*1000)&&<div className="admin-message">⚠️ 마지막 성공 TOP 갱신이 4시간을 초과했습니다. {trendsUpdatedAt?`마지막 성공: ${new Date(trendsUpdatedAt).toLocaleString('ko-KR')}`:'성공 갱신 기록 없음'} · 아래 실행 상태에서 QStash 콜백 미수신 여부를 확인하거나 ‘TOP 즉시 실행’을 사용하세요.</div>}
@@ -175,6 +183,8 @@ export default function Admin(props){
     {tab==='feed'&&<section className="admin-panel"><h2>피드 관리 <small>{feed.length}개</small></h2>{feed.map(item=><ManageRow key={item.slug} item={item} type="feed" busy={busy} action={action} confirmAdminAction={confirmAdminAction}/>)}</section>}
 
     {tab==='failures'&&<section className="admin-panel"><div className="panel-title-row"><h2>콘텐츠 생성 상태</h2><div className="admin-actions"><button disabled={!selectedTasks.size||busy} onClick={()=>confirmAdminAction({action:'retry_selected',slugs:[...selectedTasks]},`${selectedTasks.size}개 항목을 재시도 큐에 등록했습니다.`,{title:`선택한 ${selectedTasks.size}개 항목을 재시도할까요?`,description:'선택 항목을 QStash 생성 큐에 다시 등록합니다.',impact:'항목별 외부 API와 AI 토큰 사용이 발생할 수 있습니다.',confirmLabel:'선택 재시도 실행',tone:'warning'})}>선택 재시도</button><button disabled={busy} onClick={()=>confirmAdminAction({action:'clear_generation_history'},'이전 생성 상태 기록을 정리했습니다.',{title:'이전 생성 상태 기록을 정리할까요?',description:'과거 QStash 실행·작업 상태 기록만 삭제합니다. TOP·피드·콘텐츠는 삭제하지 않습니다.',impact:'source_fetch_failed 등 과거 실패 기록이 생성 상태 화면에서 제거됩니다.',confirmLabel:'상태 기록 정리',tone:'warning',reload:true})}>이전 상태 기록 정리</button></div></div>{!taskRows.length?<p className="muted">현재 대기·검토·실패 항목이 없습니다.</p>:taskRows.map((item,index)=><div className="status-row" key={`${item.slug}-${index}`}><label className="task-check"><input type="checkbox" checked={selectedTasks.has(item.slug)} onChange={e=>setSelectedTasks(current=>{const next=new Set(current);e.target.checked?next.add(item.slug):next.delete(item.slug);return next;})}/></label><div><strong>{item.title||item.displayTitle||item.keyword||item.slug}</strong><p>{statusLabel(item.status)} · {item.error||item.aiError||item.lastError||(item.publicationReasons||[]).join(' / ')||'처리 중'} · 재시도 {item.attempts||item.retryCount||0}회</p></div><button disabled={busy} onClick={()=>confirmAdminAction({action:'regenerate',slug:item.slug},'재생성을 실행했습니다.',{title:'이 콘텐츠를 재생성할까요?',description:item.title||item.displayTitle||item.keyword||item.slug,impact:'기존 공개본은 검증 결과에 따라 유지되거나 새 검토 초안이 생성되며 AI 토큰이 사용됩니다.',confirmLabel:'재생성 실행',tone:'warning'})}>개별 재생성</button></div>)}</section>}
+
+    {tab==='images'&&<section className="admin-panel thumbnail-admin"><div className="panel-title-row"><div><h2>썸네일 이미지 풀 <small>{thumbnailItems.length}/{thumbnailPool?.targetSize||100}개</small></h2><p className="muted">TOP 순위 계산과 완전히 분리된 Unsplash 사전 풀입니다. 신규 콘텐츠만 자동 배정되며 기존·수동 이미지는 유지됩니다.</p></div><div className="admin-actions"><button disabled={busy} onClick={()=>confirmAdminAction({action:'bootstrap_thumbnail_pool',values:{force:thumbnailItems.length>0}},thumbnailItems.length?'이미지 풀을 다시 구축했습니다.':'이미지 풀 100개를 구축했습니다.',{title:thumbnailItems.length?'Unsplash 이미지 풀을 다시 구축할까요?':'Unsplash 이미지 풀 100개를 구축할까요?',description:'10개 카테고리별 10개 이미지를 조회·자동 검수해 Redis에 저장합니다.',impact:'콘텐츠별 실시간 검색은 하지 않습니다. 기존 콘텐츠에 고정된 이미지는 즉시 바뀌지 않으며, UNSPLASH_ACCESS_KEY와 API 호출이 필요합니다.',confirmLabel:thumbnailItems.length?'풀 다시 구축':'100개 풀 구축',tone:'warning'})}>{thumbnailItems.length?'풀 다시 구축':'100개 풀 구축'}</button></div></div><div className="thumbnail-toolbar"><label>카테고리<select value={imageCategory} onChange={event=>setImageCategory(event.target.value)}><option value="all">전체</option>{thumbnailCategories.map(category=><option key={category} value={category}>{thumbnailItems.find(item=>item.category===category)?.categoryLabel||category}</option>)}</select></label><label>수동 적용 콘텐츠<select value={thumbnailTargetSlug} onChange={event=>setThumbnailTargetSlug(event.target.value)}><option value="">선택 안 함</option>{thumbnailTargets.map(item=><option key={item.slug} value={item.slug}>{item.rank?`TOP ${item.rank} · `:''}{item.feedTitle||item.topTitle||item.displayTitle||item.keyword||item.slug}</option>)}</select></label></div>{!thumbnailItems.length?<p className="muted">아직 이미지 풀이 없습니다. 위의 ‘100개 풀 구축’을 실행한 뒤 표본을 검수하세요.</p>:<div className="thumbnail-pool-grid">{filteredThumbnailItems.map(item=><ThumbnailPoolCard key={item.id} item={item} busy={busy} targetSlug={thumbnailTargetSlug} confirmAdminAction={confirmAdminAction}/>)}</div>}</section>}
 
     {tab==='instagram'&&<section className="admin-panel instagram-admin"><div className="panel-title-row"><div><h2>인스타 카드 <small>{filteredInstagramItems.length}개</small></h2><p className="muted">검색 후 페이지별 10개씩 선택할 수 있습니다. 선택한 카드 미리보기는 목록 위에 고정됩니다.</p></div><input className="instagram-search" value={instagramSearch} onChange={e=>{setInstagramSearch(e.target.value);setInstagramPage(1);}} placeholder="제목·키워드 검색"/></div>{selectedPost&&<div className="instagram-work instagram-work-top"><InstagramCard refProp={cardRef} post={selectedPost} card={selectedPost.instagramCards?.[cardIndex]} index={cardIndex} total={selectedPost.instagramCards?.length||0}/><div className="card-controls"><button disabled={cardIndex===0} onClick={()=>setCardIndex(i=>i-1)}>이전</button><span>{cardIndex+1}/{selectedPost.instagramCards?.length||0}</span><button disabled={cardIndex>=(selectedPost.instagramCards?.length||1)-1} onClick={()=>setCardIndex(i=>i+1)}>다음</button>{selectedPost.instagramReady?<button onClick={regenerateInstagram}>카드 검증 재생성</button>:<button disabled={busy} onClick={()=>confirmAdminAction({action:'regenerate',slug:selectedPost.slug},'콘텐츠 생성을 실행했습니다.',{title:'인스타용 원본 콘텐츠를 생성할까요?',description:selectedPost.feedTitle||selectedPost.displayTitle||selectedPost.keyword,impact:'콘텐츠와 인스타 카드 생성 과정에서 외부 API와 AI 토큰이 사용됩니다.',confirmLabel:'콘텐츠 생성 실행',tone:'warning'})}>콘텐츠 생성</button>}<button onClick={downloadCard}>현재 카드 저장</button><button onClick={downloadAllCards}>전체 저장</button></div><div className="instagram-caption-box"><h3>인스타 게시물 본문</h3><textarea readOnly value={selectedPost.instagramCaption||''}/><button onClick={copyCaption}>본문 복사</button></div><div className="instagram-export-stack" aria-hidden="true">{(selectedPost.instagramCards||[]).map((card,index)=><InstagramCard key={index} refProp={node=>allCardRefs.current[index]=node} post={selectedPost} card={card} index={index} total={selectedPost.instagramCards.length}/>)}</div></div>}<div className="instagram-picker">{pagedInstagramItems.map(item=><button key={item.slug} className={selectedPost?.slug===item.slug?'active':''} onClick={()=>{setSelectedPost(item);setCardIndex(0);window.scrollTo({top:0,behavior:'smooth'});}}>{item.currentRank?`TOP ${item.currentRank} · `:item.feedSeq?`#${item.feedSeq} · `:''}{item.feedTitle||item.displayTitle||item.keyword}<em>{item.instagramReady?'검증 완료':'공개 콘텐츠 대기'}</em></button>)}</div>{!pagedInstagramItems.length&&<p className="muted">검색 결과가 없습니다.</p>}<div className="pagination instagram-pagination"><button disabled={instagramPage<=1} onClick={()=>setInstagramPage(p=>Math.max(1,p-1))}>이전</button><span>{instagramPage}/{instagramPageCount}</span><button disabled={instagramPage>=instagramPageCount} onClick={()=>setInstagramPage(p=>Math.min(instagramPageCount,p+1))}>다음</button></div></section>}
 
@@ -246,6 +256,17 @@ function ManageRow({item,type,busy,action,confirmAdminAction}){
     </div>}
   </article>;
 }
+function ThumbnailPoolCard({item,busy,targetSlug,confirmAdminAction}){
+  const imageUrl=isUnsplashImageUrl(item?.thumbUrl||item?.imageUrl||'')?optimizeImageUrl(item.thumbUrl||item.imageUrl,420,76):'';
+  const editMood=()=>{const value=prompt('내부 분위기 제목을 입력하세요.',item.moodTitle||'');if(value!=null&&value.trim())confirmAdminAction({action:'update_thumbnail_pool_item',values:{imageId:item.id,patch:{moodTitle:value.trim()}}},'분위기 제목을 수정했습니다.',{title:'분위기 제목을 수정할까요?',description:`${item.id} · ${value.trim()}`,impact:'관리자 분류와 자동 선택 점수에만 사용되며 공개 기사 제목에는 표시되지 않습니다.',confirmLabel:'수정',tone:'warning'});};
+  const editTags=()=>{const value=prompt('분위기 태그를 쉼표로 구분해 입력하세요.',(item.moods||[]).join(', '));if(value!=null)confirmAdminAction({action:'update_thumbnail_pool_item',values:{imageId:item.id,patch:{moods:value.split(',').map(v=>v.trim()).filter(Boolean)}}},'분위기 태그를 수정했습니다.',{title:'분위기 태그를 수정할까요?',description:item.moodTitle||item.id,impact:'이후 신규 콘텐츠의 이미지 적합도 계산에 반영됩니다.',confirmLabel:'수정',tone:'warning'});};
+  return <article className={`thumbnail-pool-card ${item.enabled===false?'is-disabled':''}`}>
+    <div className="thumbnail-pool-preview">{imageUrl?<img src={imageUrl} alt={item.altDescription||item.moodTitle||''} loading="lazy"/>:<span>이미지 없음</span>}<em>{item.id}</em></div>
+    <div className="thumbnail-pool-copy"><strong>{item.moodTitle||item.id}</strong><small>{item.categoryLabel||item.category} · {item.tone||'neutral'} · 사용 {Number(item.usageCount||0)}회</small><p>{[...(item.moods||[]),...(item.subjects||[])].slice(0,7).join(' · ')}</p><small>마지막 사용 {formatAdminDate(item.lastUsedAt)} · {item.reviewStatus||'미검수'}</small></div>
+    <div className="thumbnail-pool-actions"><button disabled={busy} onClick={editMood}>제목 수정</button><button disabled={busy} onClick={editTags}>태그 수정</button><button disabled={busy} onClick={()=>confirmAdminAction({action:'update_thumbnail_pool_item',values:{imageId:item.id,patch:{enabled:item.enabled===false}}},item.enabled===false?'이미지를 활성화했습니다.':'이미지를 비활성화했습니다.',{title:item.enabled===false?'이 이미지를 다시 사용할까요?':'이 이미지의 신규 자동 배정을 중지할까요?',description:item.moodTitle||item.id,impact:'기존 콘텐츠에 이미 고정된 이미지는 즉시 변경하지 않습니다.',confirmLabel:item.enabled===false?'활성화':'비활성화',tone:item.enabled===false?'warning':'danger'})}>{item.enabled===false?'활성화':'비활성화'}</button><button disabled={busy||!targetSlug||item.enabled===false} onClick={()=>confirmAdminAction({action:'set_thumbnail_image',slug:targetSlug,values:{imageId:item.id}},'선택 콘텐츠에 수동 이미지를 고정했습니다.',{title:'선택한 콘텐츠에 이 이미지를 고정할까요?',description:`${targetSlug} · ${item.moodTitle||item.id}`,impact:'이후 TOP 순위 변경이나 콘텐츠 재생성으로 자동 변경되지 않습니다.',confirmLabel:'수동 고정',tone:'warning'})}>선택 콘텐츠에 지정</button></div>
+  </article>;
+}
+
 function AuditRow({row}){
   const hasDiff=row?.before!=null||row?.after!=null||row?.error;
   return <article className="audit-row audit-row-rich">
@@ -258,7 +279,8 @@ function InstagramCard({refProp,post,card,index=0,total=0}){
   const safeCard=card||{type:'cover',headline:post?.instagramTitle||post?.feedTitle||post?.displayTitle||post?.keyword||'STELLATE',body:post?.summary||''};
   const type=String(safeCard.type||'feed_section');
   const promo=type==='promo';
-  const imageUrl=!promo?optimizeImageUrl(post?.imageMeta?.thumbUrl||post?.thumbnail||post?.image,1080):'';
+  const rawImageUrl=post?.imageMeta?.thumbUrl||post?.thumbnail||post?.image||'';
+  const imageUrl=!promo&&isUnsplashImageUrl(rawImageUrl)?optimizeImageUrl(rawImageUrl,1080):'';
   const sourceNames=Array.isArray(safeCard.sourceNames)?safeCard.sourceNames.filter(Boolean):[];
   const foot=[safeCard.photoCredit,sourceNames.length?`출처 ${sourceNames.join(' · ')}`:'',`${index+1}/${total||1}`].filter(Boolean).join(' · ');
   const className=['instagram-card','editorial-card',promo?'promo-card editorial-promo is-light':`editorial-${type} is-dark`].join(' ');
@@ -371,15 +393,15 @@ export async function getServerSideProps({req,res}){
     }catch{return fallback;}finally{if(timer)clearTimeout(timer);}
   };
   try{
-    const [trends,feed,contents,reviewDrafts,audit,tokenUsage,events,cronRuns,top10History,candidateReport,previewReport,trendRules,trendsUpdatedAt,refreshHealth,activeRunId]=await Promise.all([
-      safe(()=>getCachedTrends({includeHidden:true}),[]),safe(()=>getFeedPosts(1000,0,{includeHidden:true}),[]),safe(()=>getAllContents(1000),[]),safe(()=>getReviewDrafts(1000),[]),safe(()=>getAuditLogs(100),[]),safe(()=>getTokenUsage(7),[]),safe(()=>getEventStats(7),[]),safe(()=>getAdminRunSnapshot(10),[]),safe(()=>getTop10History(200),[]),safe(()=>getTrendCandidateReport('latest'),null),safe(()=>getTrendCandidateReport('preview'),null),safe(()=>getTrendRules(),{excludedKeywords:[]}),safe(()=>getTrendsUpdatedAt(),null),safe(()=>getTrendRefreshHealth(),null),safe(()=>getActiveTrendRefreshRunId(),''),
+    const [trends,feed,contents,reviewDrafts,audit,tokenUsage,events,cronRuns,top10History,candidateReport,previewReport,trendRules,trendsUpdatedAt,refreshHealth,activeRunId,thumbnailPool]=await Promise.all([
+      safe(()=>getCachedTrends({includeHidden:true}),[]),safe(()=>getFeedPosts(1000,0,{includeHidden:true}),[]),safe(()=>getAllContents(1000),[]),safe(()=>getReviewDrafts(1000),[]),safe(()=>getAuditLogs(100),[]),safe(()=>getTokenUsage(7),[]),safe(()=>getEventStats(7),[]),safe(()=>getAdminRunSnapshot(10),[]),safe(()=>getTop10History(200),[]),safe(()=>getTrendCandidateReport('latest'),null),safe(()=>getTrendCandidateReport('preview'),null),safe(()=>getTrendRules(),{excludedKeywords:[]}),safe(()=>getTrendsUpdatedAt(),null),safe(()=>getTrendRefreshHealth(),null),safe(()=>getActiveTrendRefreshRunId(),''),safe(()=>getThumbnailPoolAdminState(),{items:[],usage:[],targetSize:100}),
     ]);
     res.setHeader('Cache-Control','private, no-store');
     const currentReviewDrafts=(Array.isArray(reviewDrafts)?reviewDrafts:[]).filter(item=>Number(item?.contentVersion||0)===CURRENT_CONTENT_VERSION);
     const currentContents=(Array.isArray(contents)?contents:[]).filter(item=>Number(item?.contentVersion||0)===CURRENT_CONTENT_VERSION||item?.status==='published');
-    return{props:JSON.parse(JSON.stringify({trends:Array.isArray(trends)?trends:[],feed:Array.isArray(feed)?feed:[],contents:currentContents,reviewDrafts:currentReviewDrafts,audit:Array.isArray(audit)?audit:[],tokenUsage:Array.isArray(tokenUsage)?tokenUsage:[],events:Array.isArray(events)?events:[],cronRuns:Array.isArray(cronRuns)?cronRuns:[],top10History:Array.isArray(top10History)?top10History:[],candidateReport:candidateReport||null,previewReport:previewReport||null,trendRules:trendRules||{excludedKeywords:[]},trendsUpdatedAt:trendsUpdatedAt||null,refreshHealth:refreshHealth||null,activeRunId:activeRunId||'',initialLoadError:false}))};
+    return{props:JSON.parse(JSON.stringify({trends:Array.isArray(trends)?trends:[],feed:Array.isArray(feed)?feed:[],contents:currentContents,reviewDrafts:currentReviewDrafts,audit:Array.isArray(audit)?audit:[],tokenUsage:Array.isArray(tokenUsage)?tokenUsage:[],events:Array.isArray(events)?events:[],cronRuns:Array.isArray(cronRuns)?cronRuns:[],top10History:Array.isArray(top10History)?top10History:[],candidateReport:candidateReport||null,previewReport:previewReport||null,trendRules:trendRules||{excludedKeywords:[]},trendsUpdatedAt:trendsUpdatedAt||null,refreshHealth:refreshHealth||null,activeRunId:activeRunId||'',thumbnailPool:thumbnailPool||{items:[],usage:[],targetSize:100},initialLoadError:false}))};
   }catch(error){
     res.setHeader('Cache-Control','private, no-store');
-    return{props:{trends:[],feed:[],contents:[],reviewDrafts:[],audit:[],tokenUsage:[],events:[],cronRuns:[],top10History:[],candidateReport:null,previewReport:null,trendRules:{excludedKeywords:[]},trendsUpdatedAt:null,refreshHealth:null,activeRunId:'',initialLoadError:true}};
+    return{props:{trends:[],feed:[],contents:[],reviewDrafts:[],audit:[],tokenUsage:[],events:[],cronRuns:[],top10History:[],candidateReport:null,previewReport:null,trendRules:{excludedKeywords:[]},trendsUpdatedAt:null,refreshHealth:null,activeRunId:'',thumbnailPool:{items:[],usage:[],targetSize:100},initialLoadError:true}};
   }
 }

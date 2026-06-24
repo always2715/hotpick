@@ -32,8 +32,9 @@ assert.match(apiSource,/먼저 전체 상세 내용을 작성한 뒤/);
 assert.match(apiSource,/derivePostResearchTitle\(topicTitle,pkg/);
 assert.match(apiSource,/COPYRIGHT_REWRITE_FALLBACK/);
 assert.doesNotMatch(apiSource,/buildLatestNewsFallback/);
-assert.match(apiSource,/selectRelevantSourceImage/);
-assert.match(apiSource,/preferredImageMeta\|\|videoImageMeta\|\|sourceImageMeta/);
+assert.match(apiSource,/selectCuratedThumbnailForContent/);
+assert.match(apiSource,/preferredImageMeta\|\|existingContent\?\.imageMeta/);
+assert.doesNotMatch(apiSource,/preferredImageMeta\|\|videoImageMeta\|\|sourceImageMeta/);
 
 const news=buildRelatedNews([
   {title:'앤 해서웨이, 셋째 임신 발표…D라인 공개',link:'https://a.example/one',source:'A',publishedAt:'2026-06-21T01:00:00Z'},
@@ -54,15 +55,15 @@ const content=buildRelatedContent([
 assert.ok(content.length<=3);
 
 const refreshJob=fs.readFileSync(new URL('../lib/trendRefreshJob.js',import.meta.url),'utf8');
-assert.match(refreshJob,/thumbnail=contentThumb\|\|videoThumb\|\|trend\.thumbnail/);
-assert.match(refreshJob,/thumbnailSource=contentThumb\?/);
+assert.match(refreshJob,/const thumbnail=imageMeta\?\.thumbUrl\|\|imageMeta\?\.imageUrl\|\|null/);
+assert.doesNotMatch(refreshJob,/videoThumb/);
 assert.match(refreshJob,/const publicationRows = readyRows/);
 assert.doesNotMatch(refreshJob,/validCarryoverRows|combinePublicationRows|shouldCommitProgressiveRecovery/);
 const detailPage=fs.readFileSync(new URL('../pages/feed/[slug].js',import.meta.url),'utf8');
 assert.match(detailPage,/const relatedNews=dedupeSources\(Array\.isArray\(content\.relatedNews\)\?content\.relatedNews:\[\]\)\.slice\(0,3\)/);
 assert.match(detailPage,/item\.displayTitle\|\|item\.title\|\|item\.label/);
 const version=fs.readFileSync(new URL('../pages/api/version.js',import.meta.url),'utf8');
-assert.match(version,/contentVersion:132/);
-assert.match(version,/trendCacheVersion:51/);
+assert.match(version,/contentVersion:133/);
+assert.match(version,/trendCacheVersion:52/);
 assert.match(version,/fixed-keyword-content-stop-control-v8025/);
 console.log('v8.0.12 post-research title compatibility tests passed');

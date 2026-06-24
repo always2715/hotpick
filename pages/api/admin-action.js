@@ -10,12 +10,13 @@ import { requireAdmin } from '../../lib/adminAuth';
 import { enqueueTrendRefresh, enqueueTrendRefreshStep, enqueueMissingContentJobs, enqueueSelectedContentJobs, selectTopContentCandidates, createTrendRefreshRun } from '../../lib/jobs';
 import { executeTrendRefreshRun, MAX_CANDIDATE_ATTEMPTS } from '../../lib/trendRefreshJob';
 import { PUBLIC_TOP_COUNT, TOP_GENERATION_POOL_COUNT } from '../../lib/topConfig';
+import { bootstrapThumbnailPool, updateThumbnailPoolAdminItem, manualThumbnailMeta } from '../../lib/thumbnailPoolService.js';
 
 export const config = { maxDuration: 300 };
 
 const CONFIRM_REQUIRED_ACTIONS = new Set([
   'visibility','approve_review','reject_review','slug_redirect','migrate_slug','delete','reset_feed',
-  'refresh_trends','refresh_trends_direct','resume_trend_run','stop_trend_run','stop_active_trend_run','preview_trends','regenerate','retry_selected','regenerate_top_contents','rebuild_missing_feeds','regenerate_instagram','exclude_trend','allow_trend','approve_trend_candidate','revoke_trend_candidate_approval','clear_generation_history',
+  'refresh_trends','refresh_trends_direct','resume_trend_run','stop_trend_run','stop_active_trend_run','preview_trends','regenerate','retry_selected','regenerate_top_contents','rebuild_missing_feeds','regenerate_instagram','exclude_trend','allow_trend','approve_trend_candidate','revoke_trend_candidate_approval','clear_generation_history','bootstrap_thumbnail_pool','update_thumbnail_pool_item','set_thumbnail_image',
 ]);
 
 function cleanTitle(value, min = 2, max = 80) {
@@ -224,6 +225,33 @@ export default async function handler(req, res) {
       return res.status(queued?202:200).json({success:true,result,queued});
     }
     if (action === 'regenerate_instagram') return res.json({success:true,content:await regenerateInstagramCards(slug)});
+
+    if (action === 'bootstrap_thumbnail_pool') {
+      const result=await bootstrapThumbnailPool({force:Boolean(values?.force)});
+      await addAudit('bootstrap_thumbnail_pool','',null,{count:result?.items?.length||0,version:result?.version||null,failures:result?.failures||[]},'Unsplash 사전 썸네일 이미지 풀 구축');
+      return res.json({success:true,result});
+    }
+    if (action === 'update_thumbnail_pool_item') {
+      const imageId=String(values?.imageId||value||'').trim();
+      if(!imageId)throw new Error('수정할 이미지 ID가 없습니다.');
+      return res.json({success:true,result:await updateThumbnailPoolAdminItem(imageId,values?.patch||{})});
+    }
+    if (action === 'set_thumbnail_image') {
+      const imageId=String(values?.imageId||value||'').trim();
+      const targetSlug=String(slug||values?.slug||'').trim();
+      if(!targetSlug||!imageId)throw new Error('콘텐츠와 이미지 ID를 확인하세요.');
+      const imageMeta=await manualThumbnailMeta(imageId);
+      const patch={
+        image:imageMeta.imageUrl,thumbnail:imageMeta.thumbUrl||imageMeta.imageUrl,imageMeta,imageSource:'unsplash',thumbnailSource:'Unsplash',
+        thumbnailImageId:imageMeta.thumbnailImageId,thumbnailCategory:imageMeta.thumbnailCategory,thumbnailMood:imageMeta.thumbnailMood,
+        thumbnailSelectedAt:imageMeta.thumbnailSelectedAt,thumbnailSelectionType:'manual',
+      };
+      let content=null,trend=null;
+      try{content=await updateContentFields(targetSlug,patch,'manual_thumbnail_update');}catch(error){if(!/찾을 수 없습니다/.test(String(error?.message||'')))throw error;}
+      try{trend=await updateTrendFields(targetSlug,patch,'manual_thumbnail_update');}catch(error){if(!/찾을 수 없습니다/.test(String(error?.message||'')))throw error;}
+      if(!content&&!trend)throw new Error('이미지를 적용할 콘텐츠 또는 TOP 항목을 찾을 수 없습니다.');
+      return res.json({success:true,result:{content,trend,imageMeta}});
+    }
     return res.status(400).json({error:'지원하지 않는 작업입니다.'});
   } catch (error) {
     await addAudit(action||'admin_action',slug||'',null,null,'','admin','failed',error.message||'작업 실패');
