@@ -1,12 +1,7 @@
-# STELLATE v8.0.41
+# STELLATE v8.0.42
 
-STELLATE v8.0.41 is a Windows cleanup reliability patch based on v8.0.40.
+This release guarantees that the public feed can be rebuilt directly from current TOP detail content even when all feed indexes are empty. It also automatically prepares the curated Unsplash pool before TOP work, uses a valid partial pool when API limits prevent all 100 images from being filled at once, and backfills missing thumbnails on the current TOP.
 
-- Keeps the TOP25 generation pool and successful TOP20 publication policy.
-- Keeps v8.0.39 run compatibility and non-destructive feed recovery.
-- Keeps the curated Unsplash 100-image thumbnail pool.
-- Replaces the broken UTF-8 Korean BAT with an ASCII-only CRLF Windows CMD file.
-- The BAT directly removes foreign App Router/NVD/KISA/Supabase files even before Node runs.
-- Vercel preinstall/build cleanup remains enabled.
+TOP25 selection, successful TOP20 publication, reserve promotion, ranking scores, and manual thumbnail precedence are unchanged.
 
-Run `APPLY_STELLATE_v8.0.41_CLEANUP.bat` once from the hotpick repository root, commit all deletions in GitHub Desktop, and push.
+Use `STELLATE_v8.0.42_REPLACE_ONLY.zip` for GitHub Desktop replacement.

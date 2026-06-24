@@ -12,6 +12,7 @@ import { executeTrendRefreshRun, MAX_CANDIDATE_ATTEMPTS } from '../../lib/trendR
 import { PUBLIC_TOP_COUNT, TOP_GENERATION_POOL_COUNT } from '../../lib/topConfig';
 import { assessTrendRunCompatibility, CURRENT_TREND_ENGINE_VERSION } from '../../lib/trendEnginePolicy';
 import { bootstrapThumbnailPool, updateThumbnailPoolAdminItem, manualThumbnailMeta } from '../../lib/thumbnailPoolService.js';
+import { backfillMissingTopThumbnails } from '../../lib/thumbnailBackfillService.js';
 
 export const config = { maxDuration: 300 };
 
@@ -233,8 +234,9 @@ export default async function handler(req, res) {
 
     if (action === 'bootstrap_thumbnail_pool') {
       const result=await bootstrapThumbnailPool({force:Boolean(values?.force)});
-      await addAudit('bootstrap_thumbnail_pool','',null,{count:result?.items?.length||0,version:result?.version||null,failures:result?.failures||[]},'Unsplash 사전 썸네일 이미지 풀 구축');
-      return res.json({success:true,result});
+      const backfill=await backfillMissingTopThumbnails({limit:PUBLIC_TOP_COUNT});
+      await addAudit('bootstrap_thumbnail_pool','',null,{count:result?.items?.length||0,complete:Boolean(result?.complete),version:result?.version||null,failures:result?.failures||[],backfill},'Unsplash 사전 썸네일 이미지 풀 구축 및 현재 TOP 누락 이미지 적용');
+      return res.json({success:true,result:{...result,backfill}});
     }
     if (action === 'update_thumbnail_pool_item') {
       const imageId=String(values?.imageId||value||'').trim();

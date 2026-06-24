@@ -1,0 +1,28 @@
+STELLATE v8.0.42 test report
+Date: 2026-06-24
+
+- npm run test:v8: PASS
+- v8.0.42 direct current TOP content feed recovery test: PASS
+- Empty feed Hash/ZSET/contentIndex reproduction: PASS
+- Partial curated thumbnail pool readiness: PASS
+- Automatic pool preflight/backfill static integration checks: PASS
+- TOP25 generation pool and successful TOP20 publication regression: PASS
+- Reserve promotion and original selectionRank regression: PASS
+- v8.0.37-v8.0.42 run compatibility: PASS
+- Windows ASCII cleanup BAT test: PASS
+- Next.js 14.2.35 production build: PASS
+- Compiled successfully: PASS
+- Static pages 2/2: PASS
+- Local next start: PASS
+- /api/version HTTP 200: PASS
+- appVersion 8.0.42: PASS
+- contentVersion 133: PASS
+- trendCacheVersion 52: PASS
+
+Warnings:
+- Node emitted existing MODULE_TYPELESS_PACKAGE_JSON warnings during tests; tests passed.
+- The v8.0.42 runtime test uses an extensionless import loader only for direct Node test execution; Next.js production build passed without it.
+
+Not directly verified:
+- Production Upstash Redis data and real `/feed` row count after deployment
+- Production Unsplash API key validity, quota, and final pool count

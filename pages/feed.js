@@ -89,7 +89,7 @@ export default function Feed({ initialPosts, initialTotal, initialTopMap, recomm
               return <Fragment key={post.slug}>
                 <Link href={`/feed/${post.slug}`} className="feed-row">
                   <div className="feed-seq"><strong>#{post.feedSeq || '-'}</strong>{top ? <><span className="top-feed-badge">TOP {top.rank}</span></> : <span>FEED</span>}</div>
-                  <div className="feed-thumb">{isUnsplashImageUrl(post.thumbnail || post.image) ? <><img src={optimizeImageUrl(post.thumbnail || post.image, 180, 72)} alt="" loading="lazy" />{post.imageMeta?.photographerName && <span className="thumb-credit" title={`Photo by ${post.imageMeta.photographerName} on Unsplash`}>U · {post.imageMeta.photographerName}</span>}</> : <span className="thumb-fallback">{cat.emoji || '🔥'}</span>}</div>
+                  <div className="feed-thumb">{isUnsplashImageUrl(post.thumbnail || post.image) ? <><img src={optimizeImageUrl(post.thumbnail || post.image, 180, 72)} alt="" loading="lazy" />{post.imageMeta?.photographerName && <span className="thumb-credit" title={`Photo by ${post.imageMeta.photographerName} on Unsplash`}>U · {post.imageMeta.photographerName}</span>}</> : <span className="thumb-fallback"><><small>{cat.label}</small><strong>STELLATE</strong></></span>}</div>
                   <div className="feed-copy">
                     <div className="feed-labels"><span style={{ color: cat.color }}>{cat.label}</span><span>{new Date(post.updatedAt || post.generatedAt).toLocaleDateString('ko-KR')} · 조회 {Number(post.viewCount || 0).toLocaleString()}</span></div>
                     <h2>{post.feedTitle || post.displayTitle || post.keyword}</h2>

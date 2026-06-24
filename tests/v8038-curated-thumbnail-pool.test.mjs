@@ -55,5 +55,5 @@ assert.match(refresh,/publicationRows\.slice\(0, TARGET_TOP_COUNT\)/);
 const version=fs.readFileSync(new URL('../pages/api/version.js',import.meta.url),'utf8');
 assert.match(version,/thumbnailPoolSize:100/);
 assert.match(version,/thumbnailRankingIsolation:true/);
-assert.match(version,/one-time-pool-bootstrap-no-content-time-image-search/);
+assert.match(version,/automatic-pool-preflight-and-missing-slot-fill-no-content-keyword-search-v8042/);
 console.log('STELLATE v8.0.38 curated thumbnail pool tests: PASS');
