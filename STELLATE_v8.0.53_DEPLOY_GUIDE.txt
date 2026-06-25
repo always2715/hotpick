@@ -1,9 +1,0 @@
-STELLATE v8.0.53 배포 및 복구
-
-1. REPLACE_ONLY ZIP을 별도 폴더에 압축 해제합니다.
-2. 내부 전체를 hotpick 저장소 최상위에 덮어씁니다.
-3. APPLY_STELLATE_v8.0.53_CLEANUP.bat을 실행합니다.
-4. GitHub Desktop에서 변경·삭제 전체를 커밋하고 Push합니다.
-5. /api/version에서 appVersion 8.0.53을 확인합니다.
-6. hybridPublication 오류 실행은 후보 목록이 없을 가능성이 높으므로 관리자에서 새 TOP 작업을 시작합니다.
-7. 기존 공개 TOP, 누적 피드, Redis 데이터는 삭제하지 않습니다.

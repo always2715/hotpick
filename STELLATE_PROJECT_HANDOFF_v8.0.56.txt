@@ -1,0 +1,508 @@
+STELLATE 프로젝트 통합 인수인계서
+버전: v8.0.56
+작성일: 2026-06-26
+인코딩: UTF-8
+
+======================================================================
+0. 문서 역할과 우선순위
+======================================================================
+
+이 파일은 새 채팅·담당자 변경·대화 소실 시 STELLATE 프로젝트를 이어가기 위한 최신 단일 인수인계 문서입니다.
+앞으로 새 버전을 만들 때도 완료한 내용뿐 아니라 운영에서 추가 확인할 항목, 미확정 위험, 다음 버전에서 처리할 작업을 반드시 함께 기록합니다.
+
+우선순위:
+1) STELLATE_v8.0.56_FULL.zip 실제 소스
+2) 이 인수인계서의 확정 정책
+3) README_v8.0.56.md
+4) 이전 버전 자료
+
+실제 운영 Upstash Redis·QStash·Anthropic·Naver API에서 확인하지 않은 결과는 완료로 표시하지 않습니다.
+
+======================================================================
+1. 프로젝트 개요
+======================================================================
+
+서비스명: STELLATE
+기존 저장소명: hotpick
+도메인: stellate.co.kr
+프레임워크: Next.js 14 Pages Router, React 18, Node.js 22.x
+저장·작업: Upstash Redis, Upstash QStash
+Redis namespace: stellate:v7
+
+목적:
+- Google Trends, 뉴스, DataLab 등에서 상승 키워드 탐색
+- 관심도 상대순위 상위 정상 후보 25개를 최대 예비 풀로 고정
+- 1위부터 순서대로 독립 조사와 Fact Ledger 기반 콘텐츠 생성
+- 정상 콘텐츠 20개 확보 시 낮은 순위 미처리 후보 생략
+- 성공 후보를 selectionRank 순서로 정렬해 상위 20개 공개
+- 신규 성공 15~19개면 직전 정상 TOP에서 부족분 최대 5개 보충
+- 신규 성공 15개 미만이거나 보충 후 20개를 만들 수 없으면 기존 TOP20 유지
+- 상세 콘텐츠와 피드를 누적 보존
+
+STELLATE는 기사 원문을 재조합하지 않습니다.
+확인된 구조화 사실을 바탕으로 독립적인 설명형 콘텐츠를 작성합니다.
+
+======================================================================
+2. 현재 버전과 핵심 값
+======================================================================
+
+appVersion: 8.0.56
+contentVersion: 140
+trendCacheVersion: 57
+engine: ranked-top25-early-stop-at-20-progress-aware-hybrid-publication-durable-recovery-feed-first-v8056
+generationPoolCount: 25
+publicTopCount: 20
+publicTop10Count: 10
+thumbnailPoolSize: 500
+researchWindowHours: 36
+automaticKeywordAttempts: 3
+manualKeywordAttempts: 5
+automaticRunStepBudget: 96
+manualRunStepBudget: 160
+hardMaxRunSteps: 240
+maxStalledRunSteps: 10
+maxRunMinutes: 120
+
+TOP 정책: ranked_candidate_pool_v17_top20_from25
+
+변경하지 않은 기준:
+- 관심도 상대순위 산식
+- selectionRank 순서
+- TOP25 최대 예비 풀
+- 정상 콘텐츠 20개 공개
+- 신규 15~19개 + 이전 TOP 최대 5개 혼합 공개
+- 썸네일 점수를 순위에 사용하지 않는 정책
+- 피드 화면의 구성요건과 섹션 구성
+
+======================================================================
+3. v8.0.56 수정 대상 운영 로그와 원인
+======================================================================
+
+보고된 v8.0.55 운영 결과:
+- 최종 완료 25/25
+- 추가 검색 처리 50
+- 실행 단계 77/96
+- 시작 후 54분
+- 신규 정상 콘텐츠 0개
+- 직전 TOP 이어받기 0개
+- 대표 실패:
+  영주 SK스페셜티: CONTENT_BODY_TOO_SHORT
+  의협 한특위: CONTENT_BODY_TOO_SHORT
+  이만희: CONTENT_BODY_TOO_SHORT
+  비트코인: CONTENT_ACCURACY_FAILED
+  전광훈 목사: CONTENT_BODY_TOO_SHORT
+
+직접 원인:
+1) 기존 분량 판정이 최종 피드 화면 전체가 아니라 blog 본문 문자열만 계산했음
+2) 사용자가 의도한 대제목·요약·포인트·Q&A·공백이 1,000자 계산에서 빠졌음
+3) AI가 피드 본문, 요약, Q&A, 인스타 카드 등을 한 번에 만들었음
+4) Q&A나 인스타 카드 하나가 Fact ID·수치 검증에 걸려도 피드 전체를 폐기했음
+5) 정확성 검사를 분리해도 공개 판정의 grounding·copyright 검사에 보조 콘텐츠가 포함돼 전체 후보를 다시 탈락시킬 수 있었음
+6) 전체 결과가 폐기된 뒤 짧은 fallback으로 교체돼 CONTENT_BODY_TOO_SHORT가 반복됐음
+7) 비트코인·인물·기관 같은 넓은 키워드는 공식 자료의 구조화 facts를 profile Fact로 충분히 재사용하지 못했음
+8) 생성 순서가 사용자가 원하는 `키워드 → 피드 → 요약 → 피드 기반 제목`으로 강제되지 않았음
+
+직전 TOP 이어받기 0개 해석:
+- 신규 정상 콘텐츠가 0개이면 기존 확정 정책상 carryover를 계산하지 않는 것이 정상임
+- carryover는 신규 정상 15~19개일 때 부족한 자리 최대 5개만 보충하는 정책임
+- 신규 15개 미만이면 기존 TOP20 전체를 유지하며 이전 TOP 일부를 새 목록에 섞지 않음
+- 따라서 이번 핵심 오류는 carryover가 아니라 신규 피드 0개였던 생성·검증 구조임
+
+======================================================================
+4. v8.0.56 확정 생성 순서
+======================================================================
+
+고정 순서:
+1) 관심도 상대순위 기준 TOP25 최대 예비 후보 고정
+2) 후보별 독립 검색과 Fact Ledger 구성
+3) 피드 본문 섹션 완성
+4) 피드 범위 정확성 검증
+5) 완성된 피드에서 핵심 요약·맥락·주요 포인트 생성
+6) 완성된 피드 내용과 Fact Ledger를 참고해 제목 확정
+7) 제목 확정 후 Q&A·인스타 카드 등 보조 콘텐츠 파생
+8) 최종 공개 피드 전체 글자 수 계산
+9) 1,000자 미만일 때만 같은 Fact Ledger 기반 전용 보강 1회
+10) 최종 정확성·분량·공개 판정 후 stage 저장 및 공개 후보 확정
+
+contentPipeline 저장값:
+- top25_ranked_generation_pool
+- successful_top20_publication
+- independent_keyword_search
+- feed_body_first
+- feed_derived_summary
+- feed_derived_title
+- feed_derived_auxiliary
+
+중요:
+- AI 필수 JSON 출력은 visualQuery, sections, uncertainties 중심임
+- AI에게 Q&A·인스타 카드·최종 제목을 동시에 필수 생성시키지 않음
+- 요약과 제목은 완성된 피드에서 파생함
+- 보조 콘텐츠 오류가 검증된 피드를 거꾸로 무효화하지 않음
+
+======================================================================
+5. 최종 공개 피드 분량 계산 기준
+======================================================================
+
+최소 공개 기준: 1,000자
+권장 목표: 근거가 충분하면 약 5,000자
+권장 범위: 3,500~6,000자
+
+1,000자와 5,000자 계산에 포함:
+- 메인 제목
+- 핵심 요약
+- 맥락·왜 중요한지
+- 주요 포인트
+- 대제목·소제목의 화면 표시 문자열
+- 본문 전체
+- Q&A 질문과 답변
+- 각 화면 블록 사이의 공백과 줄바꿈
+
+계산에서 제외:
+- 화면에 그대로 보이지 않는 Markdown 제어 표식 `## `
+- 내부 저장용 메타데이터, Fact ID, source ID
+- 인스타 카드
+- 하단 출처 URL 자체
+
+저장 필드:
+- feedPublicCharacterCount: 최종 공개 텍스트 전체 길이
+- feedBodyCharacterCount: blog 본문 문자열 길이
+- feedLengthBreakdown.publicText
+- feedLengthBreakdown.body
+- feedLengthBreakdown.countingBasis
+
+판정:
+- blog 본문 단독이 1,000자 미만이어도 최종 공개 텍스트가 1,000자 이상이면 통과
+- 5,000자 미달만으로 실패시키지 않음
+- 6,000자 초과만으로 실패시키지 않음
+- 동일 Fact 반복, 일반론, 추측, 근거 없는 전망으로 분량을 채우지 않음
+- 최종 공개 텍스트가 1,000자 미만일 때만 같은 Fact 보강을 1회 수행
+- 확인 Fact 자체가 부족하면 억지 통과시키지 않고 정상 실패
+
+feedDetailLengthPolicy:
+- v8056-public-text-min1000-target5000-feed-first
+
+======================================================================
+6. 정확성·근거·저작권 검증 분리
+======================================================================
+
+v8.0.56 feed scope:
+- 피드 본문 섹션과 최종 피드 요약을 공개 후보 판단의 중심으로 사용
+- 피드 본문의 claimIds, 숫자, 단위, 추론 표현을 Fact Ledger와 대조
+- grounding과 copyright 판정도 contentVersion 140부터 피드 범위를 적용
+
+보조 콘텐츠:
+- Q&A와 인스타 카드는 피드 완성 후 파생
+- 보조 콘텐츠에 잘못된 Fact ID나 근거 없는 표현이 있어도 검증된 피드 전체를 폐기하지 않음
+- 전체 검증 모드에서는 보조 콘텐츠 오류를 별도 진단 가능
+- 인스타 카드 재생성 기능의 독립 검증은 유지
+
+유지 정책:
+- 기사의 문장과 제목을 복사하지 않음
+- 공식·공인·신뢰 언론 우선
+- 온라인 반응은 Fact 근거로 사용하지 않음
+- 분량을 위해 검증 절차 설명·출처 안내문을 본문에 넣지 않음
+
+======================================================================
+7. 넓은 키워드의 profile Fact 복구
+======================================================================
+
+대상 예:
+- 비트코인·암호화폐·가상자산
+- 인물·정치인·목사·의사
+- 기관·협회·위원회·기업
+
+수정:
+- officialEvidence와 profileLinks를 함께 profile evidence로 구성
+- 공식·공인·신뢰 출처의 구조화 item.facts를 profile 설명에 포함
+- 주제 일치와 신뢰 출처를 확인한 기본 사실은 profile Fact로 활용
+- 역할 탐지 범위를 목사, 의사, 정치인, 암호화폐, 가상자산, 기관, 협회, 위원회 등으로 확장
+
+주의:
+- profile Fact는 사건 Fact를 대신하는 일반론이 아님
+- 현재 이슈 Fact가 있으면 사건 중심 피드를 우선함
+- 고정 키워드 흐름에서 사건 Fact가 부족하고 신뢰 profile Fact가 있을 때만 entity profile 모드를 허용
+- 실제 운영에서 넓은 키워드의 오탐·과도한 기본정보 비중을 반드시 표본 확인해야 함
+
+======================================================================
+8. TOP25 -> TOP20 전체 처리 흐름
+======================================================================
+
+1. Cron 또는 관리자 TOP 즉시 시작
+2. runId 생성
+3. 후보 약 90개 수집
+4. 관심도 상대순위 계산
+5. 스팸·중복·문장 조각·편집 라벨·포괄 사건 동작어 제외
+6. 다음 정상 상대순위 후보로 최대 25개 고정
+7. selectionRank와 candidateId 부여
+8. QStash 요청당 후보 1개 처리
+9. 외부 호출 전 research checkpoint와 모든 alias 저장
+10. 독립 검색과 Fact Ledger 구성
+11. 대표 엔티티 재검증
+12. 피드 본문 우선 생성
+13. 피드 요약 생성
+14. 피드 기반 제목 확정
+15. 보조 콘텐츠 파생
+16. 최종 공개 텍스트 글자 수 계산
+17. 1,000자 미만이면 same-Fact 보강 1회
+18. 최종 stage·snapshot·alias 저장 및 읽기 검증
+19. 정확성·분량·제목 검증
+20. 실제 오류 코드 저장 후 제한 재시도
+21. 정상 콘텐츠 20개 확보 시 낮은 순위 queued/retry_wait 후보를 SKIPPED_NOT_NEEDED 처리
+22. cutoffRank 이내 이미 처리된 상위 retry_wait만 제한 재시도
+23. 성공 후보를 selectionRank 오름차순 정렬
+24. 신규 20개면 신규 상위 20개 공개
+25. 신규 15~19개면 archive 포함 직전 정상 TOP에서 최대 5개 보충
+26. 신규 15개 미만이거나 20개를 만들 수 없으면 기존 TOP20 유지
+27. 직전 공개 TOP과 비교해 NEW·유지·상승·하락 계산
+28. 최종 20개 원자적 공개
+
+======================================================================
+9. v8.0.55에서 유지되는 복구 정책
+======================================================================
+
+- 외부 조사·AI 호출 전 publication stage와 run snapshot에 최소 checkpoint 저장
+- candidateId, slug:{slug}, stage:{stageId} alias 저장·읽기 검증
+- Redis 순간 오류 시 제한 재시도와 self-healing
+- 실제 실패 원인을 lastRootCauseCode에 보존
+- KEYWORD_ATTEMPT_LIMIT는 attemptLimitCode로 별도 저장
+- failed/private live 콘텐츠가 있으면 마지막 정상 archive로 carryover 조회
+- 반도체, 가스 누출, 구조팀 같은 포괄 조각 후보 차단
+- 영문·숫자가 섞인 기업명 뒤 잘못 붙은 조사 ‘서’ 제한 정규화
+- 동일 canonical source URL의 동일 사건 후보 중복 제거
+- 상단 `📈 TOP20`, `📋 피드` 아이콘 유지
+
+======================================================================
+10. 누적 피드와 주요 Redis 키
+======================================================================
+
+누적 피드 정책:
+- 현재 TOP20과 과거 정상 공개 콘텐츠를 별도 누적 보존
+- 같은 slug는 1건 유지
+- live content가 이후 failed/private가 돼도 관리자 제한이 없으면 마지막 정상 archive 상세 제공
+- 관리자 hidden_feed/private/trashed와 영구 삭제는 archive에도 반영
+- 피드 전체 초기화만 archive 삭제
+
+주요 키:
+- stellate:v7:feed:archive:items
+- stellate:v7:feed:archive:contents
+- stellate:v7:feed:archive:index:latest
+- stellate:v7:feed:archive:slugs
+- stellate:v7:cron:content:{runId}
+- stellate:v7:publication_stage:{stageId}
+
+금지:
+- Redis FLUSHALL
+- namespace 변경
+- 기존 정상 TOP 삭제
+- 누적 피드 초기화
+
+======================================================================
+11. 썸네일 정책
+======================================================================
+
+- Unsplash만 허용
+- 언론사·공식 사이트·YouTube 썸네일 대표 이미지 사용 금지
+- 10개 카테고리 x 50개 = 500개 사전 풀
+- 카테고리·분위기·소재·톤 적합도 점수
+- 최근 20개 및 같은 TOP 화면 중복 방지
+- 기존 이미지와 관리자 수동 지정 유지
+- 썸네일 적합도는 TOP 관심도 순위와 완전 분리
+
+======================================================================
+12. 주요 파일
+======================================================================
+
+v8.0.56 핵심 수정:
+- lib/api.js: 피드 우선 생성·파생 순서·최종 공개 글자 수·profile Fact
+- lib/feedLengthPolicy.js: 최종 공개 텍스트 조립과 길이 계산
+- lib/contentAccuracy.js: feed/all 검증 범위 분리
+- lib/contentPolicy.js: feed scope grounding·copyright·공개 판정
+- lib/contentArchitecture.js: 최종 공개 길이로 상세형 구조 판정
+- lib/publicationPolicy.js: 최종 공개 길이로 공개 가능 판정
+- lib/kv.js: 백업 버전 8.0.56
+- lib/trendEnginePolicy.js: v8.0.56 호환 엔진
+- lib/trendRefreshJob.js: 실행 보고 버전 8.0.56
+- pages/admin.js: contentVersion 140
+- pages/api/version.js: v8.0.56 정책 공개
+- tests/v8056-feed-first-public-length.test.mjs: 신규 회귀 테스트
+
+주요 구조:
+- pages/index.js: 메인 TOP20
+- pages/[slug].js: TOP 요약
+- pages/feed.js: 누적 피드 목록
+- pages/feed/[slug].js: 피드 상세
+- pages/admin.js: 실행·후보·콘텐츠·썸네일 관리
+- pages/api/jobs/update-trends.js: QStash TOP 단계 처리
+- lib/trendRefreshJob.js: 후보 처리·재시도·공개
+- lib/kv.js: Redis·누적 archive·stage/snapshot
+
+======================================================================
+13. 환경변수
+======================================================================
+
+- UPSTASH_REDIS_REST_URL
+- UPSTASH_REDIS_REST_TOKEN
+- QSTASH_TOKEN
+- QSTASH_CURRENT_SIGNING_KEY
+- QSTASH_NEXT_SIGNING_KEY
+- CRON_SECRET
+- ADMIN_PASSWORD
+- SESSION_SECRET
+- ANTHROPIC_API_KEY
+- NAVER_CLIENT_ID
+- NAVER_CLIENT_SECRET
+- YOUTUBE_API_KEY
+- UNSPLASH_ACCESS_KEY
+
+비밀값에 NEXT_PUBLIC_ 접두사를 사용하지 않습니다.
+.env, .env.local, .vercel, node_modules, .next는 Git에 커밋하지 않습니다.
+
+======================================================================
+14. v8.0.56 배포와 기존 0/20 실행 처리
+======================================================================
+
+권장 파일:
+- STELLATE_v8.0.56_FULL.zip
+- STELLATE_v8.0.56_REPLACE_ONLY.zip
+두 ZIP 모두 혼합 버전 배포를 막기 위해 완전한 런타임 소스 스냅샷을 포함합니다.
+
+배포 순서:
+1. ZIP을 별도 폴더에 압축 해제
+2. 내부 전체를 hotpick 저장소 최상위에 덮어쓰기
+3. APPLY_STELLATE_v8.0.56_CLEANUP.bat 실행
+4. GitHub Desktop에서 변경·삭제 전체 확인
+5. Commit to main
+6. Push origin
+7. Vercel Ready 확인
+8. /api/version에서 appVersion 8.0.56, contentVersion 140, trendCacheVersion 57 확인
+9. 관리자에서 누적 피드 전체 재구성 1회 실행
+10. 새 TOP 작업 시작
+
+보고된 v8.0.55 0/20 실행:
+- 재개하지 않음
+- 이유 1: 자동 최대 3회 시도를 이미 소진함
+- 이유 2: contentVersion 139의 동시 생성·본문 단독 계산 결과가 stage에 남아 있음
+- 이유 3: v8.0.56은 contentVersion 140으로 피드 구조를 다시 생성해야 함
+- 기존 실행은 중단 상태로 보존
+- Redis FLUSHALL, 기존 TOP 삭제, 피드 초기화 금지
+
+권장 커밋:
+fix: enforce feed-first TOP20 content pipeline v8.0.56
+
+======================================================================
+15. 테스트 결과
+======================================================================
+
+완료:
+- v8.0.56 전용 feed-first 공개 길이 테스트 PASS
+- 본문 단독 1,000자 미만 + 최종 공개 텍스트 1,000자 이상 통과 PASS
+- 제목·요약·포인트·대제목/소제목·본문·Q&A·줄바꿈 포함 계산 PASS
+- Q&A·인스타 오류의 피드 정확성 판정 격리 PASS
+- feed scope grounding·copyright 판정 PASS
+- 피드 요약 후 피드 기반 제목 확정 순서 PASS
+- stage 복구 경로 동일 순서 적용 PASS
+- TOP 순위·혼합 공개·누적 피드·썸네일 회귀 PASS
+- 전체 npm run test:v8 PASS
+- Next.js 14.2.35 production build PASS
+- Compiled successfully 확인
+- static pages 2/2 확인
+- 로컬 /api/version HTTP 200, appVersion 8.0.56, contentVersion 140, trendCacheVersion 57 확인
+- 로컬 / HTTP 200 확인
+
+검증 한계:
+- 실제 운영 Upstash Redis·QStash에서 25개 전체 생성은 로컬 환경에서 실행하지 못함
+- 실제 Anthropic/Naver/YouTube/Unsplash 응답 상태와 운영 API 제한은 배포 후 확인 필요
+- profile Fact 복구가 실제 넓은 키워드에서 어느 정도 성공률을 높이는지 운영 표본 필요
+- 신규 15~19개 부분 성공 carryover는 운영 표본에서 확인 필요
+
+======================================================================
+16. 앞으로 처리해야 할 항목
+======================================================================
+
+반드시 운영에서 확인:
+1. 새 TOP 작업이 contentVersion 140으로 시작되는지 확인
+2. 후보별 contentPipeline에 feed_body_first, feed_derived_summary, feed_derived_title, feed_derived_auxiliary가 순서대로 남는지 확인
+3. feedPublicCharacterCount와 feedBodyCharacterCount를 표본 5건 이상 비교
+4. 실제 화면에서 보이는 제목·요약·포인트·소제목·본문·Q&A 길이와 feedPublicCharacterCount가 일치하는지 확인
+5. blog 본문 단독 1,000자 미만이지만 최종 공개 텍스트 1,000자 이상인 후보가 정상 통과하는지 확인
+6. 최종 공개 텍스트 1,000자 미만 후보만 1회 보강되는지 확인
+7. Q&A나 인스타 카드 오류가 CONTENT_ACCURACY_FAILED로 피드 전체를 탈락시키지 않는지 확인
+8. 비트코인·인물·기관 표본에서 공식 구조화 profile Fact가 정상 반영되는지 확인
+9. profile Fact가 관련 없는 동명이인·다른 자산·다른 기관 사실을 섞지 않는지 확인
+10. 신규 정상 콘텐츠 수, CONTENT_BODY_TOO_SHORT 수, CONTENT_ACCURACY_FAILED 수를 v8.0.55의 0/20 결과와 비교
+11. 신규 15~19개인 실행에서 이전 TOP 최대 5개 보충 확인
+12. 신규 15개 미만일 때 carryover 0 + 기존 TOP 전체 유지가 정상 표시되는지 확인
+13. 정상 20개 확보 시 낮은 순위 후보가 SKIPPED_NOT_NEEDED로 종료되는지 확인
+14. 추가 검색 횟수·실행 단계·총 실행시간·Anthropic 토큰 사용량을 기록
+15. 관리자 누적 피드 archiveCount와 새 slug 누적 증가 확인
+
+다음 개선 후보:
+1. 관리자 후보 상세에 feedPublicCharacterCount, feedBodyCharacterCount, length repair 전후 길이 표시
+2. 오류 코드별 실행 통계와 버전별 성공률 대시보드 추가
+3. profile Fact 사용 출처·선택 이유를 관리자 전용 진단에 표시
+4. 추가 검색이 계속 50회 수준이면 실행 단위 검색 캐시와 후보별 추가 검색 최대 1회 정책 구현
+5. 동일 사건이 서로 다른 URL로 중복 진입하면 event cluster fingerprint 강화
+6. 보조 콘텐츠 별도 품질 진단을 관리자 화면에 표시하되 공개 차단과 분리
+7. 외부 API 429/5xx·timeout을 공급자별로 집계
+8. Next.js/PostCSS 취약점 해결을 위한 별도 업그레이드 브랜치 준비
+   - npm audit --omit=dev: high 1, moderate 1
+   - 자동 npm audit fix --force 금지
+   - Pages Router·React·Vercel 전체 회귀 후 적용
+
+미확정 위험:
+- 외부 API가 장시간 429/5xx를 반환하면 정상 후보 수는 여전히 줄 수 있음
+- 확인 Fact 자체가 부족한 키워드는 최종 공개 텍스트 1,000자를 강제 통과시키지 않음
+- profile Fact가 충분해도 현재 이슈가 전혀 없으면 기본정보형 피드가 될 수 있으므로 운영 품질 확인 필요
+- archive에 정상 공개본이 전혀 없으면 신규 15~19개여도 carryover를 만들 수 없음
+- 신규 정상 0~14개에서 carryover 0은 오류가 아니라 기존 확정 정책임
+- 최종 공개 길이 계산은 저장된 화면 구성 문자열 기준이며 브라우저 CSS 렌더링 픽셀·줄 수를 계산하는 방식은 아님
+
+앞으로 모든 신규 handoff 파일에는 이 ‘앞으로 처리해야 할 항목’ 섹션을 유지하고 완료·미완료 상태를 갱신해야 합니다.
+
+======================================================================
+17. 금지 작업
+======================================================================
+
+- Redis FLUSHALL
+- 기존 정상 TOP 삭제
+- 누적 피드 초기화
+- namespace 변경
+- 기존 Cron/QStash 구조 임의 교체
+- 부족한 Fact를 일반론·추측으로 채워 1,000자 강제 통과
+- 5,000자 미달을 단독 실패 사유로 사용
+- 다시 피드·제목·요약·Q&A·인스타 카드를 한 번에 필수 AI 출력으로 결합
+- 보조 콘텐츠 오류로 검증된 피드 전체를 폐기
+- 생성 완료 순서로 공개 순위 부여
+- 썸네일 점수를 TOP 순위에 반영
+- 일부 파일만 골라 적용해 혼합 버전 배포
+- npm audit fix --force 무검증 실행
+
+======================================================================
+18. 새 채팅 전달문
+======================================================================
+
+ZIP 안의 STELLATE_PROJECT_HANDOFF_v8.0.56.txt를 먼저 읽고 실제 소스와 대조해줘.
+현재 기준은 appVersion 8.0.56, contentVersion 140, trendCacheVersion 57이다.
+v8.0.56은 TOP25 키워드 확정 후 피드 본문을 먼저 완성하고, 완성 피드에서 요약을 만든 뒤 피드 내용 기반 제목을 확정하고, 마지막에 Q&A·인스타 카드를 파생한다.
+피드 최소 1,000자와 약 5,000자 권장 기준은 blog 본문 단독이 아니라 메인 제목·요약·맥락·포인트·대제목/소제목·본문·Q&A·표시 공백/줄바꿈을 포함한 최종 공개 텍스트 기준이다.
+피드 구성요건은 변경하지 않았다.
+보조 콘텐츠 오류는 검증된 피드 공개를 차단하지 않으며 별도 진단한다.
+비트코인·인물·기관 같은 넓은 키워드는 공식·공인 구조화 profile Fact를 활용한다.
+신규 정상 15개 미만에서 carryover 0은 정상 정책이며 기존 TOP20 전체를 유지한다.
+보고된 v8.0.55 0/20 실행은 재개하지 말고 v8.0.56 배포 후 새 TOP 작업을 시작한다.
+인수인계서의 ‘앞으로 처리해야 할 항목’을 완료 여부와 함께 계속 갱신해줘.
+운영 Redis·QStash·외부 API 검증이 필요한 항목은 로컬 완료와 구분해줘.
+
+======================================================================
+19. 최근 버전 이력 요약
+======================================================================
+
+v8.0.50: 정상 공개 피드와 상세 snapshot을 누적 archive에 별도 보존
+v8.0.51: 신규 정상 15~19개 + 직전 TOP 최대 5개 혼합 공개
+v8.0.52: 자동 96·수동 160 단계 예산, 진행 시 최대 240 확장, 재개 시간창 초기화
+v8.0.53: start 단계 hybridPublication 초기화 ReferenceError 수정
+v8.0.54: 정상 20개 확보 시 낮은 순위 후보 SKIPPED_NOT_NEEDED 조기 완료
+v8.0.55: 본문 미달 복구·durable checkpoint·archive carryover·후보 정규화·TOP20 아이콘
+v8.0.56: 피드 우선 생성, 최종 공개 텍스트 분량 계산, 보조 콘텐츠 검증 격리, 넓은 키워드 profile Fact 복구
+
+문서 끝

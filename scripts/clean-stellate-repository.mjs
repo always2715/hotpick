@@ -9,7 +9,7 @@ const dryRun = args.includes('--dry-run');
 
 const removeBuildOutput = args.includes('--local') || (!args.includes('--install') && !args.includes('--build'));
 
-const CURRENT_RELEASE = '8.0.55';
+const CURRENT_RELEASE = '8.0.56';
 const preservedVersionedFiles = new Set([
   `README_v${CURRENT_RELEASE}.md`,
   `STELLATE_PROJECT_HANDOFF_v${CURRENT_RELEASE}.txt`,

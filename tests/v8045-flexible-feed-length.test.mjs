@@ -31,10 +31,10 @@ const architecture=fs.readFileSync(path.join(root,'lib/contentArchitecture.js'),
 const version=fs.readFileSync(path.join(root,'pages/api/version.js'),'utf8');
 assert.match(api,/약 5,000자를 권장|target\.toLocaleString/);
 assert.match(api,/같은 사실을 반복하거나 일반론·추측·전망을 추가하면 안 됩니다/);
-assert.match(api,/feedDetailLengthPolicy:'v8046-min1000-target5000-recovery'/);
+assert.match(api,/feedDetailLengthPolicy:'v8056-public-text-min1000-target5000-feed-first'/);
 assert.match(publication,/feedBodyLength<FEED_DETAIL_MIN_CHARS/);
 assert.doesNotMatch(publication,/feedBodyLength>FEED_DETAIL/);
 assert.match(architecture,/!enforceFlexibleFeedLength&&length>maximumLength/);
-assert.match(version,/minimum-1000-recommended-around-5000-no-padding-v8046/);
-assert.match(version,/contentVersion:139/);
+assert.match(version,/final-public-visible-text-minimum-1000-recommended-around-5000-v8056/);
+assert.match(version,/contentVersion:140/);
 console.log('STELLATE v8.0.52 flexible feed length policy tests: PASS');

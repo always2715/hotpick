@@ -43,12 +43,12 @@ assert.equal(validateGeneratedPackageAccuracy(badRevision,cases[1].ledger).passe
 const apiSource=fs.readFileSync(new URL('../lib/api.js',import.meta.url),'utf8');
 const refreshSource=fs.readFileSync(new URL('../lib/trendRefreshJob.js',import.meta.url),'utf8');
 const versionSource=fs.readFileSync(new URL('../pages/api/version.js',import.meta.url),'utf8');
-assert.match(apiSource,/const revisedAccuracy=validateGeneratedPackageAccuracy\(revisedPkg,factLedger\)/,'AI 수정안은 채택 전에 정확성 검사를 통과해야 합니다.');
+assert.match(apiSource,/const revisedAccuracy=validateGeneratedPackageAccuracy\(revisedPkg,factLedger,\{scope:'feed'\}\)/,'AI 수정안은 채택 전에 정확성 검사를 통과해야 합니다.');
 assert.match(apiSource,/const strictPkg=buildVerifiedFallback\(topicTitle,factLedger,sourceWindowHours,contentTier\)/,'마지막 정확성 실패 시 Fact Ledger 결정론적 재작성 경로가 있어야 합니다.');
 assert.match(apiSource,/aiStatus='verified_literal_fallback'/,'결정론적 정확성 복구 성공 상태를 기록해야 합니다.');
 assert.match(refreshSource,/STRICT_CONTENT_ACCURACY_FAILED\|NO_ACCURATE_CONTENT/,'정확성 실패가 남으면 한 번에 영구 실패시키지 말고 제한된 추가 조사를 허용해야 합니다.');
-assert.match(versionSource,/contentVersion:139/);
-assert.match(versionSource,/trendCacheVersion:56/);
+assert.match(versionSource,/contentVersion:140/);
+assert.match(versionSource,/trendCacheVersion:57/);
 assert.match(versionSource,/publicTopCount:20/);
 
 console.log('STELLATE v8.0.34 strict accuracy completion tests: PASS');

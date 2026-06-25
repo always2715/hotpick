@@ -76,7 +76,7 @@ assert.match(adminSource,/정상 20개 확보 시 조기 종료|정상 준비 .*
 assert.doesNotMatch(adminSource,/TOP 키워드 30개|31위 이하 후보/,'관리자 화면에 TOP30 기준이 남으면 안 됩니다.');
 assert.match(adminActionSource,/needsFixedTop20Migration/,'이전 실행 재개를 차단해야 합니다.');
 assert.match(versionSource,/publicTopCount:20/);
-assert.match(versionSource,/contentVersion:139/);
-assert.match(versionSource,/trendCacheVersion:56/);
+assert.match(versionSource,/contentVersion:140/);
+assert.match(versionSource,/trendCacheVersion:57/);
 
 console.log('STELLATE v8.0.31 TOP20 and stage durability tests: PASS');

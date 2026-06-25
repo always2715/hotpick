@@ -1,7 +1,0 @@
-STELLATE v8.0.42 release manifest
-App version: 8.0.42
-Content version: 133
-Trend cache version: 52
-Generation pool: 25
-Public TOP: 20
-Primary fixes: guaranteed feed list from current TOP detail source; automatic curated Unsplash pool readiness and current TOP thumbnail backfill

@@ -38,7 +38,7 @@ assert.doesNotMatch(refresh,/buildDeterministicSafetyContent/);
 
 const api=fs.readFileSync(new URL('../lib/api.js',import.meta.url),'utf8');
 assert.match(api,/fixedTop20Flow&&contentIsReady\(stageCandidate\)&&isFixedKeywordFeedReady\(stageCandidate\)/);
-assert.match(api,/contentPipeline:\['top25_ranked_generation_pool','successful_top20_publication','independent_keyword_search','feed_first_content','feed_derived_summary'\]/);
+assert.match(api,/contentPipeline:\['top25_ranked_generation_pool','successful_top20_publication','independent_keyword_search','feed_body_first','feed_derived_summary','feed_derived_title','feed_derived_auxiliary'\]/);
 
 const version=fs.readFileSync(new URL('../pages/api/version.js',import.meta.url),'utf8');
 assert.match(version,/fixed-keyword-content-stop-control-v8025/);

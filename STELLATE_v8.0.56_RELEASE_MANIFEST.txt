@@ -1,0 +1,26 @@
+STELLATE v8.0.56 release manifest
+
+Application: STELLATE / hotpick
+App version: 8.0.56
+Content version: 140
+Trend cache version: 57
+Engine: ranked-top25-early-stop-at-20-progress-aware-hybrid-publication-durable-recovery-feed-first-v8056
+Generation pool: maximum 25 candidates
+Publication target: 20
+Minimum fresh hybrid publication: 15
+Maximum previous TOP carryover: 5
+Automatic keyword attempts: 3
+Manual keyword attempts: 5
+Automatic step budget: 96
+Manual step budget: 160
+Hard step limit: 240
+Feed minimum: final public visible text 1,000 chars
+Feed recommended target: around 5,000 chars when evidence supports it
+Feed count basis: title, summary, context, points, headings, body, QA, visible whitespace/newlines
+Generation order: ranked keyword -> feed body -> feed summary -> feed-derived title -> auxiliary content
+Auxiliary isolation: QA/Instagram cannot invalidate an otherwise valid feed
+Profile recovery: official/authorized structured facts for broad entity keywords
+Feed composition requirements: unchanged
+Thumbnail pool: Unsplash 500
+Header: 📈 TOP20 / 📋 피드
+Top policy: ranked_candidate_pool_v17_top20_from25
