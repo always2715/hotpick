@@ -48,7 +48,7 @@ assert.match(apiSource,/const strictPkg=buildVerifiedFallback\(topicTitle,factLe
 assert.match(apiSource,/aiStatus='verified_literal_fallback'/,'결정론적 정확성 복구 성공 상태를 기록해야 합니다.');
 assert.match(refreshSource,/STRICT_CONTENT_ACCURACY_FAILED\|NO_ACCURATE_CONTENT/,'정확성 실패가 남으면 한 번에 영구 실패시키지 말고 제한된 추가 조사를 허용해야 합니다.');
 assert.match(versionSource,/contentVersion:138/);
-assert.match(versionSource,/trendCacheVersion:54/);
+assert.match(versionSource,/trendCacheVersion:55/);
 assert.match(versionSource,/publicTopCount:20/);
 
 console.log('STELLATE v8.0.34 strict accuracy completion tests: PASS');

@@ -37,4 +37,4 @@ assert.doesNotMatch(publication,/feedBodyLength>FEED_DETAIL/);
 assert.match(architecture,/!enforceFlexibleFeedLength&&length>maximumLength/);
 assert.match(version,/minimum-1000-recommended-around-5000-no-padding-v8046/);
 assert.match(version,/contentVersion:138/);
-console.log('STELLATE v8.0.50 flexible feed length policy tests: PASS');
+console.log('STELLATE v8.0.52 flexible feed length policy tests: PASS');

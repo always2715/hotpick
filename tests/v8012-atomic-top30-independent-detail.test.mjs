@@ -11,7 +11,7 @@ const version=fs.readFileSync(new URL('../pages/api/version.js',import.meta.url)
 
 // TOP은 새 실행에서 검증 완료된 20건이 모두 준비될 때만 교체합니다.
 assert.match(refreshJob,/TARGET_TOP_COUNT\s*=\s*PUBLIC_TOP_COUNT/);
-assert.match(refreshJob,/const publicationRows = readyRows/);
+assert.match(refreshJob,/const publicationRows=hybridPublication\.rows/);
 assert.match(refreshJob,/if \(publicationRows\.length !== TARGET_TOP_COUNT\)/);
 assert.doesNotMatch(refreshJob,/shouldCommitProgressiveRecovery|validCarryoverRows|combinePublicationRows/);
 assert.match(kv,/ATOMIC_PUBLICATION_REQUIRES_TOP20/);
@@ -55,7 +55,7 @@ assert.match(page,/>자료 출처</);
 assert.doesNotMatch(page,/related-content-section/);
 
 assert.match(version,/contentVersion:138/);
-assert.match(version,/trendCacheVersion:54/);
+assert.match(version,/trendCacheVersion:55/);
 assert.match(version,/fixed-keyword-content-stop-control-v8025/);
 assert.match(version,/ranked_candidate_pool_v17_top20_from25/);
 

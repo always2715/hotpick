@@ -91,4 +91,4 @@ assert.match(kv,/loadCumulativeArchiveRows/);
 assert.match(kv,/options\.scope!==['"]top['"]/);
 assert.match(kv,/const archived=parse\(await r\.hget\(K\.feedArchiveContents,slug\)/);
 
-console.log('STELLATE v8.0.50 append-only cumulative feed archive tests: PASS');
+console.log('STELLATE v8.0.52 append-only cumulative feed archive tests: PASS');

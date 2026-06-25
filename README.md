@@ -1,9 +1,15 @@
-# STELLATE v8.0.50
+# STELLATE v8.0.52
 
-현재 기준은 관심도 상대순위 상위 25개 생성·검증 후 성공 후보 상위 20개 공개입니다.
+v8.0.52는 정상 TOP25 작업이 고정 72단계 상한에 걸려 중단되는 문제를 해결합니다.
 
-v8.0.50은 성공적으로 공개된 피드를 실시간 콘텐츠 상태와 분리한 별도 누적 보존소에 저장합니다. 새 TOP 공개, 후속 생성 실패, stage 재시도 때문에 과거 피드가 자동으로 사라지지 않습니다.
+- 자동 실행 기본 단계 예산 96회
+- 관리자 재개 단계 예산 160회
+- 실제 진행이 확인되면 24회 단위로 최대 240회까지 안전 확장
+- 같은 상태가 10회 반복될 때만 무한 반복으로 중단
+- 관리자 재개 시 단계 카운터와 120분 실행 시간창 초기화
+- QStash 재개 메시지 dedupe generation 분리
+- TOP25 상대순위, 성공 TOP20, 15~19개 혼합 공개, 누적 피드, 썸네일 500개 정책 유지
 
-GitHub Desktop 적용에는 `STELLATE_v8.0.50_REPLACE_ONLY.zip`을 저장소 최상위에 덮어쓴 뒤 `APPLY_STELLATE_v8.0.50_CLEANUP.bat`을 실행하십시오.
+GitHub Desktop 적용에는 `STELLATE_v8.0.52_REPLACE_ONLY.zip`을 저장소 최상위에 덮어쓴 뒤 `APPLY_STELLATE_v8.0.52_CLEANUP.bat`을 실행하십시오.
 
-상세 내용은 `README_v8.0.50.md`, `STELLATE_PROJECT_HANDOFF_v8.0.50.txt`, `STELLATE_v8.0.50_DEPLOY_GUIDE.txt`를 확인하십시오.
+상세 내용은 `README_v8.0.52.md`, `STELLATE_PROJECT_HANDOFF_v8.0.52.txt`, `STELLATE_v8.0.52_DEPLOY_GUIDE.txt`를 확인하십시오.

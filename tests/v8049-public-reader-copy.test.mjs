@@ -44,4 +44,4 @@ const apiSource=fs.readFileSync(new URL('../lib/api.js',import.meta.url),'utf8')
 assert.match(apiSource,/출처 목록은 시스템이 별도 영역에 표시합니다/);
 assert.doesNotMatch(apiSource,/확인된 출처와 사실을 중심으로 정리했습니다/);
 
-console.log('STELLATE v8.0.50 public reader copy sanitation tests: PASS');
+console.log('STELLATE v8.0.52 public reader copy sanitation tests: PASS');

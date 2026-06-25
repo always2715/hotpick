@@ -73,7 +73,7 @@ assert.match(job,/assessResearchBackedFeedSet/);
 assert.match(job,/상위 25개 생성 후보|공개에 필요한 20개/);
 assert.match(trends,/researchPool/);
 assert.match(version,/contentVersion:138/);
-assert.match(version,/trendCacheVersion:54/);
+assert.match(version,/trendCacheVersion:55/);
 assert.match(version,/fixed-keyword-content-stop-control-v8025/);
 assert.match(version,/ranked_candidate_pool_v17_top20_from25/);
 console.log('STELLATE v8.0.31 fixed TOP20 compatibility tests: PASS');

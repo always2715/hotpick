@@ -66,6 +66,6 @@ assert.match(api,/콘텐츠별 실시간 검색을 하지 않고 Redis의 사전
 assert.match(api,/feed_first_content/);
 assert.match(refresh,/TOP_POLICY_VERSION/);
 assert.match(version,/contentVersion:138/);
-assert.match(version,/trendCacheVersion:54/);
+assert.match(version,/trendCacheVersion:55/);
 assert.match(version,/fixed-keyword-content-stop-control-v8025/);
 console.log('v8.0.17 compatibility tests passed under v8.0.20');

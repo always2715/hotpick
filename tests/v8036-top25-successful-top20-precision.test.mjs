@@ -91,6 +91,6 @@ const version=source('pages/api/version.js');
 assert.match(version,/generationPoolCount:25/);
 assert.match(version,/publicTopCount:20/);
 assert.match(version,/contentVersion:138/);
-assert.match(version,/trendCacheVersion:54/);
+assert.match(version,/trendCacheVersion:55/);
 
 console.log('STELLATE v8.0.37 TOP25 generation pool, successful TOP20 publication, and precision tests: PASS');

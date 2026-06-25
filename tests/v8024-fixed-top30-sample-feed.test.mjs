@@ -35,7 +35,7 @@ assert.match(job,/prepareSelectedTopCandidates\(\(prepared\.trends \|\| \[\]\)\.
 assert.doesNotMatch(job,/prepared\.researchPool/);
 assert.doesNotMatch(job,/TOP_RESEARCH_CANDIDATE_LIMIT/);
 assert.doesNotMatch(job,/status:\s*'skipped'/);
-assert.match(job,/다음 순위 성공 후보가 자동 승격됩니다/);
+assert.match(job,/신규 성공 후보가 15개 미만이면 과거 항목 비중이 지나치게 커지므로 기존 TOP을 유지합니다/);
 assert.match(job,/TOP_POLICY_VERSION/);
 
 const api=fs.readFileSync(new URL('../lib/api.js',import.meta.url),'utf8');
@@ -64,7 +64,7 @@ assert.match(adminAction,/retryableCount/);
 
 const version=fs.readFileSync(new URL('../pages/api/version.js',import.meta.url),'utf8');
 assert.match(version,/contentVersion:138/);
-assert.match(version,/trendCacheVersion:54/);
+assert.match(version,/trendCacheVersion:55/);
 assert.match(version,/fixed-keyword-content-stop-control-v8025/);
 assert.match(version,/ranked_candidate_pool_v17_top20_from25/);
 console.log('STELLATE v8.0.31 fixed TOP20 and sample-aligned feed compatibility tests: PASS');

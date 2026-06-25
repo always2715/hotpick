@@ -82,7 +82,7 @@ assert.match(editorial,/ENTITY_TRAILING_NOISE/);
 assert.match(editorial,/PRODUCT_ROOTS/);
 assert.match(editorial,/multiple_entities/);
 assert.match(version,/contentVersion:138/);
-assert.match(version,/trendCacheVersion:54/);
+assert.match(version,/trendCacheVersion:55/);
 assert.match(version,/fixed-keyword-content-stop-control-v8025/);
 assert.match(version,/ranked_candidate_pool_v17_top20_from25/);
 console.log('STELLATE v8.0.22 single representative keyword tests: PASS');

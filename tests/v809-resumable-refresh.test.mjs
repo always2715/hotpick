@@ -36,6 +36,6 @@ assert.match(admin, /중단 지점부터 재개/);
 assert.match(adminAction, /resume_trend_run/);
 assert.match(adminAction, /enqueueTrendRefreshStep/);
 assert.match(version, /contentVersion:138/);
-assert.match(version, /trendCacheVersion:54/);
+assert.match(version, /trendCacheVersion:55/);
 assert.match(version, /fixed-keyword-content-stop-control-v8025/);
 console.log('v8.0.9 resumable QStash refresh tests passed');

@@ -14,6 +14,7 @@ import { assessTrendRunCompatibility, CURRENT_TREND_ENGINE_VERSION } from '../..
 import { bootstrapThumbnailPool, updateThumbnailPoolAdminItem, manualThumbnailMeta } from '../../lib/thumbnailPoolService.js';
 import { backfillMissingTopThumbnails } from '../../lib/thumbnailBackfillService.js';
 import { researchCandidateEntryRejectionReasons } from '../../lib/trendSelectionPolicy.js';
+import { MIN_FRESH_PUBLICATION_COUNT } from '../../lib/partialTopPublication.js';
 
 export const config = { maxDuration: 300 };
 
@@ -154,32 +155,47 @@ export default async function handler(req, res) {
       if(needsFixedTop20Migration){
         return res.status(409).json({error:`이 실행은 ${candidates.length}개 후보 기준 작업이라 25개 생성 후보 중 성공한 상위 20개 공개 정책으로 안전하게 재개할 수 없습니다. 기존 작업을 중단하고 새 TOP 갱신을 시작하세요.`,topCountMigrationRequired:true,currentCandidateCount:candidates.length,targetTopCount:PUBLIC_TOP_COUNT,generationPoolCount:TOP_GENERATION_POOL_COUNT});
       }
+      const ready=tasks.filter(task=>['generated','reused'].includes(task.status)).length;
       const invalidFixedCandidates=candidates
         .filter(candidate=>candidate?.manualApproved!==true)
         .map(candidate=>({candidate,reasons:researchCandidateEntryRejectionReasons(candidate)}))
         .filter(row=>row.reasons.length>0);
-      if(invalidFixedCandidates.length){
+      const invalidCandidateIds=new Set(invalidFixedCandidates.map(row=>String(row.candidate?.candidateId||row.candidate?.slug||'' )).filter(Boolean));
+      // v8.0.51: 이미 정상 콘텐츠가 15개 이상 준비된 실패 실행은 잘린 후보를 다시 조사하지 않고
+      // 해당 후보를 실패로 고정한 뒤 직전 TOP 보충 방식으로 finalize할 수 있습니다.
+      if(invalidFixedCandidates.length&&ready<MIN_FRESH_PUBLICATION_COUNT){
         return res.status(409).json({
-          error:`이 실행의 고정 후보 ${invalidFixedCandidates.length}개가 현재 문장 조각 차단 기준에 맞지 않습니다. 이전 후보 풀을 재개하지 말고 기존 작업을 중단한 뒤 새 TOP 작업을 시작하세요.`,
+          error:`이 실행의 고정 후보 ${invalidFixedCandidates.length}개가 현재 문장 조각 차단 기준에 맞지 않고 정상 콘텐츠도 ${ready}개뿐입니다. 기존 작업을 중단한 뒤 새 TOP 작업을 시작하세요.`,
           candidatePoolRebuildRequired:true,
           invalidCandidates:invalidFixedCandidates.slice(0,10).map(row=>({
             keyword:String(row.candidate?.keyword||row.candidate?.rawKeyword||row.candidate?.topKeyword||''),
             selectionRank:Number(row.candidate?.selectionRank||row.candidate?.sourceRank||0),
             reasons:row.reasons,
           })),
+          readyCount:ready,
+          minimumFreshPublicationCount:MIN_FRESH_PUBLICATION_COUNT,
           currentEngineVersion:CURRENT_TREND_ENGINE_VERSION,
         });
       }
-      const ready=tasks.filter(task=>['generated','reused'].includes(task.status)).length;
       let phase='start';
       let cursor=0;
       let retryableCount=0;
       if(!needsIdentityMigration&&!needsFixedTop20Migration){
         for(const task of tasks){
           if(['generated','reused'].includes(String(task?.status||'')))continue;
-          if(Number(task?.attempts||0)>=MAX_CANDIDATE_ATTEMPTS)continue;
           const taskId=String(task?.candidateId||task?.slug||'');
           if(!taskId)continue;
+          if(invalidCandidateIds.has(taskId)){
+            await updateCronRunTask(runId,taskId,{
+              status:'failed',
+              error:'문장 조각 또는 불완전 검색어로 판정돼 재시도하지 않습니다. 부족한 공개 자리는 직전 정상 TOP에서 보충합니다.',
+              errorCode:'CANDIDATE_FRAGMENT_REJECTED_FOR_CARRYOVER',
+              nextAction:'hybrid_publication_carryover',
+              finishedAt:new Date().toISOString(),
+            });
+            continue;
+          }
+          if(Number(task?.attempts||0)>=MAX_CANDIDATE_ATTEMPTS)continue;
           await updateCronRunTask(runId,taskId,{
             status:'retry_wait',
             error:task?.error||'관리자가 추가 검색을 다시 요청했습니다.',
@@ -192,16 +208,18 @@ export default async function handler(req, res) {
         phase=retryableCount>0?'retry':'finalize';
       }
       await clearTrendRefreshStop(runId);
+      const resumedAt=new Date().toISOString();
+      const queueGeneration=Math.max(0,Number(run?.queueGeneration||0))+1;
       await patchCronRun(runId,{
-        status:'resume_queued',error:'',refreshCode:'',resumedAt:new Date().toISOString(),finishedAt:'',
+        status:'resume_queued',error:'',refreshCode:'',resumedAt,resumeWindowStartedAt:resumedAt,finishedAt:'',
         manualRetryAllowed:'true',retryCursor:0,retryProcessed:0,retryQueued:retryableCount,
-        stepCount:0,lastPhase:'admin_resume',
+        stepCount:0,stepBudget:0,stalledStepCount:0,progressExtensions:0,lastProgressSignature:'',lastProgressAt:resumedAt,queueGeneration,lastPhase:'admin_resume',
         resumeNeedsIdentityMigration:needsIdentityMigration?'true':'false',
         resumeNeedsFixedTop20Migration:needsFixedTop20Migration?'true':'false',
       });
       const queued=await enqueueTrendRefreshStep({runId,trigger:'admin_resume',phase,cursor});
-      await addAudit('trend_refresh_resumed','',null,{runId,phase,cursor,readyCount:ready,retryableCount,needsIdentityMigration,needsFixedTop20Migration,messageId:queued.messageId||''},'중단된 TOP 배치 실행 명시적 재개','admin');
-      return res.status(202).json({success:true,accepted:true,runId,phase,cursor,readyCount:ready,retryableCount,needsIdentityMigration,needsFixedTop20Migration,qstashMessageId:queued.messageId||''});
+      await addAudit('trend_refresh_resumed','',null,{runId,phase,cursor,readyCount:ready,retryableCount,invalidCandidateCount:invalidFixedCandidates.length,hybridCarryoverEligible:ready>=MIN_FRESH_PUBLICATION_COUNT,needsIdentityMigration,needsFixedTop20Migration,messageId:queued.messageId||''},'중단된 TOP 배치 실행 명시적 재개','admin');
+      return res.status(202).json({success:true,accepted:true,runId,phase,cursor,readyCount:ready,retryableCount,invalidCandidateCount:invalidFixedCandidates.length,hybridCarryoverEligible:ready>=MIN_FRESH_PUBLICATION_COUNT,needsIdentityMigration,needsFixedTop20Migration,qstashMessageId:queued.messageId||''});
     }
     if (action === 'preview_trends') {
       const result=await previewTrends();
