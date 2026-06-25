@@ -1,0 +1,20 @@
+STELLATE v8.0.50 배포 및 누적 피드 이관 안내
+
+1. STELLATE_v8.0.50_REPLACE_ONLY.zip을 별도 폴더에 압축 해제합니다.
+2. 내부 전체를 hotpick 저장소 최상위에 덮어씁니다.
+3. APPLY_STELLATE_v8.0.50_CLEANUP.bat을 실행합니다.
+4. GitHub Desktop에서 변경·삭제 전체를 커밋하고 Push합니다.
+5. Vercel Ready 후 /api/version에서 appVersion 8.0.50을 확인합니다.
+6. 관리자에서 `누적 피드 전체 재구성`을 한 번 실행합니다.
+7. /api/admin/status에서 cumulativeFeed.archiveCount가 20 이상인지 확인합니다.
+8. /api/feed?page=1&limit=20&scope=all&sort=latest의 total을 확인합니다.
+9. /api/feed?page=1&limit=20&scope=past&sort=latest에서 지난 피드를 확인합니다.
+
+중요:
+- Redis FLUSHALL 금지
+- 기존 TOP·피드 초기화 금지
+- 기존 실패 TOP 실행 재개 여부는 후보 풀 상태에 따라 판단
+- 같은 slug의 유지 항목은 중복 게시하지 않으며, 새 slug가 정상 공개될 때 누적 수가 증가합니다.
+
+권장 커밋:
+fix: preserve cumulative feed in append-only archive v8.0.50

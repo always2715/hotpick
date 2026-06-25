@@ -41,7 +41,7 @@ assert.match(job,/TOP_POLICY_VERSION/);
 const api=fs.readFileSync(new URL('../lib/api.js',import.meta.url),'utf8');
 assert.match(api,/첫 번째는 ‘박서진은 어떤 가수인가’/);
 assert.match(api,/실제 요약정보 카드는 전체 피드 작성 후/);
-assert.match(api,/CONTENT_VERSION = 137/);
+assert.match(api,/CONTENT_VERSION = 138/);
 assert.match(api,/TREND_CACHE_VERSION = 54/);
 
 const preview=fs.readFileSync(new URL('../pages/[slug].js',import.meta.url),'utf8');
@@ -63,7 +63,7 @@ assert.match(adminAction,/manual_explicit_retry/);
 assert.match(adminAction,/retryableCount/);
 
 const version=fs.readFileSync(new URL('../pages/api/version.js',import.meta.url),'utf8');
-assert.match(version,/contentVersion:137/);
+assert.match(version,/contentVersion:138/);
 assert.match(version,/trendCacheVersion:54/);
 assert.match(version,/fixed-keyword-content-stop-control-v8025/);
 assert.match(version,/ranked_candidate_pool_v17_top20_from25/);

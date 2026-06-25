@@ -1,0 +1,22 @@
+STELLATE v8.0.44 RELEASE MANIFEST
+Date: 2026-06-25
+
+Release files:
+- STELLATE_v8.0.44_FULL.zip
+- STELLATE_v8.0.44_REPLACE_ONLY.zip
+- STELLATE_v8.0.44_SHA256.txt
+
+Version:
+- appVersion 8.0.44
+- contentVersion 134
+- trendCacheVersion 52
+- generationPoolCount 25
+- publicTopCount 20
+- thumbnailPoolSize 500
+
+Core changes:
+- cumulative public feed beyond current TOP20
+- persisted content key scan and feed index recovery
+- feed detail body 2,000-3,000 characters for contentVersion 134+
+- TOP summary preview capped at 1,000 characters
+- TOP ranking and thumbnail pool policies unchanged

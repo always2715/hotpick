@@ -1,0 +1,26 @@
+STELLATE v8.0.50 변경 파일
+
+핵심 변경:
+- lib/kv.js
+- pages/api/admin/status.js
+- pages/api/version.js
+- lib/trendEnginePolicy.js
+- lib/trendRefreshJob.js
+- lib/api.js
+- package.json
+- package-lock.json
+- tests/v8050-append-only-cumulative-feed.test.mjs
+- tests/v807-ranking-publication.test.mjs
+- 현재 버전 기대값 테스트 파일
+- APPLY_STELLATE_v8.0.50_CLEANUP.bat
+- README.md
+- README_v8.0.50.md
+- STELLATE_PROJECT_HANDOFF_v8.0.50.txt
+- STELLATE_v8.0.50_DEPLOY_GUIDE.txt
+
+핵심 정책:
+- 공개 성공 피드와 상세 snapshot을 별도 cumulative archive에 저장
+- 새 TOP 공개 시 과거 archive 미삭제
+- live content 실패·재작성과 archive 분리
+- 전체·지난 피드 조회 시 archive 항상 병합
+- 기존 데이터 1회 마이그레이션

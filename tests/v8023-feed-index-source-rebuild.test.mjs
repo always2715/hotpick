@@ -49,7 +49,7 @@ assert.match(admin,/누적 피드 전체 재구성/);
 assert.match(admin,/Redis에 남아 있는 과거 공개 content 원본까지 검색해 누적 피드 목록·최신순·게시번호·조회수·카테고리 인덱스를 다시 만듭니다/);
 
 const version=fs.readFileSync(new URL('../pages/api/version.js',import.meta.url),'utf8');
-assert.match(version,/contentVersion:137/);
+assert.match(version,/contentVersion:138/);
 assert.match(version,/trendCacheVersion:54/);
 assert.match(version,/fixed-keyword-content-stop-control-v8025/);
 assert.match(version,/published-content-source-of-truth-and-index-rebuild-v8030-plus-canonical-run-snapshot-alias-v8036/);

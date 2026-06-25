@@ -22,8 +22,9 @@ const facts=factTexts.map((text,index)=>({
 const fallback=buildVerifiedFallback('테스트주제',{
   version:3,sources:sourceRows,facts,confirmedFacts:facts.map(row=>row.id),uncertainties:[],conflicts:[],
 },36,'full');
-assert.ok(fallback.blog.length>=1000,`5개 구체 Fact fallback은 최소 1,000자를 구성해야 합니다. actual=${fallback.blog.length}`);
-assert.ok(!/관심이 커지고|귀추가 주목|향후 전망/.test(fallback.blog),'분량 복구에 빈 일반론을 넣으면 안 됩니다.');
+assert.ok(fallback.blog.length>0,'구체 Fact가 있으면 사실 기반 fallback 자체는 구성돼야 합니다.');
+assert.ok(!/관심이 커지고|귀추가 주목|향후 전망|출처에서 확인|기준으로 정리|동명이인|원문과 후속 공지/.test(fallback.blog),'최소 분량을 맞추기 위해 일반론이나 검증 안내문을 넣으면 안 됩니다.');
+assert.ok(fallback.blog.length<1000,'Fact가 부족하면 내부 안내문으로 1,000자를 강제 충족하지 않고 공개 검증에서 정상 실패해야 합니다.');
 
 const previous=[
   {rank:1,slug:'lee-jae-yong',topKeyword:'이재용',eventKey:'event-samsung-chairman'},
@@ -53,4 +54,4 @@ assert.match(refreshSource,/same_attempt_fact_recovery/,'같은 시도에서 Fac
 assert.match(refreshSource,/TOP_KEYWORD_MAX_ATTEMPTS\|\|5/,'관리자 명시적 재개는 최대 5회까지 허용해야 합니다.');
 assert.match(kvSource,/applyRankMovements\(trends,currentTop\)/,'공개 직전 이전 공개 TOP과 순위변동을 다시 계산해야 합니다.');
 
-console.log('v8.0.48 generation recovery and rank movement tests passed');
+console.log('v8.0.50 generation recovery and rank movement tests passed');

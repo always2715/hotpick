@@ -41,4 +41,4 @@ const adminActionSource=await import('node:fs/promises').then(fs=>fs.readFile(ne
 assert.match(adminActionSource, /candidatePoolRebuildRequired/, 'old fixed pools containing invalid fragments must not be resumed');
 assert.match(adminActionSource, /researchCandidateEntryRejectionReasons\(candidate\)/, 'resume must revalidate saved fixed candidates');
 
-console.log('v8.0.48 candidate evidence recovery tests passed');
+console.log('v8.0.50 candidate evidence recovery tests passed');

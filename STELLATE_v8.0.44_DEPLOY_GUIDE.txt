@@ -1,0 +1,57 @@
+STELLATE v8.0.44 배포 및 누적 피드 복구 안내
+작성일: 2026-06-25
+
+1. 권장 파일
+- 기존 GitHub 저장소 교체: STELLATE_v8.0.44_REPLACE_ONLY.zip
+- 신규 복구·전체 검토: STELLATE_v8.0.44_FULL.zip
+
+2. GitHub Desktop 적용
+1) hotpick 저장소에서 Fetch origin 후 필요 시 Pull origin
+2) STELLATE_v8.0.44_REPLACE_ONLY.zip을 별도 폴더에 압축 해제
+3) 압축 해제 폴더 내부의 파일·폴더 전체를 저장소 최상위에 덮어쓰기
+4) 저장소 최상위에서 APPLY_STELLATE_v8.0.44_CLEANUP.bat 실행
+5) GitHub Desktop Changes에서 변경과 삭제를 모두 확인
+6) node_modules, .next, .env, .env.local, .vercel은 커밋하지 않음
+7) Commit to main 후 Push origin
+
+권장 커밋:
+fix: preserve cumulative feed and split content lengths v8.0.44
+
+3. 배포 후 버전 확인
+/api/version에서 다음 값을 확인합니다.
+- appVersion: 8.0.44
+- contentVersion: 134
+- trendCacheVersion: 52
+- generationPoolCount: 25
+- publicTopCount: 20
+- thumbnailPoolSize: 500
+- feedCumulativePolicyV8044 존재
+- feedDetailLengthPolicy 존재
+- topPreviewLengthPolicy 존재
+
+4. 누적 피드 확인
+1) /api/feed?page=1&limit=20&scope=all&sort=latest 호출
+2) 현재 TOP20이 첫 페이지에 표시되는지 확인
+3) total이 20보다 큰 경우 page=2 또는 offset=20에서 과거 피드가 표시되는지 확인
+4) /feed 페이지 하단 다음 페이지에서 누적 피드가 계속 표시되는지 확인
+5) 관리자 대시보드의 누적 피드 수가 현재 TOP20보다 큰지 확인
+
+기존 인덱스에 과거 피드가 누락됐다면 관리자에서 `누적 피드 전체 재구성`을 한 번 실행합니다.
+이 작업은 Redis에 남아 있는 `content:*` 공개 원본을 찾아 피드 인덱스를 복구하며 AI 재생성을 기본적으로 수행하지 않습니다.
+
+5. 길이 정책 확인
+- TOP 클릭 `/{slug}`: 요약·맥락·포인트 합계 최대 1,000자
+- 피드 상세 `/feed/{slug}`: contentVersion 134부터 본문 2,000~3,000자
+- 기존 누적 피드는 길이가 짧아도 삭제하거나 숨기지 않음
+- 기존 현재 TOP을 새 길이로 다시 만들려면 배포 후 새 TOP 작업을 정상 실행
+
+6. 금지 작업
+- Redis FLUSHALL
+- 기존 공개 TOP 삭제
+- 누적 피드를 현재 TOP20으로 초기화
+- 과거 content 원본 삭제
+- 분량을 맞추기 위한 근거 없는 일반론 추가
+- 이미지 문제와 TOP 점수 연결
+
+7. 운영 검증 한계
+로컬 테스트와 프로덕션 빌드는 완료했습니다. 운영 Upstash Redis/QStash 자격증명에는 접근하지 못했으므로, 실제 누적 건수와 과거 content 키 복구 결과는 배포 후 관리자/API에서 확인해야 합니다.

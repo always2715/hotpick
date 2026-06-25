@@ -30,7 +30,7 @@ const content={
   aiStatus:'verified_fallback',contentTier:'standard',contentMode:'detailed',contentType:'detailed',hasContent:true,
   blog:'## 키워드 한눈에 보기\n테스트 서비스와 관련한 기능 변경 사실이 신뢰 자료에서 확인됐습니다.',
   claimMap:[{text:'테스트 서비스와 관련한 기능 변경 사실이 신뢰 자료에서 확인됐습니다.',claimIds:['F1']}],
-  card:{summary:'테스트 서비스가 새 기능을 공개한 사실이 확인됐습니다. 주요 변경 내용은 공식 안내와 신뢰할 수 있는 보도를 통해 확인할 수 있습니다.',why:'서비스 이용 방식에 영향을 줄 수 있는 변경입니다.',points:['새 기능 공개']},
+  card:{summary:'테스트 서비스는 새 기능과 적용 일정을 공개했으며, 이용 흐름이 변경될 수 있습니다.',why:'서비스 이용 방식에 영향을 줄 수 있는 변경입니다.',points:['새 기능 공개']},
   qa:[],instagramCards:[],topKeyword:'테스트 서비스',topTopic:'새 기능 공개',topTitle:'테스트 서비스 · 새 기능 공개',feedTitle:'테스트 서비스 · 새 기능 공개',detailTitle:'테스트 서비스 · 새 기능 공개',displayTitle:'테스트 서비스 · 새 기능 공개',titleStatus:'ready',titleReady:true,
   copyrightRisk:{passed:true,maxSimilarity:0,longPhraseMatches:0},groundingScore:100,
   evidenceSources:[source],sourceItems:[source],factLedger:{facts:[fact],conflicts:[]},

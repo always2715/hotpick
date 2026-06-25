@@ -1,16 +1,17 @@
 import { requireAdmin } from '../../../lib/adminAuth';
-import { getAdminRunSnapshot, getCronRuns, getTrendRefreshHealth, getTrendsUpdatedAt, getActiveTrendRefreshRunId } from '../../../lib/kv';
+import { getAdminRunSnapshot, getCronRuns, getTrendRefreshHealth, getTrendsUpdatedAt, getActiveTrendRefreshRunId, getCumulativeFeedStats } from '../../../lib/kv';
 import { qstashConfigured, getSiteUrl } from '../../../lib/qstash';
 
 export default async function handler(req,res){
   if(req.method!=='GET')return res.status(405).json({error:'Method not allowed'});
   if(!requireAdmin(req,res))return;
   const includeTasks=req.query.includeTasks==='1';
-  const [runs,refreshHealth,trendsUpdatedAt,activeRunId]=await Promise.all([
+  const [runs,refreshHealth,trendsUpdatedAt,activeRunId,cumulativeFeed]=await Promise.all([
     includeTasks?getAdminRunSnapshot(20):getCronRuns(20),
     getTrendRefreshHealth(),
     getTrendsUpdatedAt(),
     getActiveTrendRefreshRunId(),
+    getCumulativeFeedStats(),
   ]);
   const runtime={
     redisConfigured:Boolean(String(process.env.UPSTASH_REDIS_REST_URL||'').trim()&&String(process.env.UPSTASH_REDIS_REST_TOKEN||'').trim()),
@@ -23,5 +24,5 @@ export default async function handler(req,res){
     cronEndpoint:`${getSiteUrl()}/api/cron`,
   };
   res.setHeader('Cache-Control','no-store');
-  return res.status(200).json({runs,refreshHealth,trendsUpdatedAt,activeRunId,runtime});
+  return res.status(200).json({runs,refreshHealth,trendsUpdatedAt,activeRunId,cumulativeFeed,runtime});
 }

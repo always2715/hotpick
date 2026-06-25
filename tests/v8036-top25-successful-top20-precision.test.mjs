@@ -83,14 +83,14 @@ assert.match(refresh,/fixedTop25Pool:\s*true/);
 assert.match(refresh,/top20_from25_content_incomplete/);
 
 const api=source('lib/api.js');
-assert.match(api,/export const CONTENT_VERSION = 137/);
+assert.match(api,/export const CONTENT_VERSION = 138/);
 assert.match(api,/const TREND_CACHE_VERSION = 54/);
 assert.match(api,/titleEvidenceFactIds/);
 assert.match(api,/검증된 핵심 사실/);
 const version=source('pages/api/version.js');
 assert.match(version,/generationPoolCount:25/);
 assert.match(version,/publicTopCount:20/);
-assert.match(version,/contentVersion:137/);
+assert.match(version,/contentVersion:138/);
 assert.match(version,/trendCacheVersion:54/);
 
 console.log('STELLATE v8.0.37 TOP25 generation pool, successful TOP20 publication, and precision tests: PASS');

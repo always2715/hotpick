@@ -45,9 +45,9 @@ assert.match(feedDetail,/연관 뉴스/);
 assert.match(feedDetail,/관련 영상/);
 
 const version=fs.readFileSync(new URL('../pages/api/version.js',import.meta.url),'utf8');
-assert.match(version,/contentVersion:137/);
+assert.match(version,/contentVersion:138/);
 assert.match(version,/trendCacheVersion:54/);
 assert.match(version,/fixed-keyword-content-stop-control-v8025/);
-assert.match(version,/hide-research-window-phrases/);
+assert.match(version,/reader-information-only-strip-source-validation-meta-html-entities-v8049/);
 assert.match(version,/cover-feed-sections-insight-promo/);
 console.log('v8.0.15 preview, feed detail, public copy, and Instagram tests passed');

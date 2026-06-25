@@ -1,0 +1,69 @@
+STELLATE v8.0.44 테스트 보고서
+작성일: 2026-06-25
+
+1. 누적 피드 재현
+- 저장된 공개 콘텐츠: 45건
+- 현재 TOP/최신 피드 인덱스: 20건만 존재
+- 1페이지: 20건
+- 2페이지: 20건
+- 3페이지: 5건
+- total: 45건
+- 결과: PASS
+
+2. 현재 TOP20 조기 반환 방지
+- scope=all에서 최신 인덱스 결과 20건만으로 반환하지 않음
+- 과거 content 원본을 병합한 뒤 페이지네이션
+- scope=top은 현재 TOP만 반환
+- 결과: PASS
+
+3. 피드 상세 길이
+- 최소 2,000자, 최대 3,000자
+- 1,999자: 차단
+- 2,000자: 통과
+- 3,000자: 통과
+- 3,001자: 차단
+- 결과: PASS
+
+4. TOP 클릭 요약
+- 요약·맥락·포인트 합계 최대 1,000자
+- 과도하게 긴 입력을 1,000자 이하로 축약
+- 기존 저장 콘텐츠에도 렌더링 단계 제한 적용
+- 결과: PASS
+
+5. 전체 회귀
+- npm run test:v8
+- 결과: 전체 PASS
+- TOP25 생성 후보, 성공 TOP20, 예비 후보 승격 회귀 PASS
+- 500개 썸네일 풀 회귀 PASS
+
+6. 문법 검사
+- lib/pages/scripts/tests의 JavaScript/MJS node --check
+- 결과: PASS
+
+7. 프로덕션 빌드
+- npm run build
+- Next.js 14.2.35
+- Compiled successfully
+- static pages 2/2
+- 전체 Pages Router route 생성
+- 결과: PASS
+
+8. 로컬 기동
+- next start -p 3210
+- /api/version HTTP 200
+- appVersion 8.0.44
+- contentVersion 134
+- trendCacheVersion 52
+- 결과: PASS
+
+9. 운영 검증 한계
+운영 Upstash Redis/QStash에는 접근하지 못했습니다.
+배포 후 관리자 `누적 피드 전체 재구성` 결과와 /api/feed total/page 2 이상을 확인해야 합니다.
+
+10. REPLACE_ONLY 스테이징 검증
+- npm ci PASS
+- test:v8044 PASS
+- Next.js Compiled successfully
+- static pages 2/2 생성
+- 스테이징 복사본은 실행환경 제한시간으로 Collecting build traces 완료 전 종료
+- 동일 소스의 원본 작업 디렉터리 production build는 정상 종료 PASS
