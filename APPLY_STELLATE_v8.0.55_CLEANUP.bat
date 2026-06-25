@@ -54,6 +54,18 @@ if exist "STELLATE_PROJECT_HANDOFF_v8.0.52.txt" del /f /q "STELLATE_PROJECT_HAND
 
 if exist "STELLATE_PROJECT_HANDOFF_v8.0.53.txt" del /f /q "STELLATE_PROJECT_HANDOFF_v8.0.53.txt"
 if exist "STELLATE_PROJECT_HANDOFF_v8.0.54.txt" del /f /q "STELLATE_PROJECT_HANDOFF_v8.0.54.txt"
+if exist "README_v8.0.54.md" del /f /q "README_v8.0.54.md"
+if exist "STELLATE_v8.0.54_CHANGED_FILES.txt" del /f /q "STELLATE_v8.0.54_CHANGED_FILES.txt"
+if exist "STELLATE_v8.0.54_DEPLOY_GUIDE.txt" del /f /q "STELLATE_v8.0.54_DEPLOY_GUIDE.txt"
+if exist "STELLATE_v8.0.54_RELEASE_MANIFEST.txt" del /f /q "STELLATE_v8.0.54_RELEASE_MANIFEST.txt"
+if exist "STELLATE_v8.0.54_RUNTIME_MANIFEST.txt" del /f /q "STELLATE_v8.0.54_RUNTIME_MANIFEST.txt"
+if exist "STELLATE_v8.0.54_TEST_REPORT.txt" del /f /q "STELLATE_v8.0.54_TEST_REPORT.txt"
+for %%F in (README_v*.md) do if /I not "%%~nxF"=="README_v8.0.55.md" del /f /q "%%F"
+for %%F in (STELLATE_PROJECT_HANDOFF_v*.txt) do if /I not "%%~nxF"=="STELLATE_PROJECT_HANDOFF_v8.0.55.txt" del /f /q "%%F"
+for %%F in (STELLATE_THUMBNAIL_POOL_POLICY_v*.txt) do if /I not "%%~nxF"=="STELLATE_THUMBNAIL_POOL_POLICY_v8.0.43.txt" del /f /q "%%F"
+for %%F in (STELLATE_v*_CHANGED_FILES.txt STELLATE_v*_DEPLOY_GUIDE.txt STELLATE_v*_RELEASE_MANIFEST.txt STELLATE_v*_RUNTIME_MANIFEST.txt STELLATE_v*_TEST_REPORT.txt STELLATE_v*_IMPLEMENTATION_CHECKLIST.md STELLATE_v*_IMPLEMENTATION_REPORT.md STELLATE_v*_OPERATING_RULES.md STELLATE_v*_OUTPUT_SAMPLE.md) do (
+  echo %%~nxF | findstr /I /C:"v8.0.55_" >nul || del /f /q "%%F"
+)
 where node >nul 2>nul
 if errorlevel 1 goto cleanup_done
 node "scripts\clean-stellate-repository.mjs" --local

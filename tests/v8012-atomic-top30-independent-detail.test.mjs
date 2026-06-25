@@ -26,8 +26,8 @@ assert.match(refreshJob,/topDiscoveryContextUsed:\s*sourceTitles\.length>0\?'ide
 assert.match(refreshJob,/topDiscoveryLinksUsed:\s*false/);
 assert.match(refreshJob,/topDiscoveryImageUsed:\s*false/);
 assert.match(refreshJob,/independentTrend\.keyword,\s*\n\s*trend\.imageMeta\|\|trend\.thumbnail\|\|null,\s*\n\s*independentTrend/);
-assert.match(api,/const cacheKey=`v855:a\$\{researchAttempt\}:\$\{identityHints\.join/);
-assert.match(api,/const independentContext=\{keyword:topicTitle,topKeyword:topicTitle,researchKeyword:topicTitle,researchAttempt,identityHints,/);
+assert.match(api,/const cacheKey=`v848:a\$\{researchAttempt\}:\$\{identityHints\.join/);
+assert.match(api,/const independentContext=\{keyword:topicTitle,topKeyword:topicTitle,researchKeyword:topicTitle,researchAttempt,identityHints\}/);
 assert.match(api,/researchIsolation=\{keywordOnly:true,topDiscoveryContextUsed:false,onlineSeparated:true,windowHours:36,researchAttempt,expandedResearch:researchAttempt>1\}/);
 assert.match(api,/resolveTop30Keyword\(\{/);
 

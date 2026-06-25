@@ -9,6 +9,34 @@ const dryRun = args.includes('--dry-run');
 
 const removeBuildOutput = args.includes('--local') || (!args.includes('--install') && !args.includes('--build'));
 
+const CURRENT_RELEASE = '8.0.55';
+const preservedVersionedFiles = new Set([
+  `README_v${CURRENT_RELEASE}.md`,
+  `STELLATE_PROJECT_HANDOFF_v${CURRENT_RELEASE}.txt`,
+  `STELLATE_v${CURRENT_RELEASE}_CHANGED_FILES.txt`,
+  `STELLATE_v${CURRENT_RELEASE}_DEPLOY_GUIDE.txt`,
+  `STELLATE_v${CURRENT_RELEASE}_RELEASE_MANIFEST.txt`,
+  `STELLATE_v${CURRENT_RELEASE}_RUNTIME_MANIFEST.txt`,
+  `STELLATE_v${CURRENT_RELEASE}_TEST_REPORT.txt`,
+  'STELLATE_THUMBNAIL_POOL_POLICY_v8.0.43.txt',
+  `APPLY_STELLATE_v${CURRENT_RELEASE}_CLEANUP.bat`,
+]);
+
+function discoverOldVersionedFiles() {
+  const versionedPatterns = [
+    /^README_v\d+\.\d+\.\d+\.md$/i,
+    /^STELLATE_PROJECT_HANDOFF_v\d+\.\d+\.\d+\.txt$/i,
+    /^STELLATE_v\d+\.\d+\.\d+_.+\.(?:txt|md)$/i,
+    /^STELLATE_THUMBNAIL_POOL_POLICY_v\d+\.\d+\.\d+\.txt$/i,
+    /^APPLY_STELLATE_v\d+\.\d+\.\d+_CLEANUP\.bat$/i,
+  ];
+  return fs.readdirSync(root, { withFileTypes: true })
+    .filter((entry) => entry.isFile())
+    .map((entry) => entry.name)
+    .filter((name) => versionedPatterns.some((pattern) => pattern.test(name)))
+    .filter((name) => !preservedVersionedFiles.has(name));
+}
+
 const removableDirectories = [
   'app',
   'src/app',
@@ -45,10 +73,7 @@ const removableFiles = [
   'APPLY_STELLATE_v8.0.52_CLEANUP.bat',
   'APPLY_STELLATE_v8.0.53_CLEANUP.bat',
   'APPLY_STELLATE_v8.0.54_CLEANUP.bat',
-  'STELLATE_PROJECT_HANDOFF_v8.0.37.txt',
   'STELLATE_PROJECT_HANDOFF_v8.0.38.txt',
-  'STELLATE_PROJECT_HANDOFF_v8.0.39.txt',
-  'STELLATE_PROJECT_HANDOFF_v8.0.40.txt',
   'STELLATE_PROJECT_HANDOFF_v8.0.41.txt',
   'STELLATE_PROJECT_HANDOFF_v8.0.42.txt',
   'STELLATE_PROJECT_HANDOFF_v8.0.43.txt',
@@ -63,6 +88,12 @@ const removableFiles = [
   'STELLATE_PROJECT_HANDOFF_v8.0.52.txt',
   'STELLATE_PROJECT_HANDOFF_v8.0.53.txt',
   'STELLATE_PROJECT_HANDOFF_v8.0.54.txt',
+  'README_v8.0.54.md',
+  'STELLATE_v8.0.54_CHANGED_FILES.txt',
+  'STELLATE_v8.0.54_DEPLOY_GUIDE.txt',
+  'STELLATE_v8.0.54_RELEASE_MANIFEST.txt',
+  'STELLATE_v8.0.54_RUNTIME_MANIFEST.txt',
+  'STELLATE_v8.0.54_TEST_REPORT.txt',
 ];
 
 function readPackageName() {
@@ -80,7 +111,8 @@ if (readPackageName() !== 'hotpick') {
 }
 
 const removed = [];
-for (const relativePath of [...removableDirectories, ...removableFiles]) {
+const oldVersionedFiles = discoverOldVersionedFiles();
+for (const relativePath of [...removableDirectories, ...removableFiles, ...oldVersionedFiles]) {
   const absolutePath = path.join(root, relativePath);
   if (!fs.existsSync(absolutePath)) continue;
   removed.push(relativePath);

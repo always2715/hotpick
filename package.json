@@ -75,7 +75,7 @@
     "test:v8052": "node --loader ./tests/extensionless-loader.mjs tests/v8052-progress-aware-step-budget.test.mjs",
     "test:v8053": "node tests/v8053-hybrid-publication-initialization.test.mjs",
     "test:v8054": "node --loader ./tests/extensionless-loader.mjs tests/v8054-early-top20-completion.test.mjs",
-    "test:v8055": "node --loader ./tests/extensionless-loader.mjs tests/v8055-evidence-accumulation-content-recovery.test.mjs"
+    "test:v8055": "node --loader ./tests/extensionless-loader.mjs tests/v8055-refresh-root-cause-fix.test.mjs"
   },
   "dependencies": {
     "@upstash/qstash": "^2.11.1",

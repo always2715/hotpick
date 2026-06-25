@@ -54,4 +54,4 @@ assert.match(source,/errorCode:'SKIPPED_NOT_NEEDED'/);
 assert.match(source,/candidatePhase:'skipped_not_needed'/);
 assert.match(source,/더 높은 순위 retry_wait 후보/);
 
-console.log('STELLATE v8.0.55 early TOP20 completion tests: PASS');
+console.log('STELLATE v8.0.54 early TOP20 completion tests: PASS');
