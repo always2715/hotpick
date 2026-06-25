@@ -34,7 +34,9 @@ const job=fs.readFileSync(new URL('../lib/trendRefreshJob.js',import.meta.url),'
 assert.match(job,/prepareSelectedTopCandidates\(\(prepared\.trends \|\| \[\]\)\.slice\(0, RESEARCH_POOL_LIMIT\),runId,RESEARCH_POOL_LIMIT\)/);
 assert.doesNotMatch(job,/prepared\.researchPool/);
 assert.doesNotMatch(job,/TOP_RESEARCH_CANDIDATE_LIMIT/);
-assert.doesNotMatch(job,/status:\s*'skipped'/);
+assert.match(job,/status:\s*'skipped'/);
+assert.match(job,/SKIPPED_NOT_NEEDED/);
+assert.match(job,/skipped_not_needed/);
 assert.match(job,/신규 성공 후보가 15개 미만이면 과거 항목 비중이 지나치게 커지므로 기존 TOP을 유지합니다/);
 assert.match(job,/TOP_POLICY_VERSION/);
 
@@ -49,10 +51,11 @@ assert.match(preview,/summaryParagraphs/);
 assert.match(preview,/상세 정보 피드 보기/);
 
 const admin=fs.readFileSync(new URL('../pages/admin.js',import.meta.url),'utf8');
-assert.match(admin,/상대순위 상위 25개를 생성 후보로 고정/);
-assert.match(admin,/성공 후보 상위 20개 공개/);
+assert.match(admin,/상대순위 상위 25개를 최대 예비 후보로 고정/);
+assert.match(admin,/정상 콘텐츠 20개가 확보되면 남은 낮은 순위 후보/);
+assert.match(admin,/정상 20개 확보 시 조기 종료/);
 assert.match(admin,/재시도 대기 \{run\.retryWait\|\|0\}/);
-assert.doesNotMatch(admin,/<p>전체 \{total\}.*후순위 생략/);
+assert.match(admin,/불필요 미처리 \{run\.skipped\|\|0\}/);
 
 
 const adminAction=fs.readFileSync(new URL('../pages/api/admin-action.js',import.meta.url),'utf8');

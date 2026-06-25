@@ -72,7 +72,7 @@ assert.match(apiSource,/source_signature_unchanged/,'출처 지문이 같아 기
 assert.match(apiSource,/sanitizeFactLedgerForPublication/,'일반화 Fact 제거를 적용해야 합니다.');
 assert.match(apiSource,/\[\.\.\.directEvidence,\.\.\.ledgerEvidence\]/,'직접 출처가 일부 손상돼도 Ledger 출처를 함께 사용해야 합니다.');
 assert.match(kvSource,/trends\.length !== PUBLIC_TOP_COUNT/,'TOP 저장과 공개 수를 중앙 설정으로 검증해야 합니다.');
-assert.match(adminSource,/성공 후보 상위 20개 공개|공개 목표 20/,'관리자 안내가 공개 TOP20이어야 합니다.');
+assert.match(adminSource,/정상 20개 확보 시 조기 종료|정상 준비 .*\/20/,'관리자 안내가 공개 TOP20 목표와 조기 종료 정책을 표시해야 합니다.');
 assert.doesNotMatch(adminSource,/TOP 키워드 30개|31위 이하 후보/,'관리자 화면에 TOP30 기준이 남으면 안 됩니다.');
 assert.match(adminActionSource,/needsFixedTop20Migration/,'이전 실행 재개를 차단해야 합니다.');
 assert.match(versionSource,/publicTopCount:20/);

@@ -1,0 +1,11 @@
+STELLATE v8.0.54 release manifest
+
+Application: STELLATE / hotpick
+App version: 8.0.54
+Content version: 138
+Trend cache version: 55
+Generation pool: maximum 25 candidates
+Publication target: 20
+Early completion: enabled
+Skip code: SKIPPED_NOT_NEEDED
+Top policy: ranked_candidate_pool_v17_top20_from25

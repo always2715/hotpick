@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const projectRoot = path.resolve(new URL('..', import.meta.url).pathname);
-const batPath = path.join(projectRoot, 'APPLY_STELLATE_v8.0.53_CLEANUP.bat');
+const batPath = path.join(projectRoot, 'APPLY_STELLATE_v8.0.54_CLEANUP.bat');
 const bytes = fs.readFileSync(batPath);
 const text = bytes.toString('ascii');
 
@@ -23,7 +23,7 @@ const cleanupSource = fs.readFileSync(path.join(projectRoot, 'scripts', 'clean-s
 assert.equal([...cleanupSource].every((byte) => byte < 128), true, 'Cleanup script console output must be ASCII-safe.');
 
 const pkg = JSON.parse(fs.readFileSync(path.join(projectRoot, 'package.json'), 'utf8'));
-assert.equal(pkg.version, '8.0.53');
+assert.equal(pkg.version, '8.0.54');
 assert.match(pkg.scripts['test:v8041'], /v8041-windows-cleanup-batch/);
 
 console.log('STELLATE v8.0.52 Windows cleanup BAT encoding tests: PASS');
