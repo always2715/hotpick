@@ -35,7 +35,7 @@ assert.equal(fs.existsSync(path.join(installRoot, 'app')), false, 'preinstall에
 assert.equal(fs.existsSync(path.join(installRoot, '.next', 'BUILD_ID')), true, 'Vercel이 복원한 정상 빌드 캐시는 preinstall에서 강제로 지우지 않아야 합니다.');
 
 const packageJson = JSON.parse(fs.readFileSync(path.join(projectRoot, 'package.json'), 'utf8'));
-assert.equal(packageJson.version, '8.0.54');
+assert.equal(packageJson.version, '8.0.55');
 assert.match(packageJson.scripts.preinstall, /clean-stellate-repository/);
 assert.match(packageJson.scripts.build, /clean-stellate-repository.*next build/);
 

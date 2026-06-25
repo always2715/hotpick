@@ -4,9 +4,9 @@ export default function handler(req,res){
   res.setHeader('Cache-Control','no-store');
   return res.status(200).json({
     appVersion:pkg.version,
-    contentVersion:138,
-    trendCacheVersion:55,
-    engine:'ranked-top25-early-stop-at-20-progress-aware-hybrid-publication-v8054',
+    contentVersion:139,
+    trendCacheVersion:56,
+    engine:'ranked-top25-early-stop-at-20-accumulated-evidence-research-v8055',
     feedFallback:'published-content-source-of-truth-and-index-rebuild-v8030-plus-canonical-run-snapshot-alias-v8036',
     feedFallbackV8040:'non-destructive-published-feed-recovery-plus-top-snapshot-emergency-fallback-v8040',
     feedFallbackV8042:'direct-current-top-content-source-guarantee-v8042',
@@ -63,7 +63,7 @@ export default function handler(req,res){
     stageDurability:'publication-stage-plus-run-snapshot-candidate-and-slug-alias-self-healing-v8037',
     genericFactPolicy:'remove-generic-facts-and-rebuild-from-concrete-ledger-facts',
     legacyCompatibility:'fixed-keyword-content-stop-control-v8025',
-    runCompatibility:'v8037-v8054-same-top25-max-pool-top20-publication-run-resume',
+    runCompatibility:'v8037-v8055-same-top25-max-pool-top20-publication-run-resume',
     feedIndexCompatibility:'auto-repair-published-feed-indexes',
     feedIndexRecoveryV8040:'preserve-previously-published-feed-and-rebuild-all-indexes-v8040',
     feedIndexRecoveryV8042:'direct-current-top-content-read-even-when-all-feed-indexes-are-empty-v8042',
@@ -95,5 +95,10 @@ export default function handler(req,res){
     hybridPublicationInitializationV8053:'start-phase-uses-pending-zero-counts-finalize-calculates-hybrid-result',
     earlyCompletionPolicyV8054:'top25-is-maximum-reserve-pool-stop-after-20-ready-and-finish-only-higher-rank-retries',
     skippedCandidatePolicyV8054:'lower-rank-unneeded-candidates-marked-skipped-not-needed-not-failed',
+    evidenceAccumulationPolicyV8055:'merge-prior-attempt-fact-ledger-and-evidence-before-next-generation',
+    researchQueryExpansionV8055:'use-discovery-title-event-hints-for-search-only-never-as-public-facts',
+    candidateFragmentPolicyV8055:'reject-trailing-verb-and-quantity-only-headline-fragments-before-fixed-pool',
+    deterministicFallbackPolicyV8055:'use-more-distinct-supported-facts-without-meta-copy-or-padding',
+    previousTopCarryoverCompatibilityV8055:'allow-last-published-legacy-content-as-carryover-when-reader-visible',
   });
 }

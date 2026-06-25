@@ -1,0 +1,22 @@
+STELLATE v8.0.55 배포 및 운영 복구 안내
+
+1. STELLATE_v8.0.55_REPLACE_ONLY.zip을 별도 폴더에 압축 해제합니다.
+2. 내부 전체를 기존 hotpick 저장소 최상위에 덮어씁니다.
+3. APPLY_STELLATE_v8.0.55_CLEANUP.bat을 실행합니다.
+4. GitHub Desktop에서 변경·삭제 전체를 커밋하고 Push합니다.
+   권장 커밋: fix: accumulate research evidence across retries v8.0.55
+5. Vercel 배포 후 /api/version에서 다음 값을 확인합니다.
+   - appVersion 8.0.55
+   - contentVersion 139
+   - trendCacheVersion 56
+6. 현재 1/25 실패 실행은 중단합니다. 해당 실행은 v8.0.54 방식으로 재시도 근거를 누적하지 않은 채 자동 3회를 소진했습니다.
+7. `TOP 즉시 시작`으로 새 작업을 시작합니다. 단순 재개보다 새 후보 풀 재구성이 필요합니다.
+8. 새 후보 풀에 `급등해`, `최소 164명` 같은 조각이 없는지 확인합니다.
+9. 재시도 후보의 Fact·출처가 시도별로 누적되는지 확인합니다.
+10. 기존 공개 TOP20·누적 피드는 새 작업 성공 전까지 유지합니다.
+
+금지:
+- Redis FLUSHALL
+- 기존 정상 TOP 삭제
+- 누적 피드 초기화
+- 실패 후보를 내부 안내문·일반론·반복 문장으로 1,000자 강제 통과

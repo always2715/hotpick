@@ -47,7 +47,7 @@ for(let i=1;i<=45;i++){
     slug,keyword:`키워드 ${i}`,displayTitle:`키워드 ${i}`,feedTitle:`키워드 ${i} 확인된 사건`,detailTitle:`키워드 ${i} 상세`,
     previewSummary:`키워드 ${i}에 관해 확인된 핵심 사실과 일정을 설명하는 충분한 요약입니다.`,summary:`키워드 ${i}에 관해 확인된 핵심 사실과 일정을 설명하는 충분한 요약입니다.`,
     category:'general',feedSeq:i,status:'published',visibility:'published',hasContent:true,hasNews:true,publicReady:true,feedReady:true,
-    contentVersion:138,sourceContentVersion:138,feedIndexSchemaVersion:4,generatedAt:updatedAt,updatedAt,
+    contentVersion:139,sourceContentVersion:139,feedIndexSchemaVersion:4,generatedAt:updatedAt,updatedAt,
     archiveFirstPublishedAt:updatedAt,archivedFeed:true,
   };
   if(!redis.hashes.has(`${NS}:feed:archive:items`))redis.hashes.set(`${NS}:feed:archive:items`,new Map());

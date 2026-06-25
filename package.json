@@ -1,6 +1,6 @@
 {
   "name": "hotpick",
-  "version": "8.0.54",
+  "version": "8.0.55",
   "scripts": {
     "dev": "next dev",
     "build": "node scripts/clean-stellate-repository.mjs --build && next build",
@@ -19,7 +19,7 @@
     "test:quality": "node tests/trend-selection-policy.test.mjs",
     "test:publication": "node tests/v8-publication-policy.test.mjs",
     "test:online-reactions": "node tests/online-reaction-separation.test.mjs",
-    "test:v8": "npm run test:ranking && npm run test:images && npm run test:content && npm run test:jobs && npm run test:fallback && npm run test:top-feed && npm run test:refresh && npm run test:admin-refresh && npm run test:selection && npm run test:copyright-policy && npm run test:research && npm run test:publication && npm run test:online-reactions && npm run test:title-approval && npm run test:v802 && npm run test:v803 && npm run test:v805 && npm run test:v806 && npm run test:v807 && npm run test:v808 && npm run test:v809 && npm run test:v8010 && npm run test:v8011 && npm run test:v8012 && npm run test:v8013 && npm run test:v8014 && npm run test:v8015 && npm run test:v8016 && npm run test:v8017 && npm run test:v8018 && npm run test:v8019 && npm run test:v8020 && npm run test:v8021 && npm run test:v8022 && npm run test:v8023 && npm run test:v8024 && npm run test:v8025 && npm run test:v8026 && npm run test:v8027 && npm run test:v8028 && npm run test:v8029 && npm run test:v8030 && npm run test:v8031 && npm run test:v8032 && npm run test:v8033 && npm run test:v8034 && npm run test:v8035 && npm run test:v8036 && npm run test:v8037 && npm run test:v8038 && npm run test:v8039 && npm run test:v8040 && npm run test:v8041 && npm run test:v8042 && npm run test:v8043 && npm run test:v8044 && npm run test:v8045 && npm run test:v8046 && npm run test:v8047 && npm run test:v8048 && npm run test:v8049 && npm run test:v8050 && npm run test:v8051 && npm run test:v8052 && npm run test:v8053 && npm run test:v8054",
+    "test:v8": "npm run test:ranking && npm run test:images && npm run test:content && npm run test:jobs && npm run test:fallback && npm run test:top-feed && npm run test:refresh && npm run test:admin-refresh && npm run test:selection && npm run test:copyright-policy && npm run test:research && npm run test:publication && npm run test:online-reactions && npm run test:title-approval && npm run test:v802 && npm run test:v803 && npm run test:v805 && npm run test:v806 && npm run test:v807 && npm run test:v808 && npm run test:v809 && npm run test:v8010 && npm run test:v8011 && npm run test:v8012 && npm run test:v8013 && npm run test:v8014 && npm run test:v8015 && npm run test:v8016 && npm run test:v8017 && npm run test:v8018 && npm run test:v8019 && npm run test:v8020 && npm run test:v8021 && npm run test:v8022 && npm run test:v8023 && npm run test:v8024 && npm run test:v8025 && npm run test:v8026 && npm run test:v8027 && npm run test:v8028 && npm run test:v8029 && npm run test:v8030 && npm run test:v8031 && npm run test:v8032 && npm run test:v8033 && npm run test:v8034 && npm run test:v8035 && npm run test:v8036 && npm run test:v8037 && npm run test:v8038 && npm run test:v8039 && npm run test:v8040 && npm run test:v8041 && npm run test:v8042 && npm run test:v8043 && npm run test:v8044 && npm run test:v8045 && npm run test:v8046 && npm run test:v8047 && npm run test:v8048 && npm run test:v8049 && npm run test:v8050 && npm run test:v8051 && npm run test:v8052 && npm run test:v8053 && npm run test:v8054 && npm run test:v8055",
     "test:title-approval": "node tests/top-title-admin-approval.test.mjs",
     "test:v802": "node tests/v802-refresh-unblock.test.mjs",
     "test:v803": "node tests/v803-refresh-resilience.test.mjs",
@@ -74,7 +74,8 @@
     "test:v8051": "node --loader ./tests/extensionless-loader.mjs tests/v8051-hybrid-top20-publication.test.mjs",
     "test:v8052": "node --loader ./tests/extensionless-loader.mjs tests/v8052-progress-aware-step-budget.test.mjs",
     "test:v8053": "node tests/v8053-hybrid-publication-initialization.test.mjs",
-    "test:v8054": "node --loader ./tests/extensionless-loader.mjs tests/v8054-early-top20-completion.test.mjs"
+    "test:v8054": "node --loader ./tests/extensionless-loader.mjs tests/v8054-early-top20-completion.test.mjs",
+    "test:v8055": "node --loader ./tests/extensionless-loader.mjs tests/v8055-evidence-accumulation-content-recovery.test.mjs"
   },
   "dependencies": {
     "@upstash/qstash": "^2.11.1",

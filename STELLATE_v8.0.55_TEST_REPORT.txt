@@ -1,0 +1,44 @@
+STELLATE v8.0.55 테스트 보고서
+
+실행일: 2026-06-25
+
+전용 검증:
+- `급등해` trailing verb fragment 차단: PASS
+- `최소 164명` quantity-only fragment 차단: PASS
+- 제외 후 다음 상대순위 후보 승격 경로: PASS
+- ETF 발견 제목에서 사건 검색 힌트 생성: PASS
+- 기사 매체명 제거 및 검색 힌트 전용 사용: PASS
+- 재시도 Fact Ledger 병합·출처 URL 중복 제거: PASS
+- 중복 Fact 제거 및 sourceIds 재매핑: PASS
+- 이전 stage/snapshot 체크포인트 전달: PASS
+- 충분한 서로 다른 Fact로 fallback 1,000자 이상 구성: PASS
+- 내부 안내문·출처 확인 문구·도메인으로 분량 채우지 않음: PASS
+- 직전 정상 공개본 carryover 호환: PASS
+
+회귀 검증:
+- v8.0.1~v8.0.43 테스트: 연속 실행 구간 PASS
+- v8.0.44~v8.0.55 테스트: 개별·구간 실행 전체 PASS
+- TOP25 최대 예비 풀 및 성공 20개 조기 종료: PASS
+- 신규 15~19개 혼합 공개: PASS
+- 단계 예산 96/160/240 및 stalled-loop guard: PASS
+- NEW·유지·상승·하락: PASS
+- 누적 피드 append-only archive: PASS
+- 공개 문안 정제와 HTML 엔티티 처리: PASS
+- Unsplash 썸네일 500개: PASS
+
+정적 검증:
+- 변경 JavaScript/MJS node --check: PASS
+- Windows cleanup BAT ASCII/BOM 없음/CRLF: PASS
+
+프로덕션:
+- `npm run build`: EXIT 0
+- Next.js Compiled successfully: 확인
+- 정적 페이지 2/2 생성: 확인
+- BUILD_ID 및 route manifest 생성: 확인
+- `next start -p 3215`: 정상 시작
+- `/api/version`: HTTP 200
+- 응답: appVersion 8.0.55, contentVersion 139, trendCacheVersion 56
+
+운영 검증 한계:
+- 실제 Upstash Redis/QStash 및 외부 검색 API 자격증명으로 TOP 작업 전체를 실행하지 못했습니다.
+- 기존 1/25 실패 실행은 과거 방식으로 소진됐으므로 배포 후 새 TOP 실행 결과를 운영 관리자에서 확인해야 합니다.

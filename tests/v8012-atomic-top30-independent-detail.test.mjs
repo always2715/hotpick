@@ -26,8 +26,8 @@ assert.match(refreshJob,/topDiscoveryContextUsed:\s*sourceTitles\.length>0\?'ide
 assert.match(refreshJob,/topDiscoveryLinksUsed:\s*false/);
 assert.match(refreshJob,/topDiscoveryImageUsed:\s*false/);
 assert.match(refreshJob,/independentTrend\.keyword,\s*\n\s*trend\.imageMeta\|\|trend\.thumbnail\|\|null,\s*\n\s*independentTrend/);
-assert.match(api,/const cacheKey=`v848:a\$\{researchAttempt\}:\$\{identityHints\.join/);
-assert.match(api,/const independentContext=\{keyword:topicTitle,topKeyword:topicTitle,researchKeyword:topicTitle,researchAttempt,identityHints\}/);
+assert.match(api,/const cacheKey=`v855:a\$\{researchAttempt\}:\$\{identityHints\.join/);
+assert.match(api,/const independentContext=\{keyword:topicTitle,topKeyword:topicTitle,researchKeyword:topicTitle,researchAttempt,identityHints,/);
 assert.match(api,/researchIsolation=\{keywordOnly:true,topDiscoveryContextUsed:false,onlineSeparated:true,windowHours:36,researchAttempt,expandedResearch:researchAttempt>1\}/);
 assert.match(api,/resolveTop30Keyword\(\{/);
 
@@ -54,8 +54,8 @@ assert.match(page,/>관련 영상</);
 assert.match(page,/>자료 출처</);
 assert.doesNotMatch(page,/related-content-section/);
 
-assert.match(version,/contentVersion:138/);
-assert.match(version,/trendCacheVersion:55/);
+assert.match(version,/contentVersion:139/);
+assert.match(version,/trendCacheVersion:56/);
 assert.match(version,/fixed-keyword-content-stop-control-v8025/);
 assert.match(version,/ranked_candidate_pool_v17_top20_from25/);
 

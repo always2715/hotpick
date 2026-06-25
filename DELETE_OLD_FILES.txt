@@ -1,4 +1,4 @@
-STELLATE v8.0.53 적용 전·후 정리 대상
+STELLATE v8.0.55 적용 전·후 정리 대상
 
 1. 다른 프로젝트에서 잘못 섞인 경로
 - app/
@@ -31,6 +31,7 @@ STELLATE v8.0.53 적용 전·후 정리 대상
 - APPLY_STELLATE_v8.0.51_CLEANUP.bat
 - APPLY_STELLATE_v8.0.52_CLEANUP.bat
 - APPLY_STELLATE_v8.0.53_CLEANUP.bat
+- APPLY_STELLATE_v8.0.54_CLEANUP.bat
 
 4. 과거 단일 인수인계 파일
 - STELLATE_PROJECT_HANDOFF_v8.0.37.txt
@@ -50,8 +51,9 @@ STELLATE v8.0.53 적용 전·후 정리 대상
 - STELLATE_PROJECT_HANDOFF_v8.0.51.txt
 - STELLATE_PROJECT_HANDOFF_v8.0.52.txt
 - STELLATE_PROJECT_HANDOFF_v8.0.53.txt
+- STELLATE_PROJECT_HANDOFF_v8.0.54.txt
 
-저장소 최상위에서 APPLY_STELLATE_v8.0.54_CLEANUP.bat을 실행하면 위 정리 대상이 자동 삭제됩니다.
+저장소 최상위에서 APPLY_STELLATE_v8.0.55_CLEANUP.bat을 실행하면 위 정리 대상이 자동 삭제됩니다.
 
 현재 유지할 단일 최신 인수인계 파일:
-STELLATE_PROJECT_HANDOFF_v8.0.54.txt
+STELLATE_PROJECT_HANDOFF_v8.0.55.txt

@@ -1,0 +1,8 @@
+STELLATE v8.0.55 Release Manifest
+
+FULL: STELLATE_v8.0.55_FULL.zip
+REPLACE_ONLY: STELLATE_v8.0.55_REPLACE_ONLY.zip
+Application: 8.0.55
+Content: 139
+Trend cache: 56
+Engine: ranked-top25-early-stop-at-20-accumulated-evidence-research-v8055
