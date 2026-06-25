@@ -89,4 +89,4 @@ const publication=fs.readFileSync(path.join(root,'lib/publicationPolicy.js'),'ut
 assert.match(publication,/FEED_DETAIL_MIN_CHARS/);
 assert.doesNotMatch(publication,/feedBodyLength>FEED_DETAIL/,'5,000자 권장은 공개 상한으로 강제하면 안 됩니다.');
 
-console.log('STELLATE v8.0.47 cumulative feed and content length policy tests: PASS');
+console.log('STELLATE v8.0.48 cumulative feed and content length policy tests: PASS');

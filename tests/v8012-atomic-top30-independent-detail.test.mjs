@@ -21,15 +21,15 @@ assert.match(kv,/trends\.length !== PUBLIC_TOP_COUNT|trends\.length!==PUBLIC_TOP
 
 // 상세 생성은 TOP 발견 자료를 넘기지 않고 확정 키워드만 사용합니다.
 assert.match(refreshJob,/buildIndependentResearchTrend/);
-assert.match(refreshJob,/researchKeyword:\s*keyword/);
-assert.match(refreshJob,/topDiscoveryContextUsed:\s*false/);
+assert.match(refreshJob,/researchKeyword[,\s]/);
+assert.match(refreshJob,/topDiscoveryContextUsed:\s*sourceTitles\.length>0\?'identity_hints_only':false/);
 assert.match(refreshJob,/topDiscoveryLinksUsed:\s*false/);
 assert.match(refreshJob,/topDiscoveryImageUsed:\s*false/);
 assert.match(refreshJob,/independentTrend\.keyword,\s*\n\s*trend\.imageMeta\|\|trend\.thumbnail\|\|null,\s*\n\s*independentTrend/);
-assert.match(api,/const cacheKey=`v829:a\$\{researchAttempt\}:\$\{topicTitle/);
-assert.match(api,/const independentContext=\{keyword:topicTitle,topKeyword:topicTitle,researchKeyword:topicTitle,researchAttempt\}/);
+assert.match(api,/const cacheKey=`v848:a\$\{researchAttempt\}:\$\{identityHints\.join/);
+assert.match(api,/const independentContext=\{keyword:topicTitle,topKeyword:topicTitle,researchKeyword:topicTitle,researchAttempt,identityHints\}/);
 assert.match(api,/researchIsolation=\{keywordOnly:true,topDiscoveryContextUsed:false,onlineSeparated:true,windowHours:36,researchAttempt,expandedResearch:researchAttempt>1\}/);
-assert.match(api,/source:'top20_fixed_keyword'/);
+assert.match(api,/resolveTop30Keyword\(\{/);
 
 // 상세 본문과 제목의 생성 순서를 강제하고 온라인 반응을 사실 영역에서 분리합니다.
 assert.match(api,/let rendered=renderBlogPackage\(pkg,onlineTrend,\{keyword:topicTitle,eventTitle:pkg\.shortTitle\|\|''\}\)/);
@@ -54,8 +54,8 @@ assert.match(page,/>관련 영상</);
 assert.match(page,/>자료 출처</);
 assert.doesNotMatch(page,/related-content-section/);
 
-assert.match(version,/contentVersion:136/);
-assert.match(version,/trendCacheVersion:53/);
+assert.match(version,/contentVersion:137/);
+assert.match(version,/trendCacheVersion:54/);
 assert.match(version,/fixed-keyword-content-stop-control-v8025/);
 assert.match(version,/ranked_candidate_pool_v17_top20_from25/);
 

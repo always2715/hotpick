@@ -53,4 +53,4 @@ assert.match(refreshSource,/same_attempt_fact_recovery/,'같은 시도에서 Fac
 assert.match(refreshSource,/TOP_KEYWORD_MAX_ATTEMPTS\|\|5/,'관리자 명시적 재개는 최대 5회까지 허용해야 합니다.');
 assert.match(kvSource,/applyRankMovements\(trends,currentTop\)/,'공개 직전 이전 공개 TOP과 순위변동을 다시 계산해야 합니다.');
 
-console.log('v8.0.47 generation recovery and rank movement tests passed');
+console.log('v8.0.48 generation recovery and rank movement tests passed');

@@ -136,7 +136,7 @@ export default function Admin(props){
     const targetKeyword=keyword.trim();if(!targetKeyword)return;
     requestConfirmation({title:'수동 콘텐츠를 생성할까요?',description:`“${targetKeyword}” 키워드로 검증형 콘텐츠 생성을 시작합니다.`,impact:'외부 출처 조회와 AI 토큰 사용이 발생하며, 검증 결과에 따라 즉시 공개되거나 검토 대기로 저장됩니다.',confirmLabel:'생성 실행',tone:'warning',execute:()=>executeManualGeneration(targetKeyword)});
   }
-  async function backup(){const r=await fetch('/api/backup');if(!r.ok){setMessage('❌ 백업 오류');return;}const b=await r.blob(),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`stellate-v8.0.47-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(a.href);}
+  async function backup(){const r=await fetch('/api/backup');if(!r.ok){setMessage('❌ 백업 오류');return;}const b=await r.blob(),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`stellate-v8.0.48-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(a.href);}
   async function logout(){await fetch('/api/admin/logout',{method:'POST'});location.href='/admin-login';}
   async function ensureHtml2Canvas(){if(window.html2canvas)return;await new Promise((ok,no)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';s.onload=ok;s.onerror=no;document.head.appendChild(s);});}
   async function trackUnsplashDownload(){const location=selectedPost?.imageMeta?.downloadLocation;if(!location)return;await fetch('/api/unsplash-download',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({downloadLocation:location})}).catch(()=>{});}
@@ -160,8 +160,8 @@ export default function Admin(props){
   const thumbnailTargets=[...new Map([...trends,...feed,...contents].filter(item=>item?.slug).map(item=>[item.slug,item])).values()].filter(item=>item.visibility!=='trashed');
   const tabs=[['overview','현황'],['candidates','TOP 후보 심사'],['review','검토 대기'],['top','TOP 관리'],['feed','피드 관리'],['failures','생성 상태'],['images','썸네일 이미지'],['instagram','인스타'],['audit','변경 이력'],['settings','설정']];
 
-  return <><Head><title>관리자 — STELLATE v8.0.47</title></Head><Header/><main className="admin-shell">
-    <section className="admin-heading"><div><p className="eyebrow">STELLATE v8.0.47</p><h1>검증형 운영 관리자</h1></div><button className="admin-logout" onClick={logout}>로그아웃</button></section>
+  return <><Head><title>관리자 — STELLATE v8.0.48</title></Head><Header/><main className="admin-shell">
+    <section className="admin-heading"><div><p className="eyebrow">STELLATE v8.0.48</p><h1>검증형 운영 관리자</h1></div><button className="admin-logout" onClick={logout}>로그아웃</button></section>
     {message&&<div className="admin-message">{message}</div>}
     {props.initialLoadError&&<div className="admin-message">⚠️ 일부 관리자 데이터를 불러오지 못했습니다. 화면은 안전 모드로 열렸으며 새로고침하거나 실행 환경을 확인해 주세요.</div>}
     {(!trendsUpdatedAt||Date.now()-new Date(trendsUpdatedAt).getTime()>4*60*60*1000)&&<div className="admin-message">⚠️ 마지막 성공 TOP 갱신이 4시간을 초과했습니다. {trendsUpdatedAt?`마지막 성공: ${new Date(trendsUpdatedAt).toLocaleString('ko-KR')}`:'성공 갱신 기록 없음'} · 아래 실행 상태에서 QStash 콜백 미수신 여부를 확인하거나 ‘TOP 즉시 실행’을 사용하세요.</div>}

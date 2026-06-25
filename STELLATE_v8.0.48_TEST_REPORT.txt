@@ -1,0 +1,48 @@
+STELLATE v8.0.48 테스트 결과
+작성일: 2026-06-25
+
+1. 전체 회귀
+- npm run test:v8: PASS
+
+2. v8.0.48 전용
+- 미완결 기사 문구 차단: PASS
+- 기자수첩·편집 라벨 차단: PASS
+- 제외 후 다음 상대순위 후보로 25개 풀 유지: PASS
+- INSUFFICIENT_KEYWORD_EVIDENCE 재시도 판정: PASS
+- 발견 제목에서 대표 엔티티 검색 힌트 추출: PASS
+- 발견 URL·이미지 미사용 확인: PASS
+- 독립 조사 후 대표 키워드 재검증: PASS
+- 근거 부족 research checkpoint 저장: PASS
+- 문장 조각 포함 과거 고정 풀 관리자 재개 차단: PASS
+
+3. 기존 핵심 회귀
+- TOP25 생성 풀·성공 TOP20 공개: PASS
+- 21~25위 예비 후보 승격: PASS
+- selectionRank 보존: PASS
+- NEW·유지·상승·하락: PASS
+- 누적 피드: PASS
+- 피드 최소 1,000자·약 5,000자 권장: PASS
+- TOP 요약 최대 1,000자: PASS
+- Unsplash 500개 풀: PASS
+
+4. 빌드·기동
+- npm run build: PASS
+- Next.js Compiled successfully: 확인
+- static pages 2/2: 확인
+- next start -p 3218: PASS
+- /api/version: HTTP 200
+- /: HTTP 200
+
+5. 확인 버전
+- appVersion: 8.0.48
+- contentVersion: 137
+- trendCacheVersion: 54
+- generationPoolCount: 25
+- publicTopCount: 20
+- thumbnailPoolSize: 500
+
+6. 경고
+Node의 MODULE_TYPELESS_PACKAGE_JSON 및 experimental loader 경고는 기존 테스트 구성 경고이며 테스트 실패가 아닙니다.
+
+7. 검증 한계
+운영 Upstash Redis·QStash 자격증명이 없어 실제 운영 TOP25 전체 처리와 외부 API 성공률은 직접 검증하지 못했습니다.

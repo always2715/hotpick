@@ -13,6 +13,7 @@ import { PUBLIC_TOP_COUNT, TOP_GENERATION_POOL_COUNT } from '../../lib/topConfig
 import { assessTrendRunCompatibility, CURRENT_TREND_ENGINE_VERSION } from '../../lib/trendEnginePolicy';
 import { bootstrapThumbnailPool, updateThumbnailPoolAdminItem, manualThumbnailMeta } from '../../lib/thumbnailPoolService.js';
 import { backfillMissingTopThumbnails } from '../../lib/thumbnailBackfillService.js';
+import { researchCandidateEntryRejectionReasons } from '../../lib/trendSelectionPolicy.js';
 
 export const config = { maxDuration: 300 };
 
@@ -152,6 +153,22 @@ export default async function handler(req, res) {
       const needsFixedTop20Migration=candidates.length!==TOP_GENERATION_POOL_COUNT||candidates.some(candidate=>candidate?.fixedTop25Pool!==true);
       if(needsFixedTop20Migration){
         return res.status(409).json({error:`이 실행은 ${candidates.length}개 후보 기준 작업이라 25개 생성 후보 중 성공한 상위 20개 공개 정책으로 안전하게 재개할 수 없습니다. 기존 작업을 중단하고 새 TOP 갱신을 시작하세요.`,topCountMigrationRequired:true,currentCandidateCount:candidates.length,targetTopCount:PUBLIC_TOP_COUNT,generationPoolCount:TOP_GENERATION_POOL_COUNT});
+      }
+      const invalidFixedCandidates=candidates
+        .filter(candidate=>candidate?.manualApproved!==true)
+        .map(candidate=>({candidate,reasons:researchCandidateEntryRejectionReasons(candidate)}))
+        .filter(row=>row.reasons.length>0);
+      if(invalidFixedCandidates.length){
+        return res.status(409).json({
+          error:`이 실행의 고정 후보 ${invalidFixedCandidates.length}개가 현재 문장 조각 차단 기준에 맞지 않습니다. 이전 후보 풀을 재개하지 말고 기존 작업을 중단한 뒤 새 TOP 작업을 시작하세요.`,
+          candidatePoolRebuildRequired:true,
+          invalidCandidates:invalidFixedCandidates.slice(0,10).map(row=>({
+            keyword:String(row.candidate?.keyword||row.candidate?.rawKeyword||row.candidate?.topKeyword||''),
+            selectionRank:Number(row.candidate?.selectionRank||row.candidate?.sourceRank||0),
+            reasons:row.reasons,
+          })),
+          currentEngineVersion:CURRENT_TREND_ENGINE_VERSION,
+        });
       }
       const ready=tasks.filter(task=>['generated','reused'].includes(task.status)).length;
       let phase='start';

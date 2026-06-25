@@ -34,7 +34,7 @@ assert.doesNotMatch(detail,/<img src=\{video\.thumbnail\}/);
 assert.match(detail,/youtube-thumb-safe/);
 
 const version=fs.readFileSync(new URL('../pages/api/version.js',import.meta.url),'utf8');
-assert.match(version,/contentVersion:136/);
-assert.match(version,/trendCacheVersion:53/);
+assert.match(version,/contentVersion:137/);
+assert.match(version,/trendCacheVersion:54/);
 assert.match(version,/coverImagePolicy:'unsplash-curated-pool-500-no-official-press-youtube-thumbnails-v8043'/);
 console.log('v8.0.37 Unsplash-only regression policy tests passed under v8.0.38');
