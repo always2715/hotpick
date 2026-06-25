@@ -33,7 +33,7 @@ export default function Header() {
               borderBottom: !isFeed ? '2px solid #E24B4A' : '2px solid transparent',
               cursor:'pointer', marginBottom:-2,
             }}>
-              🔍 검색순위
+              TOP20
             </div>
           </Link>
           <Link href="/feed">

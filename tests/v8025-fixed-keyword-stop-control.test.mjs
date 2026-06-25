@@ -35,7 +35,7 @@ assert.equal(isFixedKeywordFeedReady(content),true,JSON.stringify(fixedKeywordFe
 
 const job=fs.readFileSync(new URL('../lib/trendRefreshJob.js',import.meta.url),'utf8');
 const processBlock=job.slice(job.indexOf('async function processTrendCandidate'),job.indexOf('export async function startTrendRefreshRun'));
-assert.match(job,/TOP_KEYWORD_MAX_ATTEMPTS\|\|3/);
+assert.match(job,/TOP_KEYWORD_MAX_ATTEMPTS\|\|5/);
 assert.match(job,/TOP_REFRESH_MAX_STEPS\|\|72/);
 assert.match(job,/TOP_REFRESH_MAX_MINUTES\|\|120/);
 assert.match(job,/trend_refresh_cancelled/);
@@ -71,11 +71,12 @@ assert.match(admin,/추가 검색/);
 assert.doesNotMatch(admin,/검토기준 미충족/);
 
 const version=fs.readFileSync(new URL('../pages/api/version.js',import.meta.url),'utf8');
-assert.match(version,/contentVersion:135/);
-assert.match(version,/trendCacheVersion:52/);
+assert.match(version,/contentVersion:136/);
+assert.match(version,/trendCacheVersion:53/);
 assert.match(version,/fixed-keyword-content-stop-control-v8025/);
 assert.match(version,/ranked_candidate_pool_v17_top20_from25/);
-assert.match(version,/maxKeywordAttempts:3/);
+assert.match(version,/automaticKeywordAttempts:3/);
+assert.match(version,/manualKeywordAttempts:5/);
 assert.match(version,/maxRunSteps:72/);
 assert.match(version,/maxRunMinutes:120/);
 

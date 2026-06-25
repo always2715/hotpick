@@ -48,7 +48,7 @@ assert.match(feed,/feed-excerpt/);
 assert.match(feed,/feed-trust/);
 assert.match(api,/섹션은 3~5개/);
 assert.match(api,/같은 Fact를 문장만 바꿔 여러 섹션에서 반복하지 마세요/);
-assert.match(api,/export const CONTENT_VERSION = 135/);
-assert.match(version,/contentVersion:135/);
+assert.match(api,/export const CONTENT_VERSION = 136/);
+assert.match(version,/contentVersion:136/);
 
 console.log('STELLATE v8.0.35 editorial product quality tests: PASS');

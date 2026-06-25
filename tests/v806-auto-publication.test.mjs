@@ -42,8 +42,8 @@ assert.equal(TOP_RESEARCH_POOL_LIMIT,120);
 assert.equal(TOP_DISCOVERY_POOL_LIMIT,240);
 
 const apiSource=fs.readFileSync(new URL('../lib/api.js',import.meta.url),'utf8');
-assert.match(apiSource,/const TREND_CACHE_VERSION = 52/);
-assert.match(apiSource,/export const CONTENT_VERSION = 135/);
+assert.match(apiSource,/const TREND_CACHE_VERSION = 53/);
+assert.match(apiSource,/export const CONTENT_VERSION = 136/);
 assert.match(apiSource,/isAutomaticPublicationReady\(stageCandidate\)\|\|fixedTopReady/);
 assert.doesNotMatch(apiSource,/stageOnly[\s\S]{0,700}validateContent\(candidate\)/,'stageOnly auto publication must not be blocked by legacy validateContent');
 const trendsSource=fs.readFileSync(new URL('../lib/trends.js',import.meta.url),'utf8');

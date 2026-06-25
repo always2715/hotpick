@@ -31,7 +31,7 @@ function RankChange({ item }) {
   const change = Number(item.rankChange ?? item.previousRank - item.rank);
   if (change > 0) return <span className="rank-change up">▲ {change}</span>;
   if (change < 0) return <span className="rank-change down">▼ {Math.abs(change)}</span>;
-  return <span className="rank-change same">―</span>;
+  return <span className="rank-change same">유지</span>;
 }
 
 export default function Home({ trends, updatedAt }) {
@@ -45,8 +45,8 @@ export default function Home({ trends, updatedAt }) {
       <Header />
       <main className="page-shell">
         <section className="top-intro">
-          <div><p className="eyebrow">VERIFIED DISCOVERY</p><h1>지금 확인된<br />주요 이슈</h1><p>검색 상승, 최신 보도, 사건 일관성, 독립 출처를 함께 확인합니다.</p>{trends.length>0&&<div className="trend-count-note">TOP {trends.length}/{PUBLIC_TOP_COUNT} · 검증 완료</div>}</div>
-          <div className="update-pill">{updatedAt ? `갱신 ${new Date(updatedAt).toLocaleString('ko-KR')}` : '데이터 준비 중'}</div>
+          <div><p className="eyebrow">VERIFIED DISCOVERY</p><h1 className="home-ranking-title"><span>지금 확인된 주요 이슈</span><small>실시간 검색 순위 - TOP20</small></h1><p>검색 상승, 최신 보도, 사건 일관성, 독립 출처를 함께 확인합니다.</p>{trends.length>0&&<div className="trend-count-note">TOP {trends.length}/{PUBLIC_TOP_COUNT} · 검증 완료</div>}</div>
+          <div className="update-pill refresh-cycle"><strong>3시간 단위 갱신</strong><span>{updatedAt ? `최근 갱신 ${new Date(updatedAt).toLocaleString('ko-KR')}` : '데이터 준비 중'}</span></div>
         </section>
 
         {trends.length === 0 ? (
