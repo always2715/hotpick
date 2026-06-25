@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import { assessTrendRunCompatibility, CURRENT_TREND_ENGINE_VERSION } from '../lib/trendEnginePolicy.js';
 import { isPersistedPublishedContentForFeed, upgradeTrustedPersistedFeedRecord } from '../lib/feedRecoveryPolicy.js';
 
-assert.equal(CURRENT_TREND_ENGINE_VERSION,'8.0.52');
+assert.equal(CURRENT_TREND_ENGINE_VERSION,'8.0.53');
 assert.equal(assessTrendRunCompatibility({engineVersion:'8.0.37'}).compatible,true,'동일 TOP25→TOP20 구조의 v8.0.37 실행은 재개 가능해야 합니다.');
 assert.equal(assessTrendRunCompatibility({engineVersion:'8.0.38'}).compatible,true);
 assert.equal(assessTrendRunCompatibility({engineVersion:'8.0.39'}).compatible,true);

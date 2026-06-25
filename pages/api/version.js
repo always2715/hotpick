@@ -6,7 +6,7 @@ export default function handler(req,res){
     appVersion:pkg.version,
     contentVersion:138,
     trendCacheVersion:55,
-    engine:'ranked-top25-progress-aware-step-budget-fresh-success-plus-carryover-v8052',
+    engine:'ranked-top25-progress-aware-step-budget-fresh-success-plus-carryover-v8053',
     feedFallback:'published-content-source-of-truth-and-index-rebuild-v8030-plus-canonical-run-snapshot-alias-v8036',
     feedFallbackV8040:'non-destructive-published-feed-recovery-plus-top-snapshot-emergency-fallback-v8040',
     feedFallbackV8042:'direct-current-top-content-source-guarantee-v8042',
@@ -63,7 +63,7 @@ export default function handler(req,res){
     stageDurability:'publication-stage-plus-run-snapshot-candidate-and-slug-alias-self-healing-v8037',
     genericFactPolicy:'remove-generic-facts-and-rebuild-from-concrete-ledger-facts',
     legacyCompatibility:'fixed-keyword-content-stop-control-v8025',
-    runCompatibility:'v8037-v8052-same-policy-run-resume-and-published-feed-preservation',
+    runCompatibility:'v8037-v8053-same-policy-run-resume-and-published-feed-preservation',
     feedIndexCompatibility:'auto-repair-published-feed-indexes',
     feedIndexRecoveryV8040:'preserve-previously-published-feed-and-rebuild-all-indexes-v8040',
     feedIndexRecoveryV8042:'direct-current-top-content-read-even-when-all-feed-indexes-are-empty-v8042',
@@ -92,5 +92,6 @@ export default function handler(req,res){
     hybridTopPublicationV8051:'publish-15-to-19-fresh-successes-and-fill-only-missing-slots-from-previous-valid-top',
     progressAwareStepBudgetV8052:'automatic-96-manual-160-progress-extension-to-hard-240-and-stalled-loop-guard',
     resumeWindowPolicyV8052:'manual-resume-resets-step-counter-duration-window-and-qstash-dedupe-generation',
+    hybridPublicationInitializationV8053:'start-phase-uses-pending-zero-counts-finalize-calculates-hybrid-result',
   });
 }

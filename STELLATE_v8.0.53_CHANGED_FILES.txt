@@ -1,0 +1,16 @@
+STELLATE v8.0.53 변경 파일
+- lib/trendRefreshJob.js
+- lib/trendEnginePolicy.js
+- lib/api.js
+- lib/kv.js
+- pages/api/version.js
+- package.json
+- package-lock.json
+- tests/v8053-hybrid-publication-initialization.test.mjs
+- tests/v8039-run-compatibility-feed-recovery.test.mjs
+- tests/v8040-foreign-package-cleanup.test.mjs
+- tests/v8041-windows-cleanup-batch.test.mjs
+- APPLY_STELLATE_v8.0.53_CLEANUP.bat
+- README.md
+- README_v8.0.53.md
+- STELLATE_PROJECT_HANDOFF_v8.0.53.txt
